@@ -1,5 +1,11 @@
 // ========================================
-// CLOSET AI - LUNA CLOTHING ANALYZER
+// CLOSET AI
+// MAIN APP JAVASCRIPT
+// ========================================
+
+
+// ========================================
+// LUNA BACKEND
 // ========================================
 
 const CLOSET_AI_SERVER =
@@ -7,14 +13,372 @@ const CLOSET_AI_SERVER =
 
 
 // ========================================
-// CONVERT IMAGE TO BASE64
+// GET ELEMENTS
+// ========================================
+
+const wardrobeNav =
+    document.getElementById("wardrobeNav");
+
+const outfitsNav =
+    document.getElementById("outfitsNav");
+
+const favoritesNav =
+    document.getElementById("favoritesNav");
+
+const settingsNav =
+    document.getElementById("settingsNav");
+
+const addItemButton =
+    document.getElementById("addItemButton");
+
+const addItemModal =
+    document.getElementById("addItemModal");
+
+const closeModal =
+    document.getElementById("closeModal");
+
+const clothingImageInput =
+    document.getElementById("clothingImage");
+
+const styleOutfitButton =
+    document.getElementById("styleOutfitButton");
+
+
+// ========================================
+// NAVIGATION
+// ========================================
+
+function showPage(page) {
+
+    const pages = {
+
+        wardrobe:
+            document.getElementById("wardrobePage"),
+
+        outfits:
+            document.getElementById("outfitsPage"),
+
+        favorites:
+            document.getElementById("favoritesPage"),
+
+        settings:
+            document.getElementById("settingsPage")
+
+    };
+
+
+    Object.values(pages).forEach(function(section) {
+
+        if (section) {
+
+            section.style.display = "none";
+
+        }
+
+    });
+
+
+    if (pages[page]) {
+
+        pages[page].style.display = "block";
+
+    }
+
+}
+
+
+// ========================================
+// NAVIGATION BUTTONS
+// ========================================
+
+if (wardrobeNav) {
+
+    wardrobeNav.addEventListener("click", function() {
+
+        showPage("wardrobe");
+
+    });
+
+}
+
+
+if (outfitsNav) {
+
+    outfitsNav.addEventListener("click", function() {
+
+        showPage("outfits");
+
+    });
+
+}
+
+
+if (favoritesNav) {
+
+    favoritesNav.addEventListener("click", function() {
+
+        showPage("favorites");
+
+    });
+
+}
+
+
+if (settingsNav) {
+
+    settingsNav.addEventListener("click", function() {
+
+        showPage("settings");
+
+    });
+
+}
+
+
+// ========================================
+// ADD ITEM MODAL
+// ========================================
+
+function openAddItemModal() {
+
+    if (!addItemModal) {
+
+        return;
+
+    }
+
+
+    addItemModal.classList.add("active");
+
+    addItemModal.style.display = "flex";
+
+}
+
+
+function closeAddItemModal() {
+
+    if (!addItemModal) {
+
+        return;
+
+    }
+
+
+    addItemModal.classList.remove("active");
+
+    addItemModal.style.display = "none";
+
+}
+
+
+if (addItemButton) {
+
+    addItemButton.addEventListener("click", function() {
+
+        openAddItemModal();
+
+    });
+
+}
+
+
+if (closeModal) {
+
+    closeModal.addEventListener("click", function() {
+
+        closeAddItemModal();
+
+    });
+
+}
+
+
+if (addItemModal) {
+
+    addItemModal.addEventListener("click", function(event) {
+
+        if (event.target === addItemModal) {
+
+            closeAddItemModal();
+
+        }
+
+    });
+
+}
+
+
+// ========================================
+// ESCAPE CLOSES MODAL
+// ========================================
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            closeAddItemModal();
+
+        }
+
+    }
+);
+
+
+// ========================================
+// FAVORITES
+// ========================================
+
+const favoriteButtons =
+    document.querySelectorAll(".heart");
+
+
+favoriteButtons.forEach(function(button) {
+
+    button.addEventListener("click", function(event) {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        const isFavorite =
+            button.classList.toggle("is-favorite");
+
+
+        if (isFavorite) {
+
+            button.textContent = "♥";
+
+        } else {
+
+            button.textContent = "♡";
+
+        }
+
+    });
+
+});
+
+
+// ========================================
+// MORE BUTTONS
+// ========================================
+
+const moreButtons =
+    document.querySelectorAll(".more");
+
+
+moreButtons.forEach(function(button) {
+
+    button.addEventListener("click", function(event) {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+
+        alert(
+            "Clothing item options coming soon ✨"
+        );
+
+    });
+
+});
+
+
+// ========================================
+// CLOTHING CARDS
+// ========================================
+
+const clothingCards =
+    document.querySelectorAll(".clothing-card");
+
+
+clothingCards.forEach(function(card) {
+
+    card.addEventListener("click", function(event) {
+
+        if (
+            event.target.classList.contains("heart") ||
+            event.target.classList.contains("more")
+        ) {
+
+            return;
+
+        }
+
+
+        console.log(
+            "Selected clothing:",
+            card.id
+        );
+
+    });
+
+});
+
+
+// ========================================
+// FILTERS
+// ========================================
+
+const filterButtons =
+    document.querySelectorAll("[data-filter]");
+
+
+filterButtons.forEach(function(button) {
+
+    button.addEventListener("click", function() {
+
+        const filter =
+            button.dataset.filter;
+
+
+        clothingCards.forEach(function(card) {
+
+            if (
+                filter === "all" ||
+                card.dataset.category === filter
+            ) {
+
+                card.style.display = "";
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+
+        filterButtons.forEach(function(item) {
+
+            item.classList.remove("active");
+
+        });
+
+
+        button.classList.add("active");
+
+    });
+
+});
+
+
+// ========================================
+// FILE TO BASE64
 // ========================================
 
 function fileToBase64(file) {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject) {
 
-        const reader = new FileReader();
+        const reader =
+            new FileReader();
+
 
         reader.onload = function() {
 
@@ -22,11 +386,13 @@ function fileToBase64(file) {
 
         };
 
+
         reader.onerror = function(error) {
 
             reject(error);
 
         };
+
 
         reader.readAsDataURL(file);
 
@@ -36,22 +402,22 @@ function fileToBase64(file) {
 
 
 // ========================================
-// SEND CLOTHING PHOTO TO LUNA
+// LUNA CLOTHING ANALYSIS
 // ========================================
 
 async function analyzeClothingWithAI(imageFile) {
 
     try {
 
-        console.log("📸 Sending clothing photo to Luna...");
+        console.log(
+            "📸 Sending clothing photo to Luna..."
+        );
 
 
-        // Convert the image
         const imageBase64 =
             await fileToBase64(imageFile);
 
 
-        // Send it to our backend
         const response = await fetch(
 
             `${CLOSET_AI_SERVER}/api/analyze-clothing`,
@@ -77,7 +443,8 @@ async function analyzeClothingWithAI(imageFile) {
         );
 
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
 
         if (!response.ok || !data.success) {
@@ -92,7 +459,10 @@ async function analyzeClothingWithAI(imageFile) {
         }
 
 
-        console.log("🤖 Luna identified:", data.clothing);
+        console.log(
+            "🤖 Luna identified:",
+            data.clothing
+        );
 
 
         return data.clothing;
@@ -101,16 +471,14 @@ async function analyzeClothingWithAI(imageFile) {
     } catch (error) {
 
         console.error(
-            "❌ CLOTHING ANALYSIS ERROR:",
+            "Luna analysis failed:",
             error
         );
 
 
-        alert(
-            "Sorry! Luna couldn't analyze this clothing. 😭\n\n" +
-            error.message
-        );
-
+        // IMPORTANT:
+        // Return null instead of stopping the app.
+        // This activates manual entry.
 
         return null;
 
@@ -120,16 +488,160 @@ async function analyzeClothingWithAI(imageFile) {
 
 
 // ========================================
-// CONNECT PHOTO UPLOAD TO LUNA
+// SHOW AI / MANUAL STATUS
 // ========================================
 
-// IMPORTANT:
-// This ID needs to match the file input
-// in your HTML.
+function showManualMode() {
 
-const clothingImageInput =
-    document.getElementById("clothingImage");
+    const message =
+        document.getElementById("aiStatus");
 
+
+    if (message) {
+
+        message.textContent =
+            "Luna couldn't identify this item. No worries — you can enter the details manually.";
+
+        message.style.display = "block";
+
+    } else {
+
+        console.log(
+            "✏️ Manual clothing entry available."
+        );
+
+    }
+
+}
+
+
+function showAIStatus() {
+
+    const message =
+        document.getElementById("aiStatus");
+
+
+    if (message) {
+
+        message.textContent =
+            "✨ Luna identified your clothing. You can edit anything before saving.";
+
+        message.style.display = "block";
+
+    }
+
+}
+
+
+// ========================================
+// FIND FORM FIELD
+// ========================================
+
+function findField(ids) {
+
+    for (let i = 0; i < ids.length; i++) {
+
+        const element =
+            document.getElementById(ids[i]);
+
+
+        if (element) {
+
+            return element;
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+// ========================================
+// FILL FORM WITH LUNA
+// ========================================
+
+function fillClothingForm(clothing) {
+
+    const nameInput =
+        findField([
+            "itemName",
+            "clothingName",
+            "nameInput"
+        ]);
+
+
+    const categoryInput =
+        findField([
+            "itemCategory",
+            "clothingCategory",
+            "categoryInput"
+        ]);
+
+
+    const materialInput =
+        findField([
+            "itemMaterial",
+            "clothingMaterial",
+            "materialInput"
+        ]);
+
+
+    const descriptionInput =
+        findField([
+            "itemDescription",
+            "clothingDescription",
+            "descriptionInput"
+        ]);
+
+
+    if (nameInput) {
+
+        nameInput.value =
+            clothing.name || "";
+
+    }
+
+
+    if (categoryInput) {
+
+        categoryInput.value =
+            clothing.category || "";
+
+    }
+
+
+    if (materialInput) {
+
+        materialInput.value =
+            clothing.material || "";
+
+    }
+
+
+    if (descriptionInput) {
+
+        descriptionInput.value =
+            clothing.description || "";
+
+    }
+
+
+    showAIStatus();
+
+
+    console.log(
+        "✨ Clothing form filled by Luna."
+    );
+
+}
+
+
+// ========================================
+// PHOTO UPLOAD
+// ========================================
 
 if (clothingImageInput) {
 
@@ -154,12 +666,51 @@ if (clothingImageInput) {
             );
 
 
-            // Send photo to Luna
+            // ====================================
+            // PHOTO PREVIEW
+            // ====================================
+
+            const imageURL =
+                URL.createObjectURL(file);
+
+
+            const preview =
+                document.getElementById(
+                    "clothingPreview"
+                );
+
+
+            if (preview) {
+
+                preview.src = imageURL;
+
+                preview.style.display =
+                    "block";
+
+            }
+
+
+            // ====================================
+            // TRY LUNA
+            // ====================================
+
             const clothing =
                 await analyzeClothingWithAI(file);
 
 
+            // ====================================
+            // LUNA FAILED
+            // ====================================
+
             if (!clothing) {
+
+                console.log(
+                    "⚠️ Luna failed — manual mode."
+                );
+
+
+                showManualMode();
+
 
                 return;
 
@@ -167,82 +718,45 @@ if (clothingImageInput) {
 
 
             // ====================================
-            // SHOW RESULT FOR NOW
+            // LUNA SUCCESS
             // ====================================
 
-            console.log(
-                "================================"
-            );
-
-            console.log(
-                "🤖 LUNA CLOTHING RESULT"
-            );
-
-            console.log(
-                "Name:",
-                clothing.name
-            );
-
-            console.log(
-                "Category:",
-                clothing.category
-            );
-
-            console.log(
-                "Subcategory:",
-                clothing.subcategory
-            );
-
-            console.log(
-                "Colours:",
-                clothing.colors
-            );
-
-            console.log(
-                "Material:",
-                clothing.material
-            );
-
-            console.log(
-                "Style:",
-                clothing.style
-            );
-
-            console.log(
-                "Season:",
-                clothing.season
-            );
-
-            console.log(
-                "Formality:",
-                clothing.formality
-            );
-
-            console.log(
-                "Description:",
-                clothing.description
-            );
-
-            console.log(
-                "================================"
-            );
-
-
-            // Simple test message
-            alert(
-
-                "✨ Luna analyzed your clothing!\n\n" +
-
-                clothing.name +
-
-                "\n\nCategory: " +
-
-                clothing.category
-
-            );
+            fillClothingForm(clothing);
 
         }
 
     );
 
 }
+
+
+// ========================================
+// CREATE OUTFIT
+// ========================================
+
+if (styleOutfitButton) {
+
+    styleOutfitButton.addEventListener(
+        "click",
+        function() {
+
+            alert(
+                "✨ Luna outfit styling is coming next!"
+            );
+
+        }
+    );
+
+}
+
+
+// ========================================
+// APP START
+// ========================================
+
+showPage("wardrobe");
+
+
+console.log(
+    "✨ Closet AI loaded successfully!"
+);
