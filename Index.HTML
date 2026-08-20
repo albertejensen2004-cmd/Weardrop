@@ -43,8 +43,6 @@
         <nav>
 
 
-            <!-- WARDROBE -->
-
             <button
                 class="nav-item active"
                 id="wardrobeNav"
@@ -57,8 +55,6 @@
             </button>
 
 
-            <!-- OUTFITS -->
-
             <button
                 class="nav-item"
                 id="outfitsNav"
@@ -70,8 +66,6 @@
 
             </button>
 
-
-            <!-- FAVORITES -->
 
             <button
                 class="nav-item"
@@ -111,7 +105,7 @@
 
 
     <!-- ==============================
-         MAIN APP
+         MAIN CONTENT
     =============================== -->
 
     <main class="main">
@@ -134,8 +128,6 @@
 
             </div>
 
-
-            <!-- PROFILE -->
 
             <button
                 class="profile"
@@ -182,8 +174,6 @@
                 </p>
 
 
-                <!-- STYLE OUTFIT -->
-
                 <button
                     class="style-button"
                     id="styleOutfitButton"
@@ -222,13 +212,11 @@
                 </h2>
 
                 <p id="itemCount">
-                    24 items in your closet
+                    4 items in your closet
                 </p>
 
             </div>
 
-
-            <!-- ADD ITEM -->
 
             <button
                 class="add-button"
@@ -341,11 +329,8 @@
 
                 <div class="clothing-image">
 
-
                     <div class="placeholder">
-
                         👚
-
                     </div>
 
 
@@ -358,12 +343,10 @@
 
                     </button>
 
-
                 </div>
 
 
                 <div class="clothing-info">
-
 
                     <div>
 
@@ -387,7 +370,6 @@
 
                     </button>
 
-
                 </div>
 
             </article>
@@ -404,11 +386,8 @@
 
                 <div class="clothing-image">
 
-
                     <div class="placeholder">
-
                         👖
-
                     </div>
 
 
@@ -421,12 +400,10 @@
 
                     </button>
 
-
                 </div>
 
 
                 <div class="clothing-info">
-
 
                     <div>
 
@@ -450,7 +427,6 @@
 
                     </button>
 
-
                 </div>
 
             </article>
@@ -467,11 +443,8 @@
 
                 <div class="clothing-image">
 
-
                     <div class="placeholder">
-
                         👗
-
                     </div>
 
 
@@ -484,12 +457,10 @@
 
                     </button>
 
-
                 </div>
 
 
                 <div class="clothing-info">
-
 
                     <div>
 
@@ -513,7 +484,6 @@
 
                     </button>
 
-
                 </div>
 
             </article>
@@ -530,11 +500,8 @@
 
                 <div class="clothing-image">
 
-
                     <div class="placeholder">
-
                         👟
-
                     </div>
 
 
@@ -547,12 +514,10 @@
 
                     </button>
 
-
                 </div>
 
 
                 <div class="clothing-info">
-
 
                     <div>
 
@@ -575,7 +540,6 @@
                         •••
 
                     </button>
-
 
                 </div>
 
@@ -602,7 +566,7 @@
         <div class="modal-content">
 
 
-            <!-- CLOSE -->
+            <!-- CLOSE BUTTON -->
 
             <button
                 class="close-modal"
@@ -628,37 +592,65 @@
 
 
 
-            <!-- IMAGE -->
+            <!-- ==========================
+                 IMAGE UPLOAD
+            =========================== -->
 
             <label
                 class="upload-box"
+                id="uploadBox"
                 for="clothingImage"
             >
 
-                <span>
-                    📷
-                </span>
 
-                <strong>
-                    Upload a photo
-                </strong>
+                <!-- DEFAULT UPLOAD MESSAGE -->
 
-                <small>
-                    PNG, JPG or WEBP
-                </small>
+                <div id="uploadPlaceholder">
 
+                    <span>
+                        📷
+                    </span>
+
+
+                    <strong>
+                        Upload a photo
+                    </strong>
+
+
+                    <small>
+                        Choose from your photos or
+                        take a picture
+                    </small>
+
+                </div>
+
+
+                <!-- IMAGE PREVIEW -->
+
+                <img
+                    id="imagePreview"
+                    class="image-preview"
+                    alt="Clothing preview"
+                >
+
+
+                <!-- FILE INPUT -->
 
                 <input
                     type="file"
                     id="clothingImage"
-                    accept="image/png, image/jpeg, image/webp"
+                    accept="image/*"
+                    capture="environment"
                 >
+
 
             </label>
 
 
 
-            <!-- NAME -->
+            <!-- ==========================
+                 CLOTHING NAME
+            =========================== -->
 
             <label class="input-label">
 
@@ -675,7 +667,9 @@
 
 
 
-            <!-- CATEGORY -->
+            <!-- ==========================
+                 CATEGORY
+            =========================== -->
 
             <label class="input-label">
 
@@ -716,7 +710,9 @@
 
 
 
-            <!-- SAVE -->
+            <!-- ==========================
+                 SAVE
+            =========================== -->
 
             <button
                 class="save-item"
@@ -734,7 +730,9 @@
 
 
 
-    <!-- JAVASCRIPT -->
+    <!-- ==============================
+         JAVASCRIPT
+    =============================== -->
 
     <script src="script.js"></script>
 
