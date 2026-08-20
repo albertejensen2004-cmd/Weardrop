@@ -1,16 +1,15 @@
-/* ==============================
-   GENERAL
-============================== */
+/* =====================================================
+   RESET
+===================================================== */
 
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 
 body {
-
     font-family:
         Arial,
         Helvetica,
@@ -18,65 +17,71 @@ body {
 
     background: #f8f6f3;
 
-    color: #252323;
-
-    display: flex;
+    color: #272522;
 
     min-height: 100vh;
-
 }
 
 
-/* ==============================
+button,
+input,
+select {
+    font: inherit;
+}
+
+
+button {
+    cursor: pointer;
+    border: none;
+}
+
+
+/* =====================================================
    SIDEBAR
-============================== */
+===================================================== */
 
 .sidebar {
 
-    width: 230px;
+    position: fixed;
 
-    min-height: 100vh;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 240px;
 
     background: #ffffff;
 
-    border-right: 1px solid #e8e3df;
+    border-right: 1px solid #ebe7e2;
 
-    padding: 30px 18px;
+    padding: 30px 20px;
 
     display: flex;
 
     flex-direction: column;
 
+    z-index: 20;
 }
 
 
-/* LOGO */
-
 .logo {
 
-    font-size: 21px;
+    font-size: 22px;
 
     font-weight: 700;
 
-    padding: 0 12px 40px;
+    margin-bottom: 50px;
 
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
+    cursor: pointer;
 }
 
 
 .logo span {
 
-    color: #a77b88;
+    margin-right: 8px;
 
 }
 
-
-/* NAVIGATION */
 
 nav {
 
@@ -84,28 +89,23 @@ nav {
 
     flex-direction: column;
 
-    gap: 6px;
-
+    gap: 8px;
 }
 
 
 .nav-item {
 
-    border: none;
+    width: 100%;
+
+    padding: 13px 15px;
+
+    border-radius: 12px;
 
     background: transparent;
 
-    padding: 12px 14px;
-
-    border-radius: 10px;
-
     text-align: left;
 
-    font-size: 14px;
-
     color: #777;
-
-    cursor: pointer;
 
     display: flex;
 
@@ -114,77 +114,60 @@ nav {
     gap: 12px;
 
     transition: 0.2s;
-
 }
 
 
 .nav-item:hover {
 
-    background: #f6f1f2;
+    background: #f4f1ed;
 
-    color: #252323;
-
+    color: #222;
 }
 
 
 .nav-item.active {
 
-    background: #f1e5e8;
+    background: #eee8e1;
 
-    color: #805d68;
+    color: #222;
 
     font-weight: 600;
-
 }
 
-
-.nav-item span {
-
-    font-size: 18px;
-
-}
-
-
-/* SIDEBAR BOTTOM */
 
 .sidebar-bottom {
 
     margin-top: auto;
-
 }
 
 
-/* ==============================
+/* =====================================================
    MAIN
-============================== */
+===================================================== */
 
 .main {
 
-    flex: 1;
+    margin-left: 240px;
 
-    max-width: 1400px;
+    padding: 30px 45px 70px;
 
-    margin: 0 auto;
-
-    padding: 35px 50px;
-
+    max-width: 1500px;
 }
 
 
-/* ==============================
-   TOP BAR
-============================== */
+/* =====================================================
+   TOPBAR
+===================================================== */
 
 .topbar {
 
     display: flex;
 
-    justify-content: space-between;
-
     align-items: center;
 
-    margin-bottom: 30px;
+    justify-content: space-between;
 
+    margin-bottom: 35px;
 }
 
 
@@ -192,23 +175,19 @@ nav {
 
     font-size: 11px;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
 
-    color: #9a9090;
+    color: #999;
 
     margin-bottom: 7px;
-
 }
 
 
 .topbar h1 {
 
-    font-size: 28px;
-
+    font-size: 27px;
 }
 
-
-/* PROFILE */
 
 .profile {
 
@@ -218,32 +197,25 @@ nav {
 
     border-radius: 50%;
 
-    border: none;
-
-    background: #d8b9c1;
+    background: #292623;
 
     color: white;
 
     font-weight: 600;
-
-    cursor: pointer;
-
 }
 
 
-/* ==============================
+/* =====================================================
    HERO
-============================== */
+===================================================== */
 
 .hero {
 
-    background: #e9dadd;
+    background: #e9e0d8;
 
-    border-radius: 20px;
+    border-radius: 24px;
 
-    padding: 40px 45px;
-
-    min-height: 250px;
+    padding: 45px;
 
     display: flex;
 
@@ -251,10 +223,9 @@ nav {
 
     align-items: center;
 
-    overflow: hidden;
+    min-height: 260px;
 
-    position: relative;
-
+    margin-bottom: 40px;
 }
 
 
@@ -264,10 +235,9 @@ nav {
 
     letter-spacing: 2px;
 
-    color: #80636a;
+    color: #887c72;
 
-    margin-bottom: 12px;
-
+    margin-bottom: 14px;
 }
 
 
@@ -278,79 +248,64 @@ nav {
     line-height: 1.1;
 
     margin-bottom: 15px;
-
 }
 
 
 .hero-text {
 
-    color: #705e63;
+    color: #746b63;
 
-    font-size: 14px;
+    max-width: 440px;
 
-    max-width: 350px;
-
-    line-height: 1.5;
+    line-height: 1.6;
 
     margin-bottom: 25px;
-
 }
 
-
-/* STYLE BUTTON */
-
-.style-button {
-
-    background: #292426;
-
-    color: white;
-
-    border: none;
-
-    padding: 13px 20px;
-
-    border-radius: 10px;
-
-    font-size: 14px;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-
-}
-
-
-.style-button:hover {
-
-    transform: translateY(-2px);
-
-    background: #40373a;
-
-}
-
-
-/* HERO DECORATION */
 
 .hero-decoration {
 
-    font-size: 150px;
+    font-size: 100px;
 
-    color: rgba(255, 255, 255, 0.45);
-
-    margin-right: 80px;
-
-    transform: rotate(15deg);
-
+    opacity: 0.25;
 }
 
 
-/* ==============================
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.style-button,
+.add-button,
+.save-item {
+
+    background: #282522;
+
+    color: white;
+
+    border-radius: 12px;
+
+    padding: 13px 20px;
+
+    transition: 0.2s;
+}
+
+
+.style-button:hover,
+.add-button:hover,
+.save-item:hover {
+
+    transform: translateY(-1px);
+
+    opacity: 0.9;
+}
+
+
+/* =====================================================
    WARDROBE HEADER
-============================== */
+===================================================== */
 
 .wardrobe-header {
-
-    margin-top: 45px;
 
     display: flex;
 
@@ -358,15 +313,15 @@ nav {
 
     align-items: center;
 
+    margin-bottom: 22px;
 }
 
 
 .wardrobe-header h2 {
 
-    font-size: 24px;
+    font-size: 25px;
 
     margin-bottom: 5px;
-
 }
 
 
@@ -374,142 +329,123 @@ nav {
 
     color: #999;
 
-    font-size: 13px;
-
+    font-size: 14px;
 }
 
 
-/* ADD BUTTON */
-
-.add-button {
-
-    background: white;
-
-    border: 1px solid #ded8d5;
-
-    padding: 11px 18px;
-
-    border-radius: 9px;
-
-    cursor: pointer;
-
-    font-size: 13px;
-
-    transition: 0.2s;
-
-}
-
-
-.add-button:hover {
-
-    background: #f4eeee;
-
-}
-
-
-/* ==============================
+/* =====================================================
    FILTERS
-============================== */
+===================================================== */
 
 .filters {
 
     display: flex;
 
-    gap: 8px;
+    gap: 9px;
 
-    margin: 25px 0;
+    flex-wrap: wrap;
 
+    margin-bottom: 25px;
 }
 
 
 .filter {
 
-    border: none;
+    background: #fff;
 
-    background: white;
+    border: 1px solid #e7e1db;
 
-    padding: 9px 15px;
+    padding: 9px 16px;
 
     border-radius: 20px;
 
-    color: #888;
+    color: #777;
+}
 
-    cursor: pointer;
 
-    font-size: 13px;
+.filter:hover {
 
-    border: 1px solid #ebe6e3;
-
+    border-color: #bbb;
 }
 
 
 .filter.active {
 
-    background: #292426;
+    background: #292623;
 
     color: white;
 
-    border-color: #292426;
-
+    border-color: #292623;
 }
 
 
-/* ==============================
+/* =====================================================
    CLOTHING GRID
-============================== */
+===================================================== */
 
 .clothing-grid {
 
     display: grid;
 
     grid-template-columns:
-        repeat(4, 1fr);
+        repeat(
+            auto-fill,
+            minmax(210px, 1fr)
+        );
 
-    gap: 20px;
-
+    gap: 22px;
 }
 
-
-/* ==============================
-   CLOTHING CARD
-============================== */
 
 .clothing-card {
 
     background: white;
 
-    border-radius: 15px;
+    border-radius: 17px;
 
     overflow: hidden;
 
-    border: 1px solid #eee9e6;
+    border: 1px solid #eee9e4;
 
-    transition: 0.25s;
-
-    cursor: pointer;
-
+    transition: 0.2s;
 }
 
 
 .clothing-card:hover {
 
-    transform: translateY(-4px);
+    transform: translateY(-3px);
 
     box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.06);
-
+        0 10px 30px
+        rgba(0,0,0,0.06);
 }
 
-
-/* CLOTHING IMAGE */
 
 .clothing-image {
 
     height: 260px;
 
-    background: #f4f1ef;
+    background: #f2efeb;
 
     position: relative;
+
+    overflow: hidden;
+}
+
+
+.clothing-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.placeholder {
+
+    height: 100%;
 
     display: flex;
 
@@ -517,64 +453,53 @@ nav {
 
     align-items: center;
 
+    font-size: 70px;
 }
 
-
-.placeholder {
-
-    font-size: 85px;
-
-}
-
-
-/* HEART */
 
 .heart {
 
     position: absolute;
 
-    top: 12px;
-
     right: 12px;
 
-    width: 34px;
+    top: 12px;
 
-    height: 34px;
+    width: 38px;
+
+    height: 38px;
 
     border-radius: 50%;
 
-    border: none;
+    background: rgba(255,255,255,0.9);
 
-    background: white;
-
-    font-size: 18px;
-
-    cursor: pointer;
-
+    font-size: 20px;
 }
 
 
-/* CLOTHING INFO */
+.heart.active {
+
+    color: #b54b4b;
+}
+
 
 .clothing-info {
 
-    padding: 15px;
+    padding: 16px;
 
     display: flex;
 
     justify-content: space-between;
 
-    align-items: center;
-
+    gap: 10px;
 }
 
 
 .clothing-info h3 {
 
-    font-size: 14px;
+    font-size: 15px;
 
     margin-bottom: 5px;
-
 }
 
 
@@ -584,29 +509,47 @@ nav {
 
     color: #999;
 
+    line-height: 1.5;
 }
 
 
-/* MORE BUTTON */
+.item-tags {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 5px;
+
+    margin-top: 8px;
+}
+
+
+.item-tag {
+
+    font-size: 10px;
+
+    background: #f1ede8;
+
+    border-radius: 8px;
+
+    padding: 4px 7px;
+}
+
 
 .more {
-
-    border: none;
 
     background: transparent;
 
     color: #999;
 
-    cursor: pointer;
-
-    font-size: 13px;
-
+    padding: 4px;
 }
 
 
-/* ==============================
-   ADD ITEM MODAL
-============================== */
+/* =====================================================
+   MODAL
+===================================================== */
 
 .modal {
 
@@ -615,7 +558,7 @@ nav {
     inset: 0;
 
     background:
-        rgba(37, 32, 34, 0.45);
+        rgba(25,22,20,0.45);
 
     display: none;
 
@@ -625,300 +568,171 @@ nav {
 
     padding: 20px;
 
-    z-index: 1000;
-
-    backdrop-filter: blur(5px);
-
+    z-index: 100;
 }
 
 
-/* SHOW MODAL */
-
-.modal.show {
+.modal.active {
 
     display: flex;
-
 }
 
-
-/* MODAL BOX */
 
 .modal-content {
 
-    width: 100%;
+    background: white;
 
-    max-width: 480px;
+    width: min(560px, 100%);
 
-    background: #ffffff;
+    max-height: 90vh;
 
-    border-radius: 20px;
+    overflow-y: auto;
 
-    padding: 32px;
+    border-radius: 22px;
+
+    padding: 30px;
 
     position: relative;
-
-    box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.15);
-
-    animation:
-        modalAppear 0.2s ease-out;
-
 }
 
-
-/* MODAL ANIMATION */
-
-@keyframes modalAppear {
-
-    from {
-
-        opacity: 0;
-
-        transform:
-            translateY(10px)
-            scale(0.98);
-
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-
-    }
-
-}
-
-
-/* MODAL HEADER */
-
-.modal-content h2 {
-
-    font-size: 25px;
-
-    font-weight: 600;
-
-    color: #292426;
-
-    margin-bottom: 6px;
-
-}
-
-
-.modal-subtitle {
-
-    font-size: 13px;
-
-    color: #999;
-
-    margin-bottom: 26px;
-
-}
-
-
-/* CLOSE */
 
 .close-modal {
 
     position: absolute;
 
-    top: 18px;
-
     right: 18px;
 
-    width: 34px;
+    top: 16px;
 
-    height: 34px;
+    background: #f2efeb;
+
+    width: 35px;
+
+    height: 35px;
 
     border-radius: 50%;
 
-    border: none;
-
-    background: #f6f2f1;
-
-    color: #777;
-
-    font-size: 20px;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    transition: 0.2s;
-
+    font-size: 22px;
 }
 
 
-.close-modal:hover {
+.modal-content h2 {
 
-    background: #eee6e7;
+    font-size: 25px;
 
-    color: #292426;
-
+    margin-bottom: 7px;
 }
 
 
-/* ==============================
-   IMAGE UPLOAD
-============================== */
+.modal-subtitle {
+
+    color: #999;
+
+    margin-bottom: 25px;
+}
+
+
+/* =====================================================
+   UPLOAD
+===================================================== */
 
 .upload-box {
 
-    width: 100%;
+    min-height: 210px;
 
-    height: 155px;
+    border: 2px dashed #d9d1c9;
 
-    border: 1.5px dashed #d8cece;
+    border-radius: 17px;
 
-    border-radius: 14px;
-
-    background: #faf8f7;
+    background: #faf8f6;
 
     display: flex;
-
-    flex-direction: column;
 
     justify-content: center;
 
     align-items: center;
 
-    gap: 6px;
+    text-align: center;
 
     cursor: pointer;
 
-    margin-bottom: 23px;
-
-    transition: 0.2s;
-
     overflow: hidden;
 
+    position: relative;
+
+    margin-bottom: 22px;
 }
 
 
 .upload-box:hover {
 
-    background: #f6eff1;
-
-    border-color: #b58b97;
-
+    background: #f5f1ed;
 }
 
-
-.upload-box span {
-
-    font-size: 30px;
-
-    margin-bottom: 3px;
-
-}
-
-
-.upload-box strong {
-
-    font-size: 14px;
-
-    color: #51494b;
-
-}
-
-
-.upload-box small {
-
-    font-size: 11px;
-
-    color: #aaa;
-
-    text-align: center;
-
-}
-
-
-/* HIDE FILE INPUT */
 
 .upload-box input {
 
     display: none;
-
 }
 
 
-/* ==============================
-   IMAGE PREVIEW
-============================== */
-
-.image-preview {
-
-    display: none;
-
-    width: 100%;
-
-    height: 100%;
-
-    object-fit: contain;
-
-    border-radius: 12px;
-
-}
-
-
-/* WHEN IMAGE EXISTS */
-
-.upload-box.has-image {
-
-    padding: 8px;
-
-    border-style: solid;
-
-    border-color: #d8cece;
-
-    background: #f4f1ef;
-
-}
-
-
-.upload-box.has-image #uploadPlaceholder {
-
-    display: none;
-
-}
-
-
-.upload-box.has-image .image-preview {
-
-    display: block;
-
-}
-
-
-/* ==============================
-   INPUTS
-============================== */
-
-.input-label {
+#uploadPlaceholder {
 
     display: flex;
 
     flex-direction: column;
 
+    align-items: center;
+
     gap: 7px;
 
-    font-size: 12px;
+    color: #777;
+}
 
-    font-weight: 500;
 
-    color: #5c5557;
+#uploadPlaceholder span {
+
+    font-size: 40px;
+}
+
+
+#uploadPlaceholder strong {
+
+    color: #333;
+}
+
+
+#uploadPlaceholder small {
+
+    color: #aaa;
+}
+
+
+.image-preview {
+
+    width: 100%;
+
+    height: 280px;
+
+    object-fit: contain;
+
+    display: none;
+}
+
+
+/* =====================================================
+   INPUTS
+===================================================== */
+
+.input-label {
+
+    display: block;
+
+    font-size: 13px;
+
+    font-weight: 600;
 
     margin-bottom: 18px;
-
 }
 
 
@@ -927,246 +741,188 @@ nav {
 
     width: 100%;
 
-    padding: 12px 13px;
+    margin-top: 8px;
 
-    border: 1px solid #e2dcda;
+    padding: 13px;
 
-    border-radius: 9px;
+    border-radius: 11px;
 
-    background: #ffffff;
+    border: 1px solid #ddd6cf;
 
-    color: #292426;
-
-    font-size: 14px;
-
-    font-family: inherit;
+    background: white;
 
     outline: none;
-
-    transition: 0.2s;
-
-}
-
-
-.input-label input::placeholder {
-
-    color: #b5aeae;
-
 }
 
 
 .input-label input:focus,
 .input-label select:focus {
 
-    border-color: #b58b97;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(181, 139, 151, 0.10);
-
+    border-color: #9b8e83;
 }
 
 
-/* ==============================
-   SAVE BUTTON
-============================== */
+.field-help {
+
+    font-size: 11px;
+
+    color: #999;
+
+    font-weight: normal;
+
+    margin-top: 4px;
+}
+
+
+/* =====================================================
+   TYPE TAG PICKER
+===================================================== */
+
+.tag-picker {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+
+.type-option {
+
+    background: #f5f1ed;
+
+    border: 1px solid #e6dfd8;
+
+    color: #665e58;
+
+    border-radius: 20px;
+
+    padding: 8px 12px;
+
+    font-size: 12px;
+
+    transition: 0.15s;
+}
+
+
+.type-option:hover {
+
+    border-color: #aaa;
+}
+
+
+.type-option.selected {
+
+    background: #292623;
+
+    border-color: #292623;
+
+    color: white;
+}
+
 
 .save-item {
 
     width: 100%;
 
-    padding: 13px 18px;
-
-    border: none;
-
-    border-radius: 10px;
-
-    background: #292426;
-
-    color: white;
-
-    font-size: 14px;
-
-    font-weight: 500;
-
-    font-family: inherit;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-
-    margin-top: 3px;
-
+    margin-top: 8px;
 }
 
 
-.save-item:hover {
+/* =====================================================
+   DYNAMIC PAGES
+===================================================== */
 
-    background: #40373a;
+.hidden {
 
-    transform: translateY(-1px);
-
+    display: none !important;
 }
 
 
-.save-item:active {
+.dynamic-page {
 
-    transform: translateY(0);
-
+    padding-bottom: 50px;
 }
 
 
-/* ==============================
-   RESPONSIVE
-============================== */
+.dynamic-page-header {
 
-@media (max-width: 1000px) {
-
-    .sidebar {
-
-        width: 190px;
-
-    }
-
-
-    .main {
-
-        padding: 30px;
-
-    }
-
-
-    .clothing-grid {
-
-        grid-template-columns:
-            repeat(3, 1fr);
-
-    }
-
+    margin-bottom: 25px;
 }
 
 
-@media (max-width: 750px) {
+.dynamic-page-header h2 {
 
-    .sidebar {
+    font-size: 34px;
 
-        display: none;
-
-    }
-
-
-    .main {
-
-        padding: 20px;
-
-    }
-
-
-    .clothing-grid {
-
-        grid-template-columns:
-            repeat(2, 1fr);
-
-    }
-
-
-    .hero h2 {
-
-        font-size: 30px;
-
-    }
-
-
-    .hero-decoration {
-
-        display: none;
-
-    }
-
+    margin-bottom: 8px;
 }
 
 
-@media (max-width: 500px) {
+.dynamic-page-header p {
 
-    .clothing-grid {
-
-        grid-template-columns: 1fr;
-
-    }
-
-
-    .filters {
-
-        overflow-x: auto;
-
-    }
-
-
-    .modal-content {
-
-        padding: 25px;
-
-        border-radius: 17px;
-
-    }
-
+    color: #999;
 }
-/* ==============================
-   EMPTY STATES
-============================== */
+
+
+/* =====================================================
+   EMPTY
+===================================================== */
 
 .empty-state {
 
-    grid-column: 1 / -1;
+    background: white;
+
+    border: 1px solid #eee8e2;
+
+    border-radius: 20px;
+
+    padding: 55px 30px;
 
     text-align: center;
 
-    padding: 70px 20px;
-
-    color: #999;
-
-}
-
-
-.empty-icon {
-
-    font-size: 45px;
-
-    margin-bottom: 15px;
-
+    margin-top: 25px;
 }
 
 
 .empty-state h3 {
 
-    color: #51494b;
-
-    font-size: 18px;
-
-    margin-bottom: 8px;
-
+    margin: 15px 0 7px;
 }
 
 
 .empty-state p {
 
-    font-size: 13px;
-
+    color: #999;
 }
 
 
-/* ==============================
-   OUTFITS PAGE
-============================== */
+/* =====================================================
+   OUTFIT BUILDER
+===================================================== */
 
-.outfits-page {
+.outfit-builder {
 
-    grid-column: 1 / -1;
+    background: white;
 
+    border-radius: 20px;
+
+    padding: 25px;
+
+    border: 1px solid #eee8e2;
 }
 
 
-.outfits-header {
+.outfit-section {
+
+    margin-top: 30px;
+}
+
+
+.outfit-section-header {
 
     display: flex;
 
@@ -1174,247 +930,574 @@ nav {
 
     align-items: center;
 
-    margin-bottom: 30px;
-
+    margin-bottom: 12px;
 }
 
 
-.outfits-header h2 {
+.outfit-section-header h3 {
 
-    font-size: 28px;
-
-    margin-bottom: 8px;
-
+    font-size: 17px;
 }
 
 
-.outfits-header p {
+.outfit-section-header span {
+
+    font-size: 12px;
+
+    color: #999;
+}
+
+
+/* =====================================================
+   SWIPE CLOTHING ROW
+===================================================== */
+
+.swipe-row {
+
+    display: flex;
+
+    gap: 14px;
+
+    overflow-x: auto;
+
+    padding: 5px 3px 15px;
+
+    scroll-snap-type: x mandatory;
+
+    scrollbar-width: thin;
+}
+
+
+.swipe-row::-webkit-scrollbar {
+
+    height: 5px;
+}
+
+
+.swipe-row::-webkit-scrollbar-thumb {
+
+    background: #d4ccc4;
+
+    border-radius: 10px;
+}
+
+
+.outfit-item {
+
+    flex: 0 0 155px;
+
+    scroll-snap-align: start;
+
+    background: white;
+
+    border: 2px solid #eee7e0;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    cursor: pointer;
+
+    transition: 0.18s;
+
+    position: relative;
+}
+
+
+.outfit-item:hover {
+
+    transform: translateY(-2px);
+}
+
+
+.outfit-item.selected {
+
+    border-color: #292623;
+
+    box-shadow:
+        0 0 0 2px #292623;
+}
+
+
+.outfit-item.selected::after {
+
+    content: "✓";
+
+    position: absolute;
+
+    right: 8px;
+
+    top: 8px;
+
+    width: 28px;
+
+    height: 28px;
+
+    border-radius: 50%;
+
+    background: #292623;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.outfit-item-image {
+
+    height: 180px;
+
+    background: #f3efeb;
+
+    overflow: hidden;
+}
+
+
+.outfit-item-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.outfit-item-info {
+
+    padding: 10px;
+}
+
+
+.outfit-item-info strong {
+
+    display: block;
+
+    font-size: 12px;
+
+    margin-bottom: 5px;
+}
+
+
+.outfit-item-info span {
+
+    font-size: 10px;
+
+    color: #999;
+}
+
+
+.outfit-item-tags {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 4px;
+
+    margin-top: 6px;
+}
+
+
+/* =====================================================
+   OUTFIT PREVIEW
+===================================================== */
+
+.selected-outfit {
+
+    background: #f4f0ec;
+
+    border-radius: 18px;
+
+    padding: 20px;
+
+    margin-top: 25px;
+}
+
+
+.selected-outfit-items {
+
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+    margin-top: 15px;
+}
+
+
+.selected-chip {
+
+    background: white;
+
+    border-radius: 10px;
+
+    padding: 8px 11px;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   SAVED OUTFITS
+===================================================== */
+
+.saved-outfit {
+
+    background: white;
+
+    border: 1px solid #eee7e0;
+
+    border-radius: 18px;
+
+    padding: 20px;
+
+    margin-top: 18px;
+}
+
+
+.saved-outfit h3 {
+
+    margin-bottom: 6px;
+}
+
+
+.saved-outfit-description {
 
     color: #999;
 
     font-size: 13px;
 
+    margin-bottom: 15px;
 }
 
 
-/* ==============================
-   OUTFIT BUILDER
-============================== */
-
-.outfit-selection {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 12px;
-
-    max-height: 400px;
-
-    overflow-y: auto;
-
-    margin-bottom: 20px;
-
-}
-
-
-.outfit-piece {
-
-    border: 2px solid transparent;
-
-    background: #f8f6f3;
-
-    border-radius: 12px;
-
-    padding: 8px;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-
-}
-
-
-.outfit-piece:hover {
-
-    background: #f1e7e9;
-
-}
-
-
-.outfit-piece.selected {
-
-    border-color: #b58b97;
-
-    background: #f1e5e8;
-
-}
-
-
-.outfit-piece img {
-
-    width: 100%;
-
-    height: 100px;
-
-    object-fit: contain;
-
-    border-radius: 8px;
-
-    background: #ffffff;
-
-}
-
-
-.outfit-piece span {
-
-    display: block;
-
-    font-size: 11px;
-
-    color: #555;
-
-    margin-top: 6px;
-
-}
-
-
-/* ==============================
-   SAVED OUTFITS
-============================== */
-
-.saved-outfits {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 20px;
-
-}
-
-
-.saved-outfit-card {
-
-    background: #ffffff;
-
-    border: 1px solid #eee9e6;
-
-    border-radius: 15px;
-
-    padding: 15px;
-
-}
-
-
-.saved-outfit-card h3 {
-
-    font-size: 14px;
-
-    margin-bottom: 12px;
-
-}
-
-
-.outfit-images {
+.saved-outfit-images {
 
     display: flex;
 
-    gap: 6px;
+    gap: 8px;
 
     overflow-x: auto;
-
-    margin-bottom: 12px;
-
 }
 
 
-.outfit-images img {
+.saved-outfit-images img {
 
-    width: 80px;
+    width: 90px;
 
-    height: 90px;
+    height: 110px;
 
-    object-fit: contain;
+    object-fit: cover;
 
-    background: #f4f1ef;
+    border-radius: 10px;
 
-    border-radius: 8px;
-
+    background: #eee;
 }
 
 
-/* ==============================
+.delete-outfit {
+
+    margin-top: 15px;
+
+    background: #f3efeb;
+
+    padding: 8px 12px;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
    SETTINGS
-============================== */
+===================================================== */
 
-.settings-page {
+.settings-card {
 
-    max-width: 600px;
+    background: white;
 
+    border: 1px solid #eee8e2;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    margin-bottom: 16px;
 }
 
 
-.settings-page h2 {
+.settings-card h3 {
 
-    font-size: 28px;
-
-    margin-bottom: 10px;
-
+    margin-bottom: 8px;
 }
 
 
-.settings-page p {
+.settings-card p {
 
-    color: #999;
+    color: #888;
 
     font-size: 14px;
 
-    margin-bottom: 25px;
-
+    line-height: 1.6;
 }
 
 
-.settings-page .save-item {
+.danger-button {
 
-    max-width: 220px;
+    background: #8b3f3f;
 
-    background: #a05c6c;
+    color: white;
 
+    padding: 12px 16px;
+
+    border-radius: 10px;
+
+    margin-top: 10px;
 }
 
 
-/* ==============================
-   MOBILE OUTFITS
-============================== */
+/* =====================================================
+   MOBILE
+===================================================== */
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
 
-    .saved-outfits {
+    .sidebar {
 
-        grid-template-columns: 1fr;
+        position: fixed;
+
+        left: 0;
+
+        right: 0;
+
+        bottom: 0;
+
+        top: auto;
+
+        width: 100%;
+
+        height: 70px;
+
+        border-right: none;
+
+        border-top: 1px solid #e8e3de;
+
+        padding: 7px 10px;
+
+        flex-direction: row;
+
+        align-items: center;
 
     }
 
 
-    .outfits-header {
+    .logo,
+    .sidebar-bottom {
+
+        display: none;
+    }
+
+
+    nav {
+
+        width: 100%;
+
+        flex-direction: row;
+
+        justify-content: space-around;
+
+        gap: 4px;
+    }
+
+
+    .nav-item {
+
+        width: auto;
+
+        flex: 1;
+
+        justify-content: center;
 
         flex-direction: column;
 
-        align-items: flex-start;
+        gap: 2px;
 
-        gap: 20px;
+        padding: 6px;
 
+        font-size: 10px;
     }
 
 
-    .outfit-selection {
+    .nav-item span {
+
+        font-size: 18px;
+    }
+
+
+    .main {
+
+        margin-left: 0;
+
+        padding:
+            20px
+            20px
+            95px;
+    }
+
+
+    .topbar {
+
+        margin-bottom: 25px;
+    }
+
+
+    .topbar h1 {
+
+        font-size: 21px;
+    }
+
+
+    .profile {
+
+        width: 38px;
+
+        height: 38px;
+    }
+
+
+    .hero {
+
+        padding: 28px;
+
+        min-height: 300px;
+
+        margin-bottom: 28px;
+    }
+
+
+    .hero h2 {
+
+        font-size: 31px;
+    }
+
+
+    .hero-decoration {
+
+        display: none;
+    }
+
+
+    .wardrobe-header {
+
+        align-items: flex-end;
+    }
+
+
+    .wardrobe-header h2 {
+
+        font-size: 21px;
+    }
+
+
+    .add-button {
+
+        padding: 10px 13px;
+
+        font-size: 12px;
+    }
+
+
+    .clothing-grid {
 
         grid-template-columns:
-            repeat(2, 1fr);
+            repeat(2, minmax(0, 1fr));
 
+        gap: 12px;
+    }
+
+
+    .clothing-image {
+
+        height: 210px;
+    }
+
+
+    .clothing-info {
+
+        padding: 11px;
+    }
+
+
+    .clothing-info h3 {
+
+        font-size: 13px;
+    }
+
+
+    .modal-content {
+
+        padding: 24px;
+
+        border-radius: 20px;
+
+        max-height: 92vh;
+    }
+
+
+    .outfit-item {
+
+        flex-basis: 145px;
+    }
+
+
+    .outfit-item-image {
+
+        height: 170px;
+    }
+
+}
+
+
+@media (max-width: 430px) {
+
+    .main {
+
+        padding-left: 14px;
+
+        padding-right: 14px;
+
+        padding-bottom: 90px;
+    }
+
+
+    .hero {
+
+        padding: 23px;
+    }
+
+
+    .hero h2 {
+
+        font-size: 28px;
+    }
+
+
+    .clothing-grid {
+
+        gap: 9px;
+    }
+
+
+    .clothing-image {
+
+        height: 190px;
     }
 
 }
