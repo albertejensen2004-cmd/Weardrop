@@ -1,0 +1,540 @@
+/* ------------------------------
+   GENERAL
+------------------------------ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f8f6f3;
+    color: #252323;
+
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* ------------------------------
+   SIDEBAR
+------------------------------ */
+
+.sidebar {
+    width: 230px;
+    min-height: 100vh;
+
+    background: #ffffff;
+
+    border-right: 1px solid #e8e3df;
+
+    padding: 30px 18px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* LOGO */
+
+.logo {
+    font-size: 21px;
+    font-weight: 700;
+
+    padding: 0 12px 40px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo span {
+    color: #a77b88;
+}
+
+
+/* NAVIGATION */
+
+nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.nav-item {
+    border: none;
+    background: transparent;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    text-align: left;
+
+    font-size: 14px;
+
+    color: #777;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    transition: 0.2s;
+}
+
+.nav-item:hover {
+    background: #f6f1f2;
+    color: #252323;
+}
+
+.nav-item.active {
+    background: #f1e5e8;
+    color: #805d68;
+    font-weight: 600;
+}
+
+.nav-item span {
+    font-size: 18px;
+}
+
+
+/* BOTTOM SIDEBAR */
+
+.sidebar-bottom {
+    margin-top: auto;
+}
+
+
+/* ------------------------------
+   MAIN
+------------------------------ */
+
+.main {
+    flex: 1;
+
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+    padding: 35px 50px;
+}
+
+
+/* ------------------------------
+   TOP BAR
+------------------------------ */
+
+.topbar {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 30px;
+}
+
+.small-title {
+    font-size: 11px;
+
+    letter-spacing: 1.5px;
+
+    color: #9a9090;
+
+    margin-bottom: 7px;
+}
+
+.topbar h1 {
+    font-size: 28px;
+}
+
+
+/* PROFILE */
+
+.profile {
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: #d8b9c1;
+
+    color: white;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/* ------------------------------
+   HERO
+------------------------------ */
+
+.hero {
+    background: #e9dadd;
+
+    border-radius: 20px;
+
+    padding: 40px 45px;
+
+    min-height: 250px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    position: relative;
+}
+
+.hero-label {
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    color: #80636a;
+
+    margin-bottom: 12px;
+}
+
+.hero h2 {
+    font-size: 38px;
+
+    line-height: 1.1;
+
+    margin-bottom: 15px;
+}
+
+.hero-text {
+    color: #705e63;
+
+    font-size: 14px;
+
+    max-width: 350px;
+
+    line-height: 1.5;
+
+    margin-bottom: 25px;
+}
+
+
+/* STYLE BUTTON */
+
+.style-button {
+    background: #292426;
+
+    color: white;
+
+    border: none;
+
+    padding: 13px 20px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.style-button:hover {
+    transform: translateY(-2px);
+
+    background: #40373a;
+}
+
+
+/* DECORATION */
+
+.hero-decoration {
+    font-size: 150px;
+
+    color: rgba(255, 255, 255, 0.45);
+
+    margin-right: 80px;
+
+    transform: rotate(15deg);
+}
+
+
+/* ------------------------------
+   WARDROBE HEADER
+------------------------------ */
+
+.wardrobe-header {
+    margin-top: 45px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.wardrobe-header h2 {
+    font-size: 24px;
+
+    margin-bottom: 5px;
+}
+
+.wardrobe-header p {
+    color: #999;
+
+    font-size: 13px;
+}
+
+
+/* ADD BUTTON */
+
+.add-button {
+    background: white;
+
+    border: 1px solid #ded8d5;
+
+    padding: 11px 18px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    transition: 0.2s;
+}
+
+.add-button:hover {
+    background: #f4eeee;
+}
+
+
+/* ------------------------------
+   FILTERS
+------------------------------ */
+
+.filters {
+    display: flex;
+
+    gap: 8px;
+
+    margin: 25px 0;
+}
+
+.filter {
+    border: none;
+
+    background: white;
+
+    padding: 9px 15px;
+
+    border-radius: 20px;
+
+    color: #888;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    border: 1px solid #ebe6e3;
+}
+
+.filter.active {
+    background: #292426;
+
+    color: white;
+
+    border-color: #292426;
+}
+
+
+/* ------------------------------
+   CLOTHING GRID
+------------------------------ */
+
+.clothing-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 20px;
+}
+
+
+/* ------------------------------
+   CLOTHING CARD
+------------------------------ */
+
+.clothing-card {
+    background: white;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    border: 1px solid #eee9e6;
+
+    transition: 0.25s;
+
+    cursor: pointer;
+}
+
+.clothing-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+
+/* IMAGE AREA */
+
+.clothing-image {
+    height: 260px;
+
+    background: #f4f1ef;
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+}
+
+
+/* TEMPORARY IMAGE */
+
+.placeholder {
+    font-size: 85px;
+}
+
+
+/* HEART */
+
+.heart {
+    position: absolute;
+
+    top: 12px;
+    right: 12px;
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: white;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+
+/* CLOTHING INFO */
+
+.clothing-info {
+    padding: 15px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.clothing-info h3 {
+    font-size: 14px;
+
+    margin-bottom: 5px;
+}
+
+.clothing-info p {
+    font-size: 12px;
+
+    color: #999;
+}
+
+
+/* MORE BUTTON */
+
+.more {
+    border: none;
+
+    background: transparent;
+
+    color: #999;
+
+    cursor: pointer;
+
+    font-size: 13px;
+}
+
+
+/* ------------------------------
+   RESPONSIVE
+------------------------------ */
+
+@media (max-width: 1000px) {
+
+    .sidebar {
+        width: 190px;
+    }
+
+    .main {
+        padding: 30px;
+    }
+
+    .clothing-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+
+@media (max-width: 750px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        padding: 20px;
+    }
+
+    .clothing-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero h2 {
+        font-size: 30px;
+    }
+
+    .hero-decoration {
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .clothing-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        overflow-x: auto;
+    }
+
+}
