@@ -1,256 +1,581 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Closet AI</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
-    <!-- SIDEBAR -->
+
+    <!-- ==============================
+         SIDEBAR
+    =============================== -->
+
     <aside class="sidebar">
 
-        <div class="logo">
+
+        <!-- LOGO -->
+
+        <div class="logo" id="logo">
+
             <span>✦</span>
+
             Closet AI
+
         </div>
+
+
+        <!-- NAVIGATION -->
 
         <nav>
-            <button class="nav-item active">
+
+
+            <!-- WARDROBE -->
+
+            <button
+                class="nav-item active"
+                id="wardrobeNav"
+            >
+
                 <span>⌂</span>
+
                 Wardrobe
+
             </button>
 
-            <button class="nav-item">
+
+            <!-- OUTFITS -->
+
+            <button
+                class="nav-item"
+                id="outfitsNav"
+            >
+
                 <span>✧</span>
+
                 Outfits
+
             </button>
 
-            <button class="nav-item">
+
+            <!-- FAVORITES -->
+
+            <button
+                class="nav-item"
+                id="favoritesNav"
+            >
+
                 <span>♡</span>
+
                 Favorites
+
             </button>
+
+
         </nav>
 
+
+        <!-- SETTINGS -->
+
         <div class="sidebar-bottom">
-            <button class="nav-item">
+
+            <button
+                class="nav-item"
+                id="settingsNav"
+            >
+
                 <span>⚙</span>
+
                 Settings
+
             </button>
+
         </div>
+
 
     </aside>
 
 
-    <!-- MAIN CONTENT -->
+
+    <!-- ==============================
+         MAIN APP
+    =============================== -->
+
     <main class="main">
 
+
         <!-- TOP BAR -->
+
         <header class="topbar">
 
+
             <div>
-                <p class="small-title">YOUR DIGITAL WARDROBE</p>
-                <h1>Good afternoon ✨</h1>
+
+                <p class="small-title">
+                    YOUR DIGITAL WARDROBE
+                </p>
+
+                <h1>
+                    Good afternoon ✨
+                </h1>
+
             </div>
 
-            <button class="profile">
+
+            <!-- PROFILE -->
+
+            <button
+                class="profile"
+                id="profileButton"
+            >
+
                 AJ
+
             </button>
+
 
         </header>
 
 
-        <!-- HERO -->
+
+        <!-- ==============================
+             HERO
+        =============================== -->
+
         <section class="hero">
 
+
             <div>
-                <p class="hero-label">YOUR PERSONAL STYLIST</p>
 
-                <h2>
-                    What are you<br>
-                    wearing today?
-                </h2>
-
-                <p class="hero-text">
-                    Let AI create an outfit using clothes
-                    you already own.
+                <p class="hero-label">
+                    YOUR PERSONAL STYLIST
                 </p>
 
-                <button class="style-button">
+
+                <h2>
+
+                    What are you
+                    <br>
+                    wearing today?
+
+                </h2>
+
+
+                <p class="hero-text">
+
+                    Let AI create an outfit using
+                    clothes you already own.
+
+                </p>
+
+
+                <!-- STYLE OUTFIT -->
+
+                <button
+                    class="style-button"
+                    id="styleOutfitButton"
+                >
+
                     ✨ Style my outfit
+
                 </button>
+
+
             </div>
+
 
             <div class="hero-decoration">
+
                 ✦
+
             </div>
+
 
         </section>
 
 
-        <!-- WARDROBE HEADER -->
+
+        <!-- ==============================
+             WARDROBE HEADER
+        =============================== -->
+
         <section class="wardrobe-header">
 
+
             <div>
-                <h2>My wardrobe</h2>
-                <p>24 items in your closet</p>
+
+                <h2>
+                    My wardrobe
+                </h2>
+
+                <p id="itemCount">
+                    24 items in your closet
+                </p>
+
             </div>
 
-            <button class="add-button">
+
+            <!-- ADD ITEM -->
+
+            <button
+                class="add-button"
+                id="addItemButton"
+            >
+
                 + Add item
+
             </button>
+
 
         </section>
 
 
-        <!-- FILTERS -->
+
+        <!-- ==============================
+             FILTERS
+        =============================== -->
+
         <div class="filters">
 
-            <button class="filter active">
+
+            <button
+                class="filter active"
+                id="filterAll"
+                data-category="all"
+            >
+
                 All
+
             </button>
 
-            <button class="filter">
+
+            <button
+                class="filter"
+                id="filterTops"
+                data-category="top"
+            >
+
                 Tops
+
             </button>
 
-            <button class="filter">
+
+            <button
+                class="filter"
+                id="filterBottoms"
+                data-category="bottom"
+            >
+
                 Bottoms
+
             </button>
 
-            <button class="filter">
+
+            <button
+                class="filter"
+                id="filterDresses"
+                data-category="dress"
+            >
+
                 Dresses
+
             </button>
 
-            <button class="filter">
+
+            <button
+                class="filter"
+                id="filterShoes"
+                data-category="shoes"
+            >
+
                 Shoes
+
             </button>
 
-            <button class="filter">
+
+            <button
+                class="filter"
+                id="filterAccessories"
+                data-category="accessory"
+            >
+
                 Accessories
+
             </button>
+
 
         </div>
 
 
-        <!-- CLOTHING GRID -->
-        <section class="clothing-grid">
+
+        <!-- ==============================
+             CLOTHING GRID
+        =============================== -->
+
+        <section
+            class="clothing-grid"
+            id="clothingGrid"
+        >
 
 
             <!-- ITEM 1 -->
-            <article class="clothing-card">
+
+            <article
+                class="clothing-card"
+                id="clothingItem1"
+                data-category="top"
+            >
 
                 <div class="clothing-image">
+
+
                     <div class="placeholder">
+
                         👚
+
                     </div>
 
-                    <button class="heart">
+
+                    <button
+                        class="heart"
+                        id="favoriteItem1"
+                    >
+
                         ♡
+
                     </button>
+
+
                 </div>
+
 
                 <div class="clothing-info">
 
+
                     <div>
-                        <h3>White Shirt</h3>
-                        <p>Top · Casual</p>
+
+                        <h3>
+                            White Shirt
+                        </h3>
+
+                        <p>
+                            Top · Casual
+                        </p>
+
                     </div>
 
-                    <button class="more">
+
+                    <button
+                        class="more"
+                        id="moreItem1"
+                    >
+
                         •••
+
                     </button>
+
 
                 </div>
 
             </article>
+
 
 
             <!-- ITEM 2 -->
-            <article class="clothing-card">
+
+            <article
+                class="clothing-card"
+                id="clothingItem2"
+                data-category="bottom"
+            >
 
                 <div class="clothing-image">
+
+
                     <div class="placeholder">
+
                         👖
+
                     </div>
 
-                    <button class="heart">
+
+                    <button
+                        class="heart"
+                        id="favoriteItem2"
+                    >
+
                         ♡
+
                     </button>
+
+
                 </div>
+
 
                 <div class="clothing-info">
 
+
                     <div>
-                        <h3>Wide Leg Jeans</h3>
-                        <p>Bottom · Casual</p>
+
+                        <h3>
+                            Wide Leg Jeans
+                        </h3>
+
+                        <p>
+                            Bottom · Casual
+                        </p>
+
                     </div>
 
-                    <button class="more">
+
+                    <button
+                        class="more"
+                        id="moreItem2"
+                    >
+
                         •••
+
                     </button>
+
 
                 </div>
 
             </article>
+
 
 
             <!-- ITEM 3 -->
-            <article class="clothing-card">
+
+            <article
+                class="clothing-card"
+                id="clothingItem3"
+                data-category="dress"
+            >
 
                 <div class="clothing-image">
+
+
                     <div class="placeholder">
+
                         👗
+
                     </div>
 
-                    <button class="heart">
+
+                    <button
+                        class="heart"
+                        id="favoriteItem3"
+                    >
+
                         ♡
+
                     </button>
+
+
                 </div>
+
 
                 <div class="clothing-info">
 
+
                     <div>
-                        <h3>Black Dress</h3>
-                        <p>Dress · Evening</p>
+
+                        <h3>
+                            Black Dress
+                        </h3>
+
+                        <p>
+                            Dress · Evening
+                        </p>
+
                     </div>
 
-                    <button class="more">
+
+                    <button
+                        class="more"
+                        id="moreItem3"
+                    >
+
                         •••
+
                     </button>
+
 
                 </div>
 
             </article>
 
 
+
             <!-- ITEM 4 -->
-            <article class="clothing-card">
+
+            <article
+                class="clothing-card"
+                id="clothingItem4"
+                data-category="shoes"
+            >
 
                 <div class="clothing-image">
+
+
                     <div class="placeholder">
+
                         👟
+
                     </div>
 
-                    <button class="heart">
+
+                    <button
+                        class="heart"
+                        id="favoriteItem4"
+                    >
+
                         ♡
+
                     </button>
+
+
                 </div>
+
 
                 <div class="clothing-info">
 
+
                     <div>
-                        <h3>White Sneakers</h3>
-                        <p>Shoes · Casual</p>
+
+                        <h3>
+                            White Sneakers
+                        </h3>
+
+                        <p>
+                            Shoes · Casual
+                        </p>
+
                     </div>
 
-                    <button class="more">
+
+                    <button
+                        class="more"
+                        id="moreItem4"
+                    >
+
                         •••
+
                     </button>
+
 
                 </div>
 
@@ -259,7 +584,161 @@
 
         </section>
 
+
     </main>
 
+
+
+    <!-- ==============================
+         ADD ITEM MODAL
+    =============================== -->
+
+    <div
+        class="modal"
+        id="addItemModal"
+    >
+
+
+        <div class="modal-content">
+
+
+            <!-- CLOSE -->
+
+            <button
+                class="close-modal"
+                id="closeModal"
+            >
+
+                ×
+
+            </button>
+
+
+            <h2>
+                Add clothing
+            </h2>
+
+
+            <p class="modal-subtitle">
+
+                Add something to your
+                digital wardrobe.
+
+            </p>
+
+
+
+            <!-- IMAGE -->
+
+            <label
+                class="upload-box"
+                for="clothingImage"
+            >
+
+                <span>
+                    📷
+                </span>
+
+                <strong>
+                    Upload a photo
+                </strong>
+
+                <small>
+                    PNG, JPG or WEBP
+                </small>
+
+
+                <input
+                    type="file"
+                    id="clothingImage"
+                    accept="image/png, image/jpeg, image/webp"
+                >
+
+            </label>
+
+
+
+            <!-- NAME -->
+
+            <label class="input-label">
+
+                Clothing name
+
+
+                <input
+                    type="text"
+                    id="clothingName"
+                    placeholder="e.g. White shirt"
+                >
+
+            </label>
+
+
+
+            <!-- CATEGORY -->
+
+            <label class="input-label">
+
+                Category
+
+
+                <select id="clothingCategory">
+
+
+                    <option value="top">
+                        Tops
+                    </option>
+
+
+                    <option value="bottom">
+                        Bottoms
+                    </option>
+
+
+                    <option value="dress">
+                        Dresses
+                    </option>
+
+
+                    <option value="shoes">
+                        Shoes
+                    </option>
+
+
+                    <option value="accessory">
+                        Accessories
+                    </option>
+
+
+                </select>
+
+            </label>
+
+
+
+            <!-- SAVE -->
+
+            <button
+                class="save-item"
+                id="saveItem"
+            >
+
+                Add to wardrobe
+
+            </button>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+
 </body>
+
 </html>

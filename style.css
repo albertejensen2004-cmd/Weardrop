@@ -538,3 +538,361 @@ nav {
     }
 
 }
+/* ==============================
+   ADD ITEM MODAL
+============================== */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(37, 32, 34, 0.45);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    z-index: 1000;
+
+    backdrop-filter: blur(5px);
+}
+
+
+/* SHOW MODAL */
+
+.modal.show {
+    display: flex;
+}
+
+
+/* ==============================
+   MODAL CONTENT
+============================== */
+
+.modal-content {
+    width: 100%;
+
+    max-width: 480px;
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    padding: 32px;
+
+    position: relative;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.15);
+
+    animation: modalAppear 0.2s ease-out;
+}
+
+
+/* MODAL ANIMATION */
+
+@keyframes modalAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+
+/* ==============================
+   MODAL HEADER
+============================== */
+
+.modal-content h2 {
+
+    font-size: 25px;
+
+    font-weight: 600;
+
+    color: #292426;
+
+    margin-bottom: 6px;
+
+}
+
+
+.modal-subtitle {
+
+    font-size: 13px;
+
+    color: #999;
+
+    margin-bottom: 26px;
+
+}
+
+
+/* ==============================
+   CLOSE BUTTON
+============================== */
+
+.close-modal {
+
+    position: absolute;
+
+    top: 18px;
+    right: 18px;
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: #f6f2f1;
+
+    color: #777;
+
+    font-size: 20px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    transition: 0.2s;
+
+}
+
+
+.close-modal:hover {
+
+    background: #eee6e7;
+
+    color: #292426;
+
+}
+
+
+/* ==============================
+   IMAGE UPLOAD
+============================== */
+
+.upload-box {
+
+    width: 100%;
+
+    height: 155px;
+
+    border: 1.5px dashed #d8cece;
+
+    border-radius: 14px;
+
+    background: #faf8f7;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 6px;
+
+    cursor: pointer;
+
+    margin-bottom: 23px;
+
+    transition: 0.2s;
+
+}
+
+
+.upload-box:hover {
+
+    background: #f6eff1;
+
+    border-color: #b58b97;
+
+}
+
+
+.upload-box span {
+
+    font-size: 30px;
+
+    margin-bottom: 3px;
+
+}
+
+
+.upload-box strong {
+
+    font-size: 14px;
+
+    color: #51494b;
+
+}
+
+
+.upload-box small {
+
+    font-size: 11px;
+
+    color: #aaa;
+
+}
+
+
+.upload-box input {
+
+    display: none;
+
+}
+
+
+/* ==============================
+   INPUT LABELS
+============================== */
+
+.input-label {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    color: #5c5557;
+
+    margin-bottom: 18px;
+
+}
+
+
+/* ==============================
+   TEXT INPUT + SELECT
+============================== */
+
+.input-label input,
+.input-label select {
+
+    width: 100%;
+
+    padding: 12px 13px;
+
+    border: 1px solid #e2dcda;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #292426;
+
+    font-size: 14px;
+
+    font-family: inherit;
+
+    outline: none;
+
+    transition: 0.2s;
+
+}
+
+
+.input-label input::placeholder {
+
+    color: #b5aeae;
+
+}
+
+
+.input-label input:focus,
+.input-label select:focus {
+
+    border-color: #b58b97;
+
+    box-shadow: 0 0 0 3px rgba(181, 139, 151, 0.10);
+
+}
+
+
+/* ==============================
+   SAVE BUTTON
+============================== */
+
+.save-item {
+
+    width: 100%;
+
+    padding: 13px 18px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #292426;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    margin-top: 3px;
+
+}
+
+
+.save-item:hover {
+
+    background: #40373a;
+
+    transform: translateY(-1px);
+
+}
+
+
+.save-item:active {
+
+    transform: translateY(0);
+
+}
+
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 500px) {
+
+    .modal-content {
+
+        padding: 25px;
+
+        border-radius: 17px;
+
+    }
+
+}
