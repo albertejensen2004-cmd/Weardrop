@@ -2051,3 +2051,121 @@ nav {
     }
 
 }
+/* =====================================================
+   CLOSET AI - CUSTOM DROPDOWNS
+===================================================== */
+
+.input-label select,
+#clothingFabric,
+#clothingColor,
+#clothingCategory,
+#editItemCategory,
+#editItemColor,
+#editItemFabric,
+#outfitCategoryFilter,
+#outfitFabricFilter,
+#outfitTypeFilter,
+#outfitColorFilter {
+
+    width: 100%;
+
+    margin-top: 8px;
+
+    padding: 13px 42px 13px 13px;
+
+    border: 1px solid #ddd6cf;
+
+    border-radius: 11px;
+
+    background-color: #ffffff;
+
+    color: #272522;
+
+    font-size: 14px;
+
+    outline: none;
+
+    cursor: pointer;
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    -moz-appearance: none;
+
+    background-image:
+        linear-gradient(
+            45deg,
+            transparent 50%,
+            #777 50%
+        ),
+        linear-gradient(
+            135deg,
+            #777 50%,
+            transparent 50%
+        );
+
+    background-position:
+        calc(100% - 18px) 50%,
+        calc(100% - 12px) 50%;
+
+    background-size:
+        6px 6px,
+        6px 6px;
+
+    background-repeat: no-repeat;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+
+}
+
+
+.input-label select:hover,
+#clothingFabric:hover,
+#clothingColor:hover,
+#clothingCategory:hover,
+#editItemCategory:hover,
+#editItemColor:hover,
+#editItemFabric:hover,
+#outfitCategoryFilter:hover,
+#outfitFabricFilter:hover,
+#outfitTypeFilter:hover,
+#outfitColorFilter:hover {
+
+    border-color: #b8ada3;
+
+}
+
+
+.input-label select:focus,
+#clothingFabric:focus,
+#clothingColor:focus,
+#clothingCategory:focus,
+#editItemCategory:focus,
+#editItemColor:focus,
+#editItemFabric:focus,
+#outfitCategoryFilter:focus,
+#outfitFabricFilter:focus,
+#outfitTypeFilter:focus,
+#outfitColorFilter:focus {
+
+    border-color: #9b8e83;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(155, 142, 131, 0.10);
+
+}
+
+
+/* Disabled dropdown */
+
+select:disabled {
+
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+}

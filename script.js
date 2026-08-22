@@ -1,6 +1,7 @@
 // =====================================================
 // CLOSET AI
 // COMPLETE MANUAL VERSION
+// CATEGORY + COLOUR + OPTIONAL FABRIC + STYLE TAGS
 // NO LUNA / NO API
 // =====================================================
 
@@ -113,23 +114,31 @@ function saveOutfits(outfits) {
 
 
 // =====================================================
-// TYPES
+// STYLE / TYPE TAGS
 // =====================================================
 
 const TYPE_OPTIONS = [
 
     ["basic", "Basic"],
+
     ["everyday", "Everyday"],
+
     ["fine", "Fine"],
+
     ["summer", "Summer"],
-    ["hot", "Hot weather"],
+
     ["winter", "Winter"],
+
     ["beach", "Beach"],
-    ["party", "Party"],
+
     ["going-out", "Going out"],
+
     ["work", "Work"],
+
     ["cozy", "Cozy"],
+
     ["sport", "Sport"],
+
     ["statement", "Statement"]
 
 ];
@@ -142,9 +151,55 @@ function typeLabel(type) {
             item => item[0] === type
         );
 
+
     return match
         ? match[1]
         : type;
+
+}
+
+
+// =====================================================
+// FABRIC
+// =====================================================
+
+const FABRIC_OPTIONS = [
+
+    ["denim", "Denim"],
+
+    ["cotton", "Cotton"],
+
+    ["wool", "Wool"],
+
+    ["knit", "Knit"],
+
+    ["satin", "Satin"],
+
+    ["leather", "Leather"],
+
+    ["other", "Other"]
+
+];
+
+
+function fabricLabel(fabric) {
+
+    if (!fabric) {
+
+        return "";
+
+    }
+
+
+    const match =
+        FABRIC_OPTIONS.find(
+            item => item[0] === fabric
+        );
+
+
+    return match
+        ? match[1]
+        : fabric;
 
 }
 
@@ -156,22 +211,39 @@ function typeLabel(type) {
 const COLOR_OPTIONS = [
 
     ["black", "Black"],
+
     ["white", "White"],
+
     ["beige", "Beige"],
+
     ["cream", "Cream"],
+
     ["brown", "Brown"],
+
     ["blue", "Blue"],
+
     ["navy", "Navy"],
+
     ["light-blue", "Light blue"],
+
     ["red", "Red"],
+
     ["pink", "Pink"],
+
     ["green", "Green"],
+
     ["grey", "Grey"],
+
     ["yellow", "Yellow"],
+
     ["orange", "Orange"],
+
     ["purple", "Purple"],
+
     ["gold", "Gold"],
+
     ["silver", "Silver"],
+
     ["multicolour", "Multicolour"]
 
 ];
@@ -179,10 +251,18 @@ const COLOR_OPTIONS = [
 
 function colorLabel(color) {
 
+    if (!color) {
+
+        return "";
+
+    }
+
+
     const match =
         COLOR_OPTIONS.find(
             item => item[0] === color
         );
+
 
     return match
         ? match[1]
@@ -192,7 +272,7 @@ function colorLabel(color) {
 
 
 // =====================================================
-// CATEGORIES
+// CATEGORY
 // =====================================================
 
 function categoryLabel(category) {
@@ -200,12 +280,17 @@ function categoryLabel(category) {
     const labels = {
 
         top: "Top",
+
         bottom: "Bottom",
+
         dress: "Dress",
+
         shoes: "Shoes",
+
         accessory: "Accessory"
 
     };
+
 
     return (
         labels[category] ||
@@ -220,12 +305,17 @@ function categoryEmoji(category) {
     const emojis = {
 
         top: "👚",
+
         bottom: "👖",
+
         dress: "👗",
+
         shoes: "👟",
+
         accessory: "👜"
 
     };
+
 
     return (
         emojis[category] ||
@@ -247,9 +337,7 @@ document.addEventListener(
 
 function initApp() {
 
-    // -----------------------------
-    // NAVIGATION
-    // -----------------------------
+    // Navigation
 
     $("wardrobeNav")?.addEventListener(
         "click",
@@ -281,9 +369,7 @@ function initApp() {
     );
 
 
-    // -----------------------------
-    // MAIN BUTTONS
-    // -----------------------------
+    // Main buttons
 
     $("addItemButton")?.addEventListener(
         "click",
@@ -309,9 +395,7 @@ function initApp() {
     );
 
 
-    // -----------------------------
-    // ADD ITEM MODAL
-    // -----------------------------
+    // Modal
 
     $("closeModal")?.addEventListener(
         "click",
@@ -336,9 +420,7 @@ function initApp() {
     );
 
 
-    // -----------------------------
-    // IMAGE
-    // -----------------------------
+    // Image
 
     $("clothingImage")?.addEventListener(
         "change",
@@ -346,9 +428,7 @@ function initApp() {
     );
 
 
-    // -----------------------------
-    // SAVE ITEM
-    // -----------------------------
+    // Save item
 
     $("saveItem")?.addEventListener(
         "click",
@@ -356,30 +436,17 @@ function initApp() {
     );
 
 
-    // -----------------------------
-    // TYPE BUTTONS
-    // -----------------------------
+    // Type buttons
 
     connectTypeButtons();
 
 
-    // -----------------------------
-    // MAKE COLOUR DROPDOWN
-    // -----------------------------
-
-    addColorFieldIfMissing();
-
-
-    // -----------------------------
-    // WARDROBE FILTERS
-    // -----------------------------
+    // Wardrobe filters
 
     setupWardrobeFilters();
 
 
-    // -----------------------------
-    // START APP
-    // -----------------------------
+    // Start
 
     showWardrobe();
 
@@ -456,112 +523,6 @@ function showWardrobe() {
 
 
 // =====================================================
-// COLOUR DROPDOWN FOR ADD ITEM
-// =====================================================
-
-function addColorFieldIfMissing() {
-
-    if (
-        $("clothingColor")
-    ) {
-
-        return;
-
-    }
-
-
-    const categorySelect =
-        $("clothingCategory");
-
-
-    if (!categorySelect) {
-
-        return;
-
-    }
-
-
-    const wrapper =
-        document.createElement(
-            "label"
-        );
-
-
-    wrapper.className =
-        "input-label";
-
-
-    wrapper.innerHTML = `
-
-        Colour
-
-        <select
-            id="clothingColor"
-        >
-
-            <option value="">
-                Choose colour
-            </option>
-
-            ${
-                COLOR_OPTIONS
-                    .map(
-                        function(
-                            [
-                                value,
-                                label
-                            ]
-                        ) {
-
-                            return `
-
-                                <option
-                                    value="${value}"
-                                >
-
-                                    ${label}
-
-                                </option>
-
-                            `;
-
-                        }
-                    )
-                    .join("")
-            }
-
-        </select>
-
-    `;
-
-
-    const categoryWrapper =
-        categorySelect.closest(
-            ".input-label"
-        );
-
-
-    if (categoryWrapper) {
-
-        categoryWrapper.insertAdjacentElement(
-            "afterend",
-            wrapper
-        );
-
-    } else {
-
-        categorySelect.parentElement
-            ?.insertAdjacentElement(
-                "afterend",
-                wrapper
-            );
-
-    }
-
-}
-
-
-// =====================================================
 // ADD ITEM MODAL
 // =====================================================
 
@@ -599,14 +560,6 @@ function resetAddForm() {
         [];
 
 
-    if ($("clothingName")) {
-
-        $("clothingName").value =
-            "";
-
-    }
-
-
     if ($("clothingCategory")) {
 
         $("clothingCategory").value =
@@ -618,6 +571,14 @@ function resetAddForm() {
     if ($("clothingColor")) {
 
         $("clothingColor").value =
+            "";
+
+    }
+
+
+    if ($("clothingFabric")) {
+
+        $("clothingFabric").value =
             "";
 
     }
@@ -711,8 +672,7 @@ function connectTypeButtons() {
                             selectedTypes =
                                 selectedTypes.filter(
                                     item =>
-                                        item !==
-                                        type
+                                        item !== type
                                 );
 
 
@@ -948,26 +908,10 @@ function resizeImage(file) {
 
 function saveClothing() {
 
-    const name =
-        $("clothingName")
-            ?.value
-            .trim();
-
-
-    if (!name) {
-
-        alert(
-            "Please give your clothing a name."
-        );
-
-
-        $("clothingName")
-            ?.focus();
-
-
-        return;
-
-    }
+    const category =
+        $("clothingCategory")
+            ?.value ||
+        "top";
 
 
     const item = {
@@ -980,16 +924,16 @@ function saveClothing() {
                 .toString(36)
                 .slice(2, 8),
 
-        name:
-            name,
-
         category:
-            $("clothingCategory")
-                ?.value ||
-            "top",
+            category,
 
         color:
             $("clothingColor")
+                ?.value ||
+            "",
+
+        fabric:
+            $("clothingFabric")
                 ?.value ||
             "",
 
@@ -1131,14 +1075,16 @@ function wardrobeItemMatches(item) {
 
         const searchable = [
 
-            item.name,
+            categoryLabel(
+                item.category
+            ),
 
             colorLabel(
                 item.color
             ),
 
-            categoryLabel(
-                item.category
+            fabricLabel(
+                item.fabric
             ),
 
             ...(item.types || [])
@@ -1315,7 +1261,9 @@ function createClothingCard(item) {
             <img
                 src="${item.image}"
                 alt="${escapeHTML(
-                    item.name
+                    categoryLabel(
+                        item.category
+                    )
                 )}"
             >
             `
@@ -1361,6 +1309,41 @@ function createClothingCard(item) {
             .join("");
 
 
+    const detailParts = [];
+
+
+    if (item.color) {
+
+        detailParts.push(
+            colorLabel(
+                item.color
+            )
+        );
+
+    }
+
+
+    if (item.fabric) {
+
+        detailParts.push(
+            fabricLabel(
+                item.fabric
+            )
+        );
+
+    }
+
+
+    const details =
+        detailParts
+            .map(
+                escapeHTML
+            )
+            .join(
+                " · "
+            );
+
+
     card.innerHTML = `
 
         <div
@@ -1400,29 +1383,19 @@ function createClothingCard(item) {
                 <h3>
 
                     ${escapeHTML(
-                        item.name
-                    )}
+                        categoryLabel(
+                            item.category
+                        )
+                    ).toUpperCase()}
 
                 </h3>
 
 
                 <p>
 
-                    ${escapeHTML(
-                        categoryLabel(
-                            item.category
-                        )
-                    )}
-
                     ${
-                        item.color
-                            ? " · " +
-                              escapeHTML(
-                                  colorLabel(
-                                      item.color
-                                  )
-                              )
-                            : ""
+                        details ||
+                        "No colour or fabric selected"
                     }
 
                 </p>
@@ -1454,9 +1427,7 @@ function createClothingCard(item) {
     `;
 
 
-    // --------------------------------
     // Photo
-    // --------------------------------
 
     card
         .querySelector(
@@ -1485,9 +1456,7 @@ function createClothingCard(item) {
         );
 
 
-    // --------------------------------
     // Favourite
-    // --------------------------------
 
     card
         .querySelector(
@@ -1508,9 +1477,7 @@ function createClothingCard(item) {
         );
 
 
-    // --------------------------------
     // Edit
-    // --------------------------------
 
     card
         .querySelector(
@@ -1555,6 +1522,31 @@ function openPhotoModal(item) {
         "photo-modal active";
 
 
+    const detailParts = [];
+
+
+    if (item.color) {
+
+        detailParts.push(
+            colorLabel(
+                item.color
+            )
+        );
+
+    }
+
+
+    if (item.fabric) {
+
+        detailParts.push(
+            fabricLabel(
+                item.fabric
+            )
+        );
+
+    }
+
+
     modal.innerHTML = `
 
         <div
@@ -1581,7 +1573,9 @@ function openPhotoModal(item) {
                     <img
                         src="${item.image}"
                         alt="${escapeHTML(
-                            item.name
+                            categoryLabel(
+                                item.category
+                            )
                         )}"
                     >
                     `
@@ -1613,8 +1607,10 @@ function openPhotoModal(item) {
             >
 
                 ${escapeHTML(
-                    item.name
-                )}
+                    categoryLabel(
+                        item.category
+                    )
+                ).toUpperCase()}
 
             </h2>
 
@@ -1626,19 +1622,14 @@ function openPhotoModal(item) {
                 "
             >
 
-                ${categoryLabel(
-                    item.category
-                )}
-
                 ${
-                    item.color
-                        ? " · " +
-                          escapeHTML(
-                              colorLabel(
-                                  item.color
-                              )
-                          )
-                        : ""
+                    detailParts.length
+                        ? escapeHTML(
+                            detailParts.join(
+                                " · "
+                            )
+                        )
+                        : "No colour or fabric selected"
                 }
 
             </p>
@@ -1762,20 +1753,6 @@ function openEditModal(item) {
                 "
             >
 
-                Name
-
-                <input
-                    type="text"
-                    id="editItemName"
-                >
-
-            </label>
-
-
-            <label
-                class="input-label"
-            >
-
                 Category
 
                 <select
@@ -1853,11 +1830,57 @@ function openEditModal(item) {
             </label>
 
 
+            <label
+                class="input-label"
+            >
+
+                Fabric
+
+                <select
+                    id="editItemFabric"
+                >
+
+                    <option value="">
+                        No fabric selected
+                    </option>
+
+                    ${
+                        FABRIC_OPTIONS
+                            .map(
+                                function(
+                                    [
+                                        value,
+                                        label
+                                    ]
+                                ) {
+
+                                    return `
+
+                                        <option
+                                            value="${value}"
+                                        >
+
+                                            ${label}
+
+                                        </option>
+
+                                    `;
+
+                                }
+                            )
+                            .join("")
+                    }
+
+                </select>
+
+            </label>
+
+
             <div
                 class="input-label"
             >
 
-                Tags
+                Style / Type
 
                 <div
                     class="tag-picker"
@@ -1904,10 +1927,6 @@ function openEditModal(item) {
     );
 
 
-    $("editItemName").value =
-        item.name;
-
-
     $("editItemCategory").value =
         item.category;
 
@@ -1917,10 +1936,18 @@ function openEditModal(item) {
         "";
 
 
-    // Tags
+    $("editItemFabric").value =
+        item.fabric ||
+        "";
+
 
     TYPE_OPTIONS.forEach(
-        function([value, label]) {
+        function(
+            [
+                value,
+                label
+            ]
+        ) {
 
             const button =
                 document.createElement(
@@ -1946,7 +1973,9 @@ function openEditModal(item) {
 
             if (
                 (item.types || [])
-                    .includes(value)
+                    .includes(
+                        value
+                    )
             ) {
 
                 button.classList.add(
@@ -2016,12 +2045,6 @@ function openEditModal(item) {
                 }
 
 
-                existing.name =
-                    $("editItemName")
-                        .value
-                        .trim();
-
-
                 existing.category =
                     $("editItemCategory")
                         .value;
@@ -2029,6 +2052,11 @@ function openEditModal(item) {
 
                 existing.color =
                     $("editItemColor")
+                        .value;
+
+
+                existing.fabric =
+                    $("editItemFabric")
                         .value;
 
 
@@ -2043,20 +2071,6 @@ function openEditModal(item) {
                             button =>
                                 button.dataset.type
                         );
-
-
-                if (
-                    !existing.name
-                ) {
-
-                    alert(
-                        "Please give the item a name."
-                    );
-
-
-                    return;
-
-                }
 
 
                 saveWardrobe(
@@ -2094,7 +2108,7 @@ function openEditModal(item) {
 
 
 // =====================================================
-// DELETE CONFIRMATION
+// DELETE ITEM CONFIRMATION
 // =====================================================
 
 function confirmDeleteItem(id) {
@@ -2148,14 +2162,7 @@ function confirmDeleteItem(id) {
             >
 
                 Are you sure you want to delete
-
-                <strong>
-                    ${escapeHTML(
-                        item.name
-                    )}
-                </strong>
-
-                from your wardrobe?
+                this item from your wardrobe?
 
             </p>
 
@@ -2334,7 +2341,9 @@ function showOutfits() {
             <p
                 class="hero-label"
             >
+
                 YOUR SAVED LOOKS
+
             </p>
 
 
@@ -2421,7 +2430,9 @@ function showOutfitBuilder() {
             <p
                 class="hero-label"
             >
+
                 BUILD YOUR LOOK
+
             </p>
 
 
@@ -2438,11 +2449,10 @@ function showOutfitBuilder() {
         </div>
 
 
-        <!-- OUTFIT FILTERS -->
+        <!-- FILTERS -->
 
         <div
             class="closet-filter-panel"
-            id="outfitFilterPanel"
         >
 
             <div
@@ -2459,16 +2469,14 @@ function showOutfitBuilder() {
                     <span
                         class="closet-filter-label"
                     >
-
                         Search
-
                     </span>
 
 
                     <input
                         id="outfitSearch"
                         type="text"
-                        placeholder="Black, white, summer..."
+                        placeholder="Black, denim, summer..."
                     >
 
                 </div>
@@ -2479,9 +2487,7 @@ function showOutfitBuilder() {
                     <span
                         class="closet-filter-label"
                     >
-
                         Category
-
                     </span>
 
 
@@ -2523,9 +2529,56 @@ function showOutfitBuilder() {
                     <span
                         class="closet-filter-label"
                     >
+                        Fabric
+                    </span>
 
+
+                    <select
+                        id="outfitFabricFilter"
+                    >
+
+                        <option value="all">
+                            All fabrics
+                        </option>
+
+                        ${
+                            FABRIC_OPTIONS
+                                .map(
+                                    function(
+                                        [
+                                            value,
+                                            label
+                                        ]
+                                    ) {
+
+                                        return `
+
+                                            <option
+                                                value="${value}"
+                                            >
+
+                                                ${label}
+
+                                            </option>
+
+                                        `;
+
+                                    }
+                                )
+                                .join("")
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <span
+                        class="closet-filter-label"
+                    >
                         Type
-
                     </span>
 
 
@@ -2574,9 +2627,7 @@ function showOutfitBuilder() {
                     <span
                         class="closet-filter-label"
                     >
-
                         Colour
-
                     </span>
 
 
@@ -2631,8 +2682,6 @@ function showOutfitBuilder() {
         >
 
 
-            <!-- CLOTHES -->
-
             <div
                 id="outfitCategories"
             ></div>
@@ -2678,7 +2727,7 @@ function showOutfitBuilder() {
             </div>
 
 
-            <!-- NAME AT BOTTOM -->
+            <!-- NAME -->
 
             <div
                 class="outfit-name-bottom"
@@ -2701,8 +2750,6 @@ function showOutfitBuilder() {
             </div>
 
 
-            <!-- SAVE -->
-
             <button
                 class="save-item"
                 id="saveOutfitButton"
@@ -2716,8 +2763,6 @@ function showOutfitBuilder() {
 
             </button>
 
-
-            <!-- CANCEL -->
 
             <button
                 class="delete-outfit"
@@ -2734,8 +2779,6 @@ function showOutfitBuilder() {
     `;
 
 
-    // SAVE
-
     $("saveOutfitButton")
         .addEventListener(
             "click",
@@ -2743,16 +2786,12 @@ function showOutfitBuilder() {
         );
 
 
-    // CANCEL
-
     $("cancelOutfitButton")
         .addEventListener(
             "click",
             showOutfits
         );
 
-
-    // FILTERS
 
     $("outfitSearch")
         .addEventListener(
@@ -2762,6 +2801,13 @@ function showOutfitBuilder() {
 
 
     $("outfitCategoryFilter")
+        .addEventListener(
+            "change",
+            renderOutfitRows
+        );
+
+
+    $("outfitFabricFilter")
         .addEventListener(
             "change",
             renderOutfitRows
@@ -2783,7 +2829,6 @@ function showOutfitBuilder() {
 
 
     renderOutfitRows();
-
 
     updateOutfitPreview();
 
@@ -2810,6 +2855,12 @@ function outfitMatchesFilter(item) {
         "all";
 
 
+    const fabric =
+        $("outfitFabricFilter")
+            ?.value ||
+        "all";
+
+
     const type =
         $("outfitTypeFilter")
             ?.value ||
@@ -2821,8 +2872,6 @@ function outfitMatchesFilter(item) {
             ?.value ||
         "all";
 
-
-    // Category
 
     if (
         category !==
@@ -2836,7 +2885,21 @@ function outfitMatchesFilter(item) {
     }
 
 
-    // Type
+    // Fabric is optional.
+    // "all" also includes pieces
+    // that have no fabric selected.
+
+    if (
+        fabric !==
+        "all" &&
+        item.fabric !==
+        fabric
+    ) {
+
+        return false;
+
+    }
+
 
     if (
         type !==
@@ -2852,8 +2915,6 @@ function outfitMatchesFilter(item) {
     }
 
 
-    // Colour
-
     if (
         color !==
         "all" &&
@@ -2866,20 +2927,20 @@ function outfitMatchesFilter(item) {
     }
 
 
-    // Search
-
     if (search) {
 
         const searchable = [
 
-            item.name,
+            categoryLabel(
+                item.category
+            ),
 
             colorLabel(
                 item.color
             ),
 
-            categoryLabel(
-                item.category
+            fabricLabel(
+                item.fabric
             ),
 
             ...(item.types || [])
@@ -2954,7 +3015,9 @@ function renderOutfitRows() {
                         font-size:45px;
                     "
                 >
+
                     🔎
+
                 </div>
 
 
@@ -3179,8 +3242,6 @@ function renderOutfitRows() {
     );
 
 
-    // Restore selected state
-
     selectedOutfitItems.forEach(
         function(selected) {
 
@@ -3201,7 +3262,7 @@ function renderOutfitRows() {
 
 
 // =====================================================
-// CAROUSEL
+// CAROUSEL BUTTONS
 // =====================================================
 
 function setupCarouselButtons(
@@ -3314,7 +3375,9 @@ function createOutfitItem(
             <img
                 src="${item.image}"
                 alt="${escapeHTML(
-                    item.name
+                    categoryLabel(
+                        item.category
+                    )
                 )}"
             >
             `
@@ -3383,17 +3446,36 @@ function createOutfitItem(
             <strong>
 
                 ${escapeHTML(
-                    item.name
-                )}
+                    categoryLabel(
+                        item.category
+                    )
+                ).toUpperCase()}
 
             </strong>
 
 
             <span>
 
-                ${categoryLabel(
-                    item.category
-                )}
+                ${
+                    item.color
+                        ? escapeHTML(
+                            colorLabel(
+                                item.color
+                            )
+                        )
+                        : "No colour"
+                }
+
+                ${
+                    item.fabric
+                        ? " · " +
+                          escapeHTML(
+                              fabricLabel(
+                                  item.fabric
+                              )
+                          )
+                        : ""
+                }
 
             </span>
 
@@ -3448,10 +3530,6 @@ function selectOutfitItem(
         );
 
 
-    // --------------------------------
-    // REMOVE
-    // --------------------------------
-
     if (
         alreadySelected
     ) {
@@ -3477,9 +3555,7 @@ function selectOutfitItem(
     }
 
 
-    // --------------------------------
-    // DRESS
-    // --------------------------------
+    // Dress removes top/bottom.
 
     if (
         item.category ===
@@ -3512,9 +3588,7 @@ function selectOutfitItem(
     }
 
 
-    // --------------------------------
-    // TOP / BOTTOM
-    // --------------------------------
+    // Top or bottom removes dress.
 
     if (
         item.category ===
@@ -3562,9 +3636,7 @@ function selectOutfitItem(
     }
 
 
-    // --------------------------------
-    // SHOES = ONE
-    // --------------------------------
+    // Shoes = one.
 
     if (
         item.category ===
@@ -3619,9 +3691,7 @@ function selectOutfitItem(
     }
 
 
-    // --------------------------------
-    // ADD
-    // --------------------------------
+    // Accessories can be multiple.
 
     selectedOutfitItems.push(
         item
@@ -3679,9 +3749,7 @@ function updateOutfitPreview() {
         "";
 
 
-    // --------------------------------
-    // DRESS
-    // --------------------------------
+    // Dress
 
     const dress =
         selectedOutfitItems.find(
@@ -3700,8 +3768,6 @@ function updateOutfitPreview() {
         );
 
     } else {
-
-        // TOP
 
         const top =
             selectedOutfitItems.find(
@@ -3729,8 +3795,6 @@ function updateOutfitPreview() {
 
         );
 
-
-        // BOTTOM
 
         const bottom =
             selectedOutfitItems.find(
@@ -3761,9 +3825,7 @@ function updateOutfitPreview() {
     }
 
 
-    // --------------------------------
-    // SHOES
-    // --------------------------------
+    // Shoes
 
     const shoes =
         selectedOutfitItems.find(
@@ -3792,11 +3854,9 @@ function updateOutfitPreview() {
     );
 
 
-    // --------------------------------
-    // ACCESSORIES
-    // --------------------------------
+    // Accessories
 
-    const selectedAccessories =
+    const accessoriesSelected =
         selectedOutfitItems.filter(
             item =>
                 item.category ===
@@ -3805,7 +3865,7 @@ function updateOutfitPreview() {
 
 
     if (
-        !selectedAccessories.length
+        !accessoriesSelected.length
     ) {
 
         accessories.appendChild(
@@ -3816,7 +3876,7 @@ function updateOutfitPreview() {
 
     } else {
 
-        selectedAccessories.forEach(
+        accessoriesSelected.forEach(
             function(item) {
 
                 accessories.appendChild(
@@ -3860,7 +3920,9 @@ function makeOutfitPiece(item) {
                 <img
                     src="${item.image}"
                     alt="${escapeHTML(
-                        item.name
+                        categoryLabel(
+                            item.category
+                        )
                     )}"
                 >
                 `
@@ -3891,8 +3953,21 @@ function makeOutfitPiece(item) {
         >
 
             ${escapeHTML(
-                item.name
-            )}
+                categoryLabel(
+                    item.category
+                )
+            ).toUpperCase()}
+
+            ${
+                item.color
+                    ? " · " +
+                      escapeHTML(
+                          colorLabel(
+                              item.color
+                          )
+                      )
+                    : ""
+            }
 
         </div>
 
@@ -3984,14 +4059,15 @@ function saveCurrentOutfit() {
                     id:
                         item.id,
 
-                    name:
-                        item.name,
-
                     category:
                         item.category,
 
                     color:
                         item.color ||
+                        "",
+
+                    fabric:
+                        item.fabric ||
                         "",
 
                     types:
@@ -4075,7 +4151,9 @@ function renderSavedOutfits() {
                         font-size:48px;
                     "
                 >
+
                     ✨
+
                 </div>
 
 
@@ -4085,8 +4163,8 @@ function renderSavedOutfits() {
 
 
                 <p>
-                    Click Create outfit
-                    to make your first look.
+                    Click Create outfit to make
+                    your first look.
                 </p>
 
             </div>
@@ -4114,14 +4192,14 @@ function renderSavedOutfits() {
                                 item =>
 
                                     `
-
                                     <img
                                         src="${item.image}"
                                         alt="${escapeHTML(
-                                            item.name
+                                            categoryLabel(
+                                                item.category
+                                            )
                                         )}"
                                     >
-
                                     `
                             )
                             .join("");
@@ -4196,13 +4274,14 @@ function renderSavedOutfits() {
                                             item =>
 
                                                 `
-
                                                 <span
                                                     class="selected-chip"
                                                 >
 
                                                     ${escapeHTML(
-                                                        item.name
+                                                        categoryLabel(
+                                                            item.category
+                                                        )
                                                     )}
 
                                                 </span>
@@ -4234,7 +4313,7 @@ function renderSavedOutfits() {
             .join("");
 
 
-    // Open outfit
+    // Open saved outfit
 
     container
         .querySelectorAll(
@@ -4258,7 +4337,7 @@ function renderSavedOutfits() {
         );
 
 
-    // Delete outfit
+    // Delete
 
     container
         .querySelectorAll(
@@ -4449,8 +4528,6 @@ function showSavedOutfit(id) {
 
     } else {
 
-        // Top
-
         const top =
             outfit.items.find(
                 item =>
@@ -4469,8 +4546,6 @@ function showSavedOutfit(id) {
 
         }
 
-
-        // Bottom
 
         const bottom =
             outfit.items.find(
@@ -4493,8 +4568,6 @@ function showSavedOutfit(id) {
     }
 
 
-    // Shoes
-
     const shoes =
         outfit.items.find(
             item =>
@@ -4513,8 +4586,6 @@ function showSavedOutfit(id) {
 
     }
 
-
-    // Accessories
 
     outfit.items
         .filter(
@@ -4582,7 +4653,7 @@ function deleteOutfit(id) {
 
 
 // =====================================================
-// FAVORITES PAGE
+// FAVORITES
 // =====================================================
 
 function showFavorites() {
@@ -4889,7 +4960,7 @@ function showSettings() {
 
 
 // =====================================================
-// CLOSE TEMPORARY MODALS
+// REMOVE TEMPORARY MODALS
 // =====================================================
 
 function removeTemporaryModals() {
