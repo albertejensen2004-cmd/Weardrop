@@ -2137,35 +2137,3 @@ nav {
     border-color: #b8ada3;
 
 }
-
-
-.input-label select:focus,
-#clothingFabric:focus,
-#clothingColor:focus,
-#clothingCategory:focus,
-#editItemCategory:focus,
-#editItemColor:focus,
-#editItemFabric:focus,
-#outfitCategoryFilter:focus,
-#outfitFabricFilter:focus,
-#outfitTypeFilter:focus,
-#outfitColorFilter:focus {
-
-    border-color: #9b8e83;
-
-    box-shadow:
-        0 0 0 3px
-        rgba(155, 142, 131, 0.10);
-
-}
-
-
-/* Disabled dropdown */
-
-select:disabled {
-
-    opacity: 0.5;
-
-    cursor: not-allowed;
-
-}
