@@ -1,6 +1,35 @@
-/* =====================================================
-   RESET
-===================================================== */
+/* Main stylesheet
+   SECTIONS
+   01. Variables + reset
+   02. Sidebar
+   03. Main layout + top bar
+   04. Wardrobe hero
+   05. Wardrobe filters
+   06. Clothing cards
+   07. Forms + dropdowns
+   08. Modals
+   09. Outfit library
+   10. Outfit creator
+   11. Outfit preview
+   12. Settings
+   13. Responsive layout */
+
+/* 01. VARIABLES + RESET */
+
+:root {
+    --bg: #f8f6f3;
+    --surface: #ffffff;
+    --soft: #f2eeea;
+    --line: #e8e1da;
+    --text: #2d2926;
+    --muted: #8d857e;
+    --accent: #8c7b70;
+    --accent-dark: #6f5f55;
+    --danger-bg: #f4e8e6;
+    --danger-text: #a96159;
+    --shadow: 0 8px 28px rgba(45, 41, 38, 0.06);
+    --radius: 18px;
+}
 
 * {
     box-sizing: border-box;
@@ -8,20 +37,18 @@
     padding: 0;
 }
 
-
-body {
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    background: #f8f6f3;
-
-    color: #272522;
-
-    min-height: 100vh;
+html {
+    scroll-behavior: smooth;
 }
 
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+        Inter,system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
 button,
 input,
@@ -29,1935 +56,776 @@ select {
     font: inherit;
 }
 
-
-button {
+button,
+select {
     cursor: pointer;
-    border: none;
 }
 
+img {
+    display: block;
+    max-width: 100%;
+}
 
-/* =====================================================
-   SIDEBAR
-===================================================== */
+.hidden {
+    display: none !important;
+}
+
+/* 02. SIDEBAR */
 
 .sidebar {
-
     position: fixed;
-
-    left: 0;
-    top: 0;
-    bottom: 0;
-
+    inset: 0 auto 0 0;
     width: 240px;
-
-    background: #ffffff;
-
-    border-right: 1px solid #ebe7e2;
-
-    padding: 30px 20px;
-
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    padding: 28px 18px;
     display: flex;
-
     flex-direction: column;
-
     z-index: 20;
 }
 
-
 .logo {
-
-    font-size: 22px;
-
+    padding: 4px 10px 28px;
+    font-size: 20px;
     font-weight: 700;
-
-    margin-bottom: 50px;
-
-    cursor: pointer;
 }
-
 
 .logo span {
-
     margin-right: 8px;
-
 }
 
+.logo .small-title {
+    display: none;
+}
 
-nav {
-
+.sidebar nav {
     display: flex;
-
     flex-direction: column;
-
-    gap: 8px;
+    gap: 6px;
 }
-
 
 .nav-item {
-
     width: 100%;
-
-    padding: 13px 15px;
-
+    border: 0;
     border-radius: 12px;
-
     background: transparent;
-
+    color: var(--muted);
+    padding: 12px 14px;
     text-align: left;
-
-    color: #777;
-
     display: flex;
-
     align-items: center;
-
-    gap: 12px;
-
-    transition: 0.2s;
+    gap: 11px;
+    transition: 0.2s ease;
 }
 
-
-.nav-item:hover {
-
-    background: #f4f1ed;
-
-    color: #222;
-}
-
-
+.nav-item:hover,
 .nav-item.active {
-
-    background: #eee8e1;
-
-    color: #222;
-
-    font-weight: 600;
+    background: var(--soft);
+    color: var(--text);
 }
-
 
 .sidebar-bottom {
-
     margin-top: auto;
 }
 
-
-/* =====================================================
-   MAIN
-===================================================== */
+/* 03. MAIN LAYOUT + TOP BAR */
 
 .main {
-
     margin-left: 240px;
-
-    padding: 30px 45px 70px;
-
-    max-width: 1500px;
+    min-height: 100vh;
+    padding: 30px 42px 60px;
 }
-
-
-/* =====================================================
-   TOPBAR
-===================================================== */
 
 .topbar {
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
-    margin-bottom: 35px;
+    gap: 20px;
+    margin-bottom: 34px;
 }
-
-
-.small-title {
-
-    font-size: 11px;
-
-    letter-spacing: 2px;
-
-    color: #999;
-
-    margin-bottom: 7px;
-}
-
 
 .topbar h1 {
-
-    font-size: 27px;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
 }
-
 
 .profile {
-
-    width: 44px;
-
-    height: 44px;
-
+    width: 42px;
+    height: 42px;
+    border: 0;
     border-radius: 50%;
-
-    background: #292623;
-
-    color: white;
-
-    font-weight: 600;
+    background: var(--soft);
+    color: var(--text);
+    font-weight: 700;
 }
 
-
-/* =====================================================
-   HERO
-===================================================== */
+/* 04. WARDROBE HERO */
 
 .hero {
-
-    background: #e9e0d8;
-
-    border-radius: 24px;
-
-    padding: 45px;
-
     display: flex;
-
-    justify-content: space-between;
-
     align-items: center;
-
-    min-height: 260px;
-
-    margin-bottom: 40px;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 34px;
+    margin-bottom: 38px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    box-shadow: var(--shadow);
 }
-
 
 .hero-label {
-
+    margin-bottom: 10px;
+    color: var(--accent);
     font-size: 11px;
-
-    letter-spacing: 2px;
-
-    color: #887c72;
-
-    margin-bottom: 14px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
-
 
 .hero h2 {
-
-    font-size: 38px;
-
-    line-height: 1.1;
-
-    margin-bottom: 15px;
+    max-width: 580px;
+    font-size: 42px;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
 }
-
 
 .hero-text {
-
-    color: #746b63;
-
-    max-width: 440px;
-
+    max-width: 520px;
+    margin: 14px 0 22px;
+    color: var(--muted);
     line-height: 1.6;
-
-    margin-bottom: 25px;
 }
-
 
 .hero-decoration {
-
-    font-size: 100px;
-
-    opacity: 0.25;
+    padding-right: 20px;
+    color: #ddd2ca;
+    font-size: 82px;
 }
-
-
-/* =====================================================
-   BUTTONS
-===================================================== */
 
 .style-button,
 .add-button,
 .save-item {
-
-    background: #282522;
-
-    color: white;
-
+    border: 0;
     border-radius: 12px;
-
-    padding: 13px 20px;
-
-    transition: 0.2s;
+    padding: 12px 18px;
+    background: var(--text);
+    color: #ffffff;
+    font-weight: 600;
+    transition: 0.2s ease;
 }
-
 
 .style-button:hover,
 .add-button:hover,
 .save-item:hover {
-
-    transform: translateY(-1px);
-
-    opacity: 0.9;
+    background: #171412;
 }
 
-
-/* =====================================================
-   WARDROBE HEADER
-===================================================== */
+/* 05. WARDROBE FILTERS */
 
 .wardrobe-header {
-
     display: flex;
-
+    align-items: flex-end;
     justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 22px;
-}
-
-
-.wardrobe-header h2 {
-
-    font-size: 25px;
-
-    margin-bottom: 5px;
-}
-
-
-.wardrobe-header p {
-
-    color: #999;
-
-    font-size: 14px;
-}
-
-
-/* =====================================================
-   FILTERS
-===================================================== */
-
-.filters {
-
-    display: flex;
-
-    gap: 9px;
-
-    flex-wrap: wrap;
-
-    margin-bottom: 25px;
-}
-
-
-.filter {
-
-    background: #fff;
-
-    border: 1px solid #e7e1db;
-
-    padding: 9px 16px;
-
-    border-radius: 20px;
-
-    color: #777;
-}
-
-
-.filter:hover {
-
-    border-color: #bbb;
-}
-
-
-.filter.active {
-
-    background: #292623;
-
-    color: white;
-
-    border-color: #292623;
-}
-
-
-/* =====================================================
-   CLOTHING GRID
-===================================================== */
-
-.clothing-grid {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fill,
-            minmax(210px, 1fr)
-        );
-
-    gap: 22px;
-}
-
-
-.clothing-card {
-
-    background: white;
-
-    border-radius: 17px;
-
-    overflow: hidden;
-
-    border: 1px solid #eee9e4;
-
-    transition: 0.2s;
-}
-
-
-.clothing-card:hover {
-
-    transform: translateY(-3px);
-
-    box-shadow:
-        0 10px 30px
-        rgba(0,0,0,0.06);
-}
-
-
-.clothing-image {
-
-    height: 260px;
-
-    background: #f2efeb;
-
-    position: relative;
-
-    overflow: hidden;
-}
-
-
-.clothing-image img {
-
-    width: 100%;
-
-    height: 100%;
-
-    object-fit: cover;
-}
-
-
-.placeholder {
-
-    height: 100%;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    font-size: 70px;
-}
-
-
-.heart {
-
-    position: absolute;
-
-    right: 12px;
-
-    top: 12px;
-
-    width: 38px;
-
-    height: 38px;
-
-    border-radius: 50%;
-
-    background: rgba(255,255,255,0.9);
-
-    font-size: 20px;
-}
-
-
-.heart.active {
-
-    color: #b54b4b;
-}
-
-
-.clothing-info {
-
-    padding: 16px;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    gap: 10px;
-}
-
-
-.clothing-info h3 {
-
-    font-size: 15px;
-
-    margin-bottom: 5px;
-}
-
-
-.clothing-info p {
-
-    font-size: 12px;
-
-    color: #999;
-
-    line-height: 1.5;
-}
-
-
-.item-tags {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 5px;
-
-    margin-top: 8px;
-}
-
-
-.item-tag {
-
-    font-size: 10px;
-
-    background: #f1ede8;
-
-    border-radius: 8px;
-
-    padding: 4px 7px;
-}
-
-
-.more {
-
-    background: transparent;
-
-    color: #999;
-
-    padding: 4px;
-}
-
-
-/* =====================================================
-   MODAL
-===================================================== */
-
-.modal {
-
-    position: fixed;
-
-    inset: 0;
-
-    background:
-        rgba(25,22,20,0.45);
-
-    display: none;
-
-    justify-content: center;
-
-    align-items: center;
-
-    padding: 20px;
-
-    z-index: 100;
-}
-
-
-.modal.active {
-
-    display: flex;
-}
-
-
-.modal-content {
-
-    background: white;
-
-    width: min(560px, 100%);
-
-    max-height: 90vh;
-
-    overflow-y: auto;
-
-    border-radius: 22px;
-
-    padding: 30px;
-
-    position: relative;
-}
-
-
-.close-modal {
-
-    position: absolute;
-
-    right: 18px;
-
-    top: 16px;
-
-    background: #f2efeb;
-
-    width: 35px;
-
-    height: 35px;
-
-    border-radius: 50%;
-
-    font-size: 22px;
-}
-
-
-.modal-content h2 {
-
-    font-size: 25px;
-
-    margin-bottom: 7px;
-}
-
-
-.modal-subtitle {
-
-    color: #999;
-
-    margin-bottom: 25px;
-}
-
-
-/* =====================================================
-   UPLOAD
-===================================================== */
-
-.upload-box {
-
-    min-height: 210px;
-
-    border: 2px dashed #d9d1c9;
-
-    border-radius: 17px;
-
-    background: #faf8f6;
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    text-align: center;
-
-    cursor: pointer;
-
-    overflow: hidden;
-
-    position: relative;
-
-    margin-bottom: 22px;
-}
-
-
-.upload-box:hover {
-
-    background: #f5f1ed;
-}
-
-
-.upload-box input {
-
-    display: none;
-}
-
-
-#uploadPlaceholder {
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    gap: 7px;
-
-    color: #777;
-}
-
-
-#uploadPlaceholder span {
-
-    font-size: 40px;
-}
-
-
-#uploadPlaceholder strong {
-
-    color: #333;
-}
-
-
-#uploadPlaceholder small {
-
-    color: #aaa;
-}
-
-
-.image-preview {
-
-    width: 100%;
-
-    height: 280px;
-
-    object-fit: contain;
-
-    display: none;
-}
-
-
-/* =====================================================
-   INPUTS
-===================================================== */
-
-.input-label {
-
-    display: block;
-
-    font-size: 13px;
-
-    font-weight: 600;
-
+    gap: 20px;
     margin-bottom: 18px;
 }
 
-
-.input-label input,
-.input-label select {
-
-    width: 100%;
-
-    margin-top: 8px;
-
-    padding: 13px;
-
-    border-radius: 11px;
-
-    border: 1px solid #ddd6cf;
-
-    background: white;
-
-    outline: none;
+.wardrobe-header h2 {
+    font-size: 28px;
 }
 
-
-.input-label input:focus,
-.input-label select:focus {
-
-    border-color: #9b8e83;
-}
-
-
-.field-help {
-
-    font-size: 11px;
-
-    color: #999;
-
-    font-weight: normal;
-
+.wardrobe-header p {
     margin-top: 4px;
-}
-
-
-/* =====================================================
-   TYPE TAG PICKER
-===================================================== */
-
-.tag-picker {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 8px;
-
-    margin-top: 10px;
-}
-
-
-.type-option {
-
-    background: #f5f1ed;
-
-    border: 1px solid #e6dfd8;
-
-    color: #665e58;
-
-    border-radius: 20px;
-
-    padding: 8px 12px;
-
-    font-size: 12px;
-
-    transition: 0.15s;
-}
-
-
-.type-option:hover {
-
-    border-color: #aaa;
-}
-
-
-.type-option.selected {
-
-    background: #292623;
-
-    border-color: #292623;
-
-    color: white;
-}
-
-
-.save-item {
-
-    width: 100%;
-
-    margin-top: 8px;
-}
-
-
-/* =====================================================
-   DYNAMIC PAGES
-===================================================== */
-
-.hidden {
-
-    display: none !important;
-}
-
-
-.dynamic-page {
-
-    padding-bottom: 50px;
-}
-
-
-.dynamic-page-header {
-
-    margin-bottom: 25px;
-}
-
-
-.dynamic-page-header h2 {
-
-    font-size: 34px;
-
-    margin-bottom: 8px;
-}
-
-
-.dynamic-page-header p {
-
-    color: #999;
-}
-
-
-/* =====================================================
-   EMPTY
-===================================================== */
-
-.empty-state {
-
-    background: white;
-
-    border: 1px solid #eee8e2;
-
-    border-radius: 20px;
-
-    padding: 55px 30px;
-
-    text-align: center;
-
-    margin-top: 25px;
-}
-
-
-.empty-state h3 {
-
-    margin: 15px 0 7px;
-}
-
-
-.empty-state p {
-
-    color: #999;
-}
-
-
-/* =====================================================
-   OUTFIT BUILDER
-===================================================== */
-
-.outfit-builder {
-
-    background: white;
-
-    border-radius: 20px;
-
-    padding: 25px;
-
-    border: 1px solid #eee8e2;
-}
-
-
-.outfit-section {
-
-    margin-top: 30px;
-}
-
-
-.outfit-section-header {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 12px;
-}
-
-
-.outfit-section-header h3 {
-
-    font-size: 17px;
-}
-
-
-.outfit-section-header span {
-
-    font-size: 12px;
-
-    color: #999;
-}
-
-
-/* =====================================================
-   SWIPE CLOTHING ROW
-===================================================== */
-
-.swipe-row {
-
-    display: flex;
-
-    gap: 14px;
-
-    overflow-x: auto;
-
-    padding: 5px 3px 15px;
-
-    scroll-snap-type: x mandatory;
-
-    scrollbar-width: thin;
-}
-
-
-.swipe-row::-webkit-scrollbar {
-
-    height: 5px;
-}
-
-
-.swipe-row::-webkit-scrollbar-thumb {
-
-    background: #d4ccc4;
-
-    border-radius: 10px;
-}
-
-
-.outfit-item {
-
-    flex: 0 0 155px;
-
-    scroll-snap-align: start;
-
-    background: white;
-
-    border: 2px solid #eee7e0;
-
-    border-radius: 15px;
-
-    overflow: hidden;
-
-    cursor: pointer;
-
-    transition: 0.18s;
-
-    position: relative;
-}
-
-
-.outfit-item:hover {
-
-    transform: translateY(-2px);
-}
-
-
-.outfit-item.selected {
-
-    border-color: #292623;
-
-    box-shadow:
-        0 0 0 2px #292623;
-}
-
-
-.outfit-item.selected::after {
-
-    content: "✓";
-
-    position: absolute;
-
-    right: 8px;
-
-    top: 8px;
-
-    width: 28px;
-
-    height: 28px;
-
-    border-radius: 50%;
-
-    background: #292623;
-
-    color: white;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-}
-
-
-.outfit-item-image {
-
-    height: 180px;
-
-    background: #f3efeb;
-
-    overflow: hidden;
-}
-
-
-.outfit-item-image img {
-
-    width: 100%;
-
-    height: 100%;
-
-    object-fit: cover;
-}
-
-
-.outfit-item-info {
-
-    padding: 10px;
-}
-
-
-.outfit-item-info strong {
-
-    display: block;
-
-    font-size: 12px;
-
-    margin-bottom: 5px;
-}
-
-
-.outfit-item-info span {
-
-    font-size: 10px;
-
-    color: #999;
-}
-
-
-.outfit-item-tags {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 4px;
-
-    margin-top: 6px;
-}
-
-
-/* =====================================================
-   OUTFIT PREVIEW
-===================================================== */
-
-.selected-outfit {
-
-    background: #f4f0ec;
-
-    border-radius: 18px;
-
-    padding: 20px;
-
-    margin-top: 25px;
-}
-
-
-.selected-outfit-items {
-
-    display: flex;
-
-    gap: 10px;
-
-    flex-wrap: wrap;
-
-    margin-top: 15px;
-}
-
-
-.selected-chip {
-
-    background: white;
-
-    border-radius: 10px;
-
-    padding: 8px 11px;
-
-    font-size: 12px;
-}
-
-
-/* =====================================================
-   SAVED OUTFITS
-===================================================== */
-
-.saved-outfit {
-
-    background: white;
-
-    border: 1px solid #eee7e0;
-
-    border-radius: 18px;
-
-    padding: 20px;
-
-    margin-top: 18px;
-}
-
-
-.saved-outfit h3 {
-
-    margin-bottom: 6px;
-}
-
-
-.saved-outfit-description {
-
-    color: #999;
-
+    color: var(--muted);
     font-size: 13px;
-
-    margin-bottom: 15px;
 }
 
-
-.saved-outfit-images {
-
+.filters {
     display: flex;
-
+    flex-wrap: wrap;
     gap: 8px;
-
-    overflow-x: auto;
-}
-
-
-.saved-outfit-images img {
-
-    width: 90px;
-
-    height: 110px;
-
-    object-fit: cover;
-
-    border-radius: 10px;
-
-    background: #eee;
-}
-
-
-.delete-outfit {
-
-    margin-top: 15px;
-
-    background: #f3efeb;
-
-    padding: 8px 12px;
-
-    border-radius: 9px;
-
-    font-size: 12px;
-}
-
-
-/* =====================================================
-   SETTINGS
-===================================================== */
-
-.settings-card {
-
-    background: white;
-
-    border: 1px solid #eee8e2;
-
-    border-radius: 18px;
-
-    padding: 22px;
-
-    margin-bottom: 16px;
-}
-
-
-.settings-card h3 {
-
-    margin-bottom: 8px;
-}
-
-
-.settings-card p {
-
-    color: #888;
-
-    font-size: 14px;
-
-    line-height: 1.6;
-}
-
-
-.danger-button {
-
-    background: #8b3f3f;
-
-    color: white;
-
-    padding: 12px 16px;
-
-    border-radius: 10px;
-
-    margin-top: 10px;
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
-@media (max-width: 800px) {
-
-    .sidebar {
-
-        position: fixed;
-
-        left: 0;
-
-        right: 0;
-
-        bottom: 0;
-
-        top: auto;
-
-        width: 100%;
-
-        height: 70px;
-
-        border-right: none;
-
-        border-top: 1px solid #e8e3de;
-
-        padding: 7px 10px;
-
-        flex-direction: row;
-
-        align-items: center;
-
-    }
-
-
-    .logo,
-    .sidebar-bottom {
-
-        display: none;
-    }
-
-
-    nav {
-
-        width: 100%;
-
-        flex-direction: row;
-
-        justify-content: space-around;
-
-        gap: 4px;
-    }
-
-
-    .nav-item {
-
-        width: auto;
-
-        flex: 1;
-
-        justify-content: center;
-
-        flex-direction: column;
-
-        gap: 2px;
-
-        padding: 6px;
-
-        font-size: 10px;
-    }
-
-
-    .nav-item span {
-
-        font-size: 18px;
-    }
-
-
-    .main {
-
-        margin-left: 0;
-
-        padding:
-            20px
-            20px
-            95px;
-    }
-
-
-    .topbar {
-
-        margin-bottom: 25px;
-    }
-
-
-    .topbar h1 {
-
-        font-size: 21px;
-    }
-
-
-    .profile {
-
-        width: 38px;
-
-        height: 38px;
-    }
-
-
-    .hero {
-
-        padding: 28px;
-
-        min-height: 300px;
-
-        margin-bottom: 28px;
-    }
-
-
-    .hero h2 {
-
-        font-size: 31px;
-    }
-
-
-    .hero-decoration {
-
-        display: none;
-    }
-
-
-    .wardrobe-header {
-
-        align-items: flex-end;
-    }
-
-
-    .wardrobe-header h2 {
-
-        font-size: 21px;
-    }
-
-
-    .add-button {
-
-        padding: 10px 13px;
-
-        font-size: 12px;
-    }
-
-
-    .clothing-grid {
-
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-
-        gap: 12px;
-    }
-
-
-    .clothing-image {
-
-        height: 210px;
-    }
-
-
-    .clothing-info {
-
-        padding: 11px;
-    }
-
-
-    .clothing-info h3 {
-
-        font-size: 13px;
-    }
-
-
-    .modal-content {
-
-        padding: 24px;
-
-        border-radius: 20px;
-
-        max-height: 92vh;
-    }
-
-
-    .outfit-item {
-
-        flex-basis: 145px;
-    }
-
-
-    .outfit-item-image {
-
-        height: 170px;
-    }
-
-}
-
-
-@media (max-width: 430px) {
-
-    .main {
-
-        padding-left: 14px;
-
-        padding-right: 14px;
-
-        padding-bottom: 90px;
-    }
-
-
-    .hero {
-
-        padding: 23px;
-    }
-
-
-    .hero h2 {
-
-        font-size: 28px;
-    }
-
-
-    .clothing-grid {
-
-        gap: 9px;
-    }
-
-
-    .clothing-image {
-
-        height: 190px;
-    }
-
-}
-/* =====================================================
-   NEW CLOSET FEATURES
-===================================================== */
-
-.closet-filter-panel {
-    background: #ffffff;
-    border: 1px solid #eee8e2;
-    border-radius: 18px;
-    padding: 16px;
     margin-bottom: 22px;
 }
 
-.closet-filter-row {
+.filter {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 14px;
+    background: var(--surface);
+    color: var(--muted);
+}
+
+.filter:hover,
+.filter.active {
+    border-color: var(--text);
+    background: var(--text);
+    color: #ffffff;
+}
+
+/* 06. CLOTHING GRID + CARDS */
+
+.clothing-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.clothing-card {
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 5px 20px rgba(45, 41, 38, 0.04);
+}
+
+.clothing-image {
+    position: relative;
+    aspect-ratio: 1 / 1.08;
+    overflow: hidden;
+    background: var(--soft);
+    cursor: pointer;
+}
+
+.clothing-image > img,
+.clothing-image > .placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.placeholder {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    color: #b8aca3;
+    font-size: 38px;
+}
+
+.heart {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #6f6660;
+}
+
+.heart.active {
+    color: #9d5d68;
+}
+
+.clothing-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px;
+}
+
+.clothing-info h3 {
+    font-size: 14px;
+    letter-spacing: 0.04em;
+}
+
+.clothing-info p {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.more {
+    border: 0;
+    background: transparent;
+    color: #9a9189;
+}
+
+.item-tags {
+    display: flex;
     flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
 }
 
-.closet-filter-row input,
-.closet-filter-row select {
-    flex: 1;
-    min-width: 150px;
-    padding: 11px 13px;
-    border: 1px solid #ddd6cf;
-    border-radius: 11px;
-    background: white;
-    outline: none;
+.item-tag,
+.selected-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: var(--soft);
+    color: #756b64;
+    font-size: 10px;
 }
 
-.closet-filter-row input:focus,
-.closet-filter-row select:focus {
-    border-color: #9b8e83;
+.empty-state {
+    grid-column: 1 / -1;
+    padding: 48px 20px;
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    text-align: center;
+    color: var(--muted);
 }
 
-.closet-filter-label {
+/* 07. FORMS + DROPDOWNS */
+
+.input-label {
     display: block;
-    font-size: 11px;
-    color: #999;
-    margin-bottom: 6px;
+    margin-top: 16px;
+    color: #665e58;
+    font-size: 13px;
     font-weight: 600;
 }
 
+.input-label input,
+.input-label select {
+    width: 100%;
+    margin-top: 7px;
+    padding: 12px 13px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    outline: 0;
+    background: var(--surface);
+    color: var(--text);
+}
+
+.input-label input:focus,
+.input-label select:focus,
+.outfit-filter-panel select:focus {
+    border-color: #c2b4aa;
+    box-shadow:
+        0 0 0 3px rgba(140, 123, 112, 0.09);
+}
+
+.field-help {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.upload-box {
+    position: relative;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1.5px dashed #d7cdc5;
+    border-radius: 18px;
+    background: #fbfaf8;
+    cursor: pointer;
+}
+
+.upload-box input {
+    display: none;
+}
+
+#uploadPlaceholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    color: var(--muted);
+    text-align: center;
+}
+
+#uploadPlaceholder span {
+    font-size: 34px;
+}
+
+#uploadPlaceholder strong {
+    color: var(--text);
+}
+
+.image-preview {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tag-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 9px;
+}
+
+.type-option {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 11px;
+    background: var(--surface);
+    color: var(--muted);
+}
+
+.type-option:hover,
+.type-option.selected {
+    border-color: var(--text);
+    background: var(--text);
+    color: #ffffff;
+}
+
+/* 08. MODALS */
+/* Hidden by default */
+.modal,
 .photo-modal,
 .edit-modal,
 .delete-modal {
     position: fixed;
     inset: 0;
-    background: rgba(25, 22, 20, 0.55);
+    z-index: 100;
     display: none;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     padding: 20px;
-    z-index: 300;
+    background: rgba(40, 35, 31, 0.38);
 }
 
+/* JavaScript adds .active when opening */
+.modal.active,
 .photo-modal.active,
 .edit-modal.active,
 .delete-modal.active {
     display: flex;
 }
 
+/* Modal box */
+.modal-content,
 .photo-modal-content,
 .edit-modal-content,
 .delete-modal-content {
-    background: white;
-    border-radius: 22px;
-    position: relative;
-    width: min(620px, 100%);
+    width: min(560px, 100%);
     max-height: 90vh;
-    overflow-y: auto;
-    padding: 25px;
+    overflow: auto;
+    padding: 26px;
+    background: var(--surface);
+    border-radius: 22px;
+    box-shadow:
+        0 24px 70px rgba(30, 25, 22, 0.18);
 }
 
-.photo-modal-content img {
-    width: 100%;
-    max-height: 65vh;
-    object-fit: contain;
-    border-radius: 15px;
-    background: #f3efeb;
+/* Close button */
+.close-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-left: auto;
+    border: 0;
+    border-radius: 50%;
+    background: var(--soft);
+    color: var(--text);
+    font-size: 20px;
 }
 
+/* Action buttons */
 .item-action-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
-    margin-top: 18px;
+    margin-top: 22px;
 }
 
-.item-action-row button {
-    padding: 11px 16px;
-    border-radius: 10px;
+.edit-save-button,
+.delete-item-button,
+.cancel-button,
+.danger-button {
+    border: 0;
+    padding: 11px 15px;
+    border-radius: 11px;
 }
 
 .edit-save-button {
-    background: #292623;
-    color: white;
+    background: var(--text);
+    color: #ffffff;
 }
 
-.delete-item-button {
-    background: #f3dddd;
-    color: #8b3f3f;
+.delete-item-button,
+.danger-button {
+    background: var(--danger-bg);
+    color: var(--danger-text);
 }
 
 .cancel-button {
-    background: #f1ede8;
-    color: #555;
+    background: var(--soft);
+    color: var(--text);
 }
 
-.outfit-stage {
-    margin-top: 25px;
-    background: #f3efeb;
-    border-radius: 22px;
-    padding: 25px;
-    min-height: 520px;
-    position: relative;
+/*  09. OUTFIT LIBRARY
+   OUTING / SAVED OUTFITS page:
+   - page title
+   - saved-outfit filters
+   - saved outfit cards
+ */
+
+.dynamic-page {
+    min-height: 50vh;
 }
 
-.outfit-stage-title {
-    text-align: center;
-    font-size: 13px;
-    color: #999;
-    margin-bottom: 15px;
-}
-
-.outfit-stage-layout {
-    display: grid;
-    grid-template-columns: 1fr 1.4fr 1fr;
-    gap: 15px;
-    align-items: center;
-    min-height: 430px;
-}
-
-.outfit-stage-center {
+.outfits-header,
+.outfit-library-header {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
 }
 
-.outfit-piece {
-    width: 150px;
-    min-height: 120px;
-    background: white;
-    border-radius: 16px;
-    padding: 8px;
-    text-align: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+.outfits-header h2,
+.outfit-library-header h2 {
+    font-size: 30px;
+    line-height: 1.1;
 }
 
-.outfit-piece img {
+.secondary-button {
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 10px 15px;
+    background: var(--surface);
+    color: var(--text);
+}
+
+/* ----- Saved outfit filters ----- */
+
+.outfit-filter-panel {
     width: 100%;
-    height: 125px;
-    object-fit: contain;
-    border-radius: 10px;
+    display: grid !important;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr)) !important;
+    align-items: end;
+    gap: 14px !important;
+    padding: 18px !important;
+    margin: 0 0 22px !important;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
 }
 
-.outfit-piece-name {
-    font-size: 11px;
-    margin-top: 6px;
+.outfit-filter-panel > label,
+.outfit-filter-panel .outfit-filter-field {
+    display: block !important;
+    min-width: 0;
 }
 
-.outfit-stage-accessories {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.outfit-filter-panel > label > span,
+.outfit-filter-panel .outfit-filter-field > span {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--muted);
+    font-size: 12px;
 }
 
-.outfit-empty-piece {
-    width: 150px;
-    min-height: 80px;
-    border: 2px dashed #d5ccc4;
-    border-radius: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #aaa;
-    font-size: 11px;
-    text-align: center;
+.outfit-filter-panel > label > select,
+.outfit-filter-panel .outfit-filter-field > select {
+    display: block;
+    width: 100% !important;
+    height: 44px;
+    margin: 0 !important;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: var(--surface);
+    color: var(--text);
+    outline: 0;
 }
 
-.saved-outfit-card {
-    background: white;
-    border: 1px solid #eee8e2;
-    border-radius: 20px;
-    padding: 18px;
-    margin-top: 18px;
-    cursor: pointer;
-}
-
-.saved-outfit-card:hover {
-    box-shadow: 0 10px 28px rgba(0,0,0,0.06);
-}
-
-.saved-outfit-thumb-row {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    margin-top: 12px;
-}
-
-.saved-outfit-thumb-row img {
-    width: 90px;
-    height: 105px;
-    object-fit: cover;
-    border-radius: 10px;
-    background: #f2efeb;
-}
-
-@media (max-width: 700px) {
-
-    .outfit-stage-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .outfit-stage-center {
-        order: 1;
-    }
-
-    .outfit-stage-accessories {
-        order: 2;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .outfit-piece {
-        width: 130px;
-    }
-
-}
-/* =====================================================
-   SAVED OUTFITS - TWO CARD GRID
-===================================================== */
-
-#savedOutfits {
-
-    display: grid;
-
+/* ----- Saved outfit cards ----- */
+#savedOutfits,
+.saved-outfits-grid {
+    display: grid !important;
     grid-template-columns:
         repeat(2, minmax(0, 1fr));
-
     gap: 18px;
-
-    margin-top: 25px;
-
 }
-
 
 .saved-outfit-card {
-
-    background: white;
-
-    border: 1px solid #eee8e2;
-
-    border-radius: 20px;
-
-    padding: 16px;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-
     min-width: 0;
-}
-
-
-.saved-outfit-card:hover {
-
-    transform: translateY(-2px);
-
+    overflow: hidden;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    cursor: pointer;
     box-shadow:
-        0 10px 28px rgba(0,0,0,0.06);
-
+        0 5px 20px rgba(45, 41, 38, 0.04);
 }
-
 
 .saved-outfit-card h3 {
-
-    font-size: 17px;
-
-    margin-top: 14px;
-
-    margin-bottom: 5px;
-
+    margin-top: 12px;
+    font-size: 16px;
 }
 
-
-.saved-outfit-description {
-
-    color: #999;
-
-    font-size: 12px;
-
-}
-
-
+.saved-outfit-image,
 .saved-outfit-thumb-row {
-
-    display: flex;
-
-    gap: 7px;
-
+    width: 100%;
+    aspect-ratio: 1 / 0.72;
     overflow: hidden;
-
+    display: grid;
+    grid-template-columns:
+        repeat(2, 1fr);
+    grid-template-rows:
+        repeat(2, 1fr);
+    gap: 4px;
+    border-radius: 14px;
+    background: var(--soft);
 }
 
-
+.saved-outfit-image img,
 .saved-outfit-thumb-row img {
-
-    width: 85px;
-
-    height: 100px;
-
-    object-fit: cover;
-
-    border-radius: 10px;
-
-    background: #f2efeb;
-
-    flex-shrink: 0;
-
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #f3efeb;
 }
 
 
-/* =====================================================
-   OUTFIT ROW WITH ARROWS
-===================================================== */
+/* 10. OUTFIT CREATOR
+   This controls the CREATE OUTFIT page:
+   - category sections
+   - clothing carousel
+   - arrows
+   - selected clothing */
+
+.outfit-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.outfit-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.outfit-section-header h3 {
+    font-size: 16px;
+}
+
+.outfit-section-header span {
+    color: var(--muted);
+    font-size: 11px;
+}
 
 .outfit-carousel {
-
-    position: relative;
-
     display: flex;
-
     align-items: center;
-
     gap: 8px;
-
 }
-
-
-.outfit-carousel-button {
-
-    flex: 0 0 38px;
-
-    width: 38px;
-
-    height: 38px;
-
-    border-radius: 50%;
-
-    background: #292623;
-
-    color: white;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 18px;
-
-    z-index: 2;
-
-}
-
-
-.outfit-carousel-button:disabled {
-
-    opacity: 0.25;
-
-    cursor: default;
-
-}
-
 
 .outfit-carousel .swipe-row {
-
     flex: 1;
-
     min-width: 0;
-
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
     scroll-behavior: smooth;
-
 }
 
+.outfit-carousel .swipe-row::-webkit-scrollbar {
+    display: none;
+}
 
-/* Keep the swipe cards nicely sized */
+.outfit-carousel-button {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--text);
+    color: #ffffff;
+    font-size: 20px;
+}
+
+.outfit-carousel-button:disabled {
+    opacity: 0.25;
+    cursor: default;
+}
 
 .outfit-item {
+    flex: 0 0 150px;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    cursor: pointer;
+}
 
-    flex: 0 0 155px;
+.outfit-item.selected {
+    border-color: var(--accent);
+    box-shadow:0 0 0 2px rgba(140, 123, 112, 0.12);
+}
 
+.outfit-item-image {
+    aspect-ratio: 1;
+    background: var(--soft);
+}
+
+.outfit-item-image img,
+.outfit-item-image .placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.outfit-item-info {
+    padding: 10px;
+}
+
+.outfit-item-info strong {
+    display: block;
+    font-size: 11px;
+}
+
+.outfit-item-info span {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 10px;
 }
 
 
-/* Mobile */
-
-@media (max-width: 700px) {
-
-    #savedOutfits {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .outfit-carousel-button {
-
-        width: 34px;
-
-        height: 34px;
-
-        flex-basis: 34px;
-
-    }
-
-
-    .outfit-item {
-
-        flex-basis: 145px;
-
-    }
-
-}
-.outfit-name-bottom {
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid #eee7e0;
-}
-/* =====================================================
-   CLEAN OUTFIT PREVIEW
-===================================================== */
-
+/*  11. OUTFIT PREVIEW
+   This controls the big preview:
+   - top
+   - bottom
+   - shoes
+   - accessories  
+*/
 .outfit-stage {
-    background: #f4f0ec;
-    border-radius: 24px;
-    padding: 28px;
-    margin-top: 25px;
-    min-height: 520px;
+    margin-top: 24px;
+    padding: 22px;
+    background: #f2eeea;
+    border-radius: 22px;
 }
 
 .outfit-stage-title {
+    margin-bottom: 18px;
     text-align: center;
-    font-size: 13px;
-    color: #999;
-    margin-bottom: 20px;
-    letter-spacing: 0.3px;
+    color: var(--muted);
+    font-size: 12px;
 }
 
 .outfit-stage-layout {
+    min-height: 340px;
     display: grid;
     grid-template-columns: 0.7fr 1.6fr 0.8fr;
-    gap: 20px;
     align-items: center;
-    min-height: 430px;
+    gap: 18px;
 }
 
 .outfit-stage-center {
@@ -1965,70 +833,182 @@ nav {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 7px;
 }
 
 .outfit-piece {
-    width: 180px;
-    background: rgba(255,255,255,0.9);
-    border-radius: 16px;
-    padding: 8px;
+    width: 170px;
+    padding: 7px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
     text-align: center;
-    box-shadow: 0 5px 18px rgba(0,0,0,0.05);
 }
 
 .outfit-piece img {
     width: 100%;
-    height: 135px;
+    height: 115px;
     object-fit: contain;
-    border-radius: 11px;
+    border-radius: 9px;
 }
 
 .outfit-piece-name {
-    font-size: 11px;
-    margin-top: 7px;
-    padding-bottom: 4px;
+    padding: 5px 0 2px;
+    color: var(--muted);
+    font-size: 10px;
 }
 
 .outfit-empty-piece {
-    width: 180px;
-    min-height: 75px;
-    border: 2px dashed #d7cec6;
-    border-radius: 15px;
+    width: 170px;
+    min-height: 58px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    color: #aaa;
-    font-size: 11px;
+    justify-content: center;
+    border: 1.5px dashed #cfc3ba;
+    border-radius: 13px;
+    color: #aaa19a;
+    font-size: 10px;
     text-align: center;
-    background: rgba(255,255,255,0.3);
 }
 
 .outfit-stage-accessories {
     display: flex;
     flex-direction: column;
-    gap: 10px;
     align-items: center;
+    gap: 8px;
 }
 
 .outfit-stage-accessories .outfit-piece {
-    width: 120px;
+    width: 112px;
 }
 
 .outfit-stage-accessories .outfit-piece img {
-    height: 95px;
+    height: 80px;
 }
 
-@media (max-width: 700px) {
+.outfit-name-bottom {
+    margin-top: 22px;
+    padding-top: 18px;
 
-    .outfit-stage {
-        padding: 18px;
-        min-height: auto;
+    border-top: 1px solid var(--line);
+}
+
+/* 12. SETTINGS*/
+
+.settings-card {
+    padding: 20px;
+    margin-bottom: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.settings-card h3 {
+    margin-bottom: 7px;
+}
+
+.settings-card p {
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+/*  13. RESPONSIVE */
+
+@media (max-width: 1100px) {
+    .clothing-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 820px) {
+
+    .sidebar {
+        width: 78px;
+        padding: 20px 10px;
+    }
+
+    .logo {
+        padding: 4px 0 25px;
+        text-align: center;
+        font-size: 0;
+    }
+
+    .logo span {
+        margin: 0;
+        font-size: 22px;
+    }
+
+    .nav-item {
+        justify-content: center;
+        padding: 12px 8px;
+        font-size: 0;
+    }
+
+    .nav-item span {
+        font-size: 18px;
+    }
+
+    .main {
+        margin-left: 78px;
+        padding: 24px 22px 50px;
+    }
+
+    .hero {
+        padding: 28px;
+    }
+
+    .hero h2 {
+        font-size: 34px;
+    }
+
+    .hero-decoration {
+        display: none;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .main {
+        padding: 20px 15px 40px;
+    }
+
+    .topbar h1 {
+        font-size: 23px;
+    }
+
+    .hero {
+        padding: 22px;
+        border-radius: 20px;
+    }
+
+    .hero h2 {
+        font-size: 30px;
+    }
+
+    .clothing-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .outfits-header,
+    .outfit-library-header {
+        align-items: flex-start;
+    }
+
+    .outfit-filter-panel {
+        grid-template-columns: 1fr !important;
+    }
+
+    #savedOutfits,
+    .saved-outfits-grid {
+        grid-template-columns: 1fr;
     }
 
     .outfit-stage-layout {
         grid-template-columns: 1fr;
-        gap: 18px;
     }
 
     .outfit-stage-center {
@@ -2041,99 +1021,4 @@ nav {
         flex-wrap: wrap;
         justify-content: center;
     }
-
-    .outfit-piece {
-        width: 155px;
-    }
-
-    .outfit-piece img {
-        height: 120px;
-    }
-
-}
-/* =====================================================
-   CLOSET AI - CUSTOM DROPDOWNS
-===================================================== */
-
-.input-label select,
-#clothingFabric,
-#clothingColor,
-#clothingCategory,
-#editItemCategory,
-#editItemColor,
-#editItemFabric,
-#outfitCategoryFilter,
-#outfitFabricFilter,
-#outfitTypeFilter,
-#outfitColorFilter {
-
-    width: 100%;
-
-    margin-top: 8px;
-
-    padding: 13px 42px 13px 13px;
-
-    border: 1px solid #ddd6cf;
-
-    border-radius: 11px;
-
-    background-color: #ffffff;
-
-    color: #272522;
-
-    font-size: 14px;
-
-    outline: none;
-
-    cursor: pointer;
-
-    appearance: none;
-
-    -webkit-appearance: none;
-
-    -moz-appearance: none;
-
-    background-image:
-        linear-gradient(
-            45deg,
-            transparent 50%,
-            #777 50%
-        ),
-        linear-gradient(
-            135deg,
-            #777 50%,
-            transparent 50%
-        );
-
-    background-position:
-        calc(100% - 18px) 50%,
-        calc(100% - 12px) 50%;
-
-    background-size:
-        6px 6px,
-        6px 6px;
-
-    background-repeat: no-repeat;
-
-    transition:
-        border-color 0.2s,
-        box-shadow 0.2s;
-
-}
-
-
-.input-label select:hover,
-#clothingFabric:hover,
-#clothingColor:hover,
-#clothingCategory:hover,
-#editItemCategory:hover,
-#editItemColor:hover,
-#editItemFabric:hover,
-#outfitCategoryFilter:hover,
-#outfitFabricFilter:hover,
-#outfitTypeFilter:hover,
-#outfitColorFilter:hover {
-
-    border-color: #b8ada3;
-
 }

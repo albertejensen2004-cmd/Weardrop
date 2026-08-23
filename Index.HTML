@@ -1,14 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Closet AI</title>
 
@@ -19,93 +13,76 @@
 
 </head>
 
-
 <body>
 
-
-    <!-- ==================================================
-         SIDEBAR
-    ================================================== -->
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
-        <div
-            class="logo"
-            id="logo"
-        >
+        <div class="logo" id="logo">
             <span>✦</span>
             The Wardrobe
+
+            <p class="small-title">
+                    YOUR DIGITAL WARDROBE
+                </p>
         </div>
 
-
         <nav>
-
-            <button
+            <button 
                 class="nav-item active"
                 id="wardrobeNav"
-                type="button"
-            >
+                type="button">
+
                 <span>⌂</span>
                 Wardrobe
-            </button>
 
+            </button>
 
             <button
                 class="nav-item"
                 id="outfitsNav"
-                type="button"
-            >
+                type="button">
+
                 <span>✧</span>
                 Outfits
-            </button>
 
+            </button>
 
             <button
                 class="nav-item"
                 id="favoritesNav"
-                type="button"
-            >
+                type="button">
+
                 <span>♡</span>
                 Favorites
+
             </button>
 
         </nav>
-
 
         <div class="sidebar-bottom">
 
             <button
                 class="nav-item"
                 id="settingsNav"
-                type="button"
-            >
+                type="button">
+
                 <span>⚙</span>
                 Settings
+
             </button>
-
         </div>
-
     </aside>
 
-
-
-    <!-- ==================================================
-         MAIN
-    ================================================== -->
+    <!-- MAIN-->
 
     <main class="main">
-
-
-        <!-- TOP BAR -->
+        <!--TOPBAR -->
 
         <header class="topbar">
 
             <div>
-
-                <p class="small-title">
-                    YOUR DIGITAL WARDROBE
-                </p>
-
                 <h1>
                     Welcome back! 💖
                 </h1>
@@ -118,21 +95,16 @@
                 id="profileButton"
                 type="button"
             >
+
                 AJ
+
             </button>
 
         </header>
 
-
-
-        <!-- ==================================================
-             WARDROBE PAGE
-        ================================================== -->
+        <!-- WARDROBE -->
 
         <section id="wardrobePage">
-
-
-            <!-- HERO -->
 
             <section class="hero">
 
@@ -142,11 +114,11 @@
                         YOUR PERSONAL STYLIST
                     </p>
 
+
                     <h2>
-                        What are you
-                        <br>
-                        wearing today?
+                        What are you wearing today?
                     </h2>
+
 
                     <p class="hero-text">
                         Build your own outfit from the
@@ -156,9 +128,10 @@
                     <button
                         class="style-button"
                         id="styleOutfitButton"
-                        type="button"
-                    >
+                        type="button">
+
                         Create an outfit!
+
                     </button>
 
                 </div>
@@ -169,10 +142,6 @@
                 </div>
 
             </section>
-
-
-
-            <!-- WARDROBE HEADER -->
 
             <section class="wardrobe-header">
 
@@ -192,33 +161,29 @@
                 <button
                     class="add-button"
                     id="addItemButton"
-                    type="button"
-                >
-                    + Add item
+                    type="button">
+
+                    Add item
+
                 </button>
 
             </section>
 
-
-
-            <!-- FILTERS -->
+            <!-- WARDROBE CATEGORY FILTERS -->
 
             <div class="filters">
 
                 <button
                     class="filter active"
                     data-category="all"
-                    type="button"
-                >
+                    type="button">
                     All
                 </button>
-
 
                 <button
                     class="filter"
                     data-category="top"
-                    type="button"
-                >
+                    type="button">
                     Tops
                 </button>
 
@@ -226,8 +191,7 @@
                 <button
                     class="filter"
                     data-category="bottom"
-                    type="button"
-                >
+                    type="button">
                     Bottoms
                 </button>
 
@@ -235,17 +199,14 @@
                 <button
                     class="filter"
                     data-category="dress"
-                    type="button"
-                >
+                    type="button">
                     Dresses
                 </button>
-
 
                 <button
                     class="filter"
                     data-category="shoes"
-                    type="button"
-                >
+                    type="button">
                     Shoes
                 </button>
 
@@ -253,63 +214,46 @@
                 <button
                     class="filter"
                     data-category="accessory"
-                    type="button"
-                >
+                    type="button">
                     Accessories
                 </button>
 
             </div>
 
-
-
-            <!-- CLOTHING GRID -->
-
             <section
                 class="clothing-grid"
-                id="clothingGrid"
-            >
+                id="clothingGrid">
             </section>
 
 
         </section>
 
-
-
-        <!-- ==================================================
-             DYNAMIC PAGE
-        ================================================== -->
+        <!-- DYNAMIC PAGE-->
 
         <section
             id="dynamicPage"
-            class="dynamic-page hidden"
-        >
+            class="dynamic-page hidden">
         </section>
-
 
     </main>
 
 
 
-    <!-- ==================================================
-         ADD ITEM MODAL
-    ================================================== -->
+    <!-- ADD ITEM MODAL-->
 
     <div
         class="modal"
-        id="addItemModal"
-    >
+        id="addItemModal">
 
         <div class="modal-content">
-
 
             <button
                 class="close-modal"
                 id="closeModal"
-                type="button"
-            >
+                type="button">
                 ×
-            </button>
 
+            </button>
 
             <h2>
                 Add clothing
@@ -317,17 +261,17 @@
 
 
             <p class="modal-subtitle">
-                Add something to your digital wardrobe.
+
+                Add something to your
+                digital wardrobe.
+
             </p>
-
-
 
             <!-- PHOTO -->
 
             <label
                 class="upload-box"
-                for="clothingImage"
-            >
+                for="clothingImage">
 
                 <div id="uploadPlaceholder">
 
@@ -350,25 +294,28 @@
                 <img
                     id="imagePreview"
                     class="image-preview"
-                    alt="Clothing preview"
-                >
-
+                    alt="Clothing preview">
 
                 <input
                     type="file"
                     id="clothingImage"
                     accept="image/*"
-                    capture="environment"
-                >
+                    capture="environment">
 
             </label>
 
-
             <!-- CATEGORY -->
+
             <label class="input-label">
-                    Category
+
+                Category
 
                 <select id="clothingCategory">
+
+                    <option value="">
+                        Choose a category
+                    </option>
+
                     <option value="top">
                         Tops
                     </option>
@@ -393,10 +340,14 @@
 
             </label>
 
+            <!-- COLOUR -->
 
             <label class="input-label">
+
                 Colour
+
                 <select id="clothingColor">
+
                     <option value="">
                         Choose colour
                     </option>
@@ -411,10 +362,6 @@
 
                     <option value="beige">
                         Beige
-                    </option>
-
-                   <option value="grey">
-                        Grey
                     </option>
 
                     <option value="brown">
@@ -435,6 +382,10 @@
 
                     <option value="green">
                         Green
+                    </option>
+
+                    <option value="grey">
+                        Grey
                     </option>
 
                     <option value="yellow">
@@ -465,11 +416,15 @@
 
             </label>
 
+            <!-- FABRIC -->
+
             <label class="input-label">
+                Fabric
+
                 <select id="clothingFabric">
 
                     <option value="">
-                        Choose fabric
+                        No fabric selected
                     </option>
 
                     <option value="denim">
@@ -499,13 +454,12 @@
                     <option value="other">
                         Other
                     </option>
+
                 </select>
+
             </label>
 
-
-
-
-            <!-- TYPES -->
+            <!-- STYLE / TYPE -->
 
             <div class="input-label">
 
@@ -518,54 +472,43 @@
 
                 <div
                     class="tag-picker"
-                    id="typePicker"
-                >
+                    id="typePicker">
 
                     <button
                         type="button"
                         class="type-option"
-                        data-type="basic"
-                    >
+                        data-type="basic">
                         Basic
                     </button>
 
                     <button
                         type="button"
                         class="type-option"
-                        data-type="everyday"
-                    >
-                        Everyday
-                    </button>
-
-                    <button
-                        type="button"
-                        class="type-option"
-                        data-type="fine"
-                    >
+                        data-type="fine">
                         Fine
                     </button>
 
+
                     <button
                         type="button"
                         class="type-option"
-                        data-type="summer"
-                    >
+                        data-type="summer">
                         Summer
                     </button>
 
-                    <button
-                        type="button"
-                        class="type-option"
-                        data-type="winter"
-                    >
-                        Winter
-                    </button>
 
                     <button
                         type="button"
                         class="type-option"
-                        data-type="beach"
-                    >
+                        data-type="winter">
+                        Winter
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="type-option"
+                        data-type="beach" >
                         Beach
                     </button>
 
@@ -573,72 +516,59 @@
                     <button
                         type="button"
                         class="type-option"
-                        data-type="going-out"
-                    >
+                        data-type="going-out">
                         Going out
                     </button>
 
+
                     <button
                         type="button"
                         class="type-option"
-                        data-type="work"
-                    >
+                        data-type="work">
                         Work
                     </button>
 
+
                     <button
                         type="button"
                         class="type-option"
-                        data-type="cozy"
-                    >
+                        data-type="cozy">
                         Cozy
                     </button>
 
-                    <button
-                        type="button"
-                        class="type-option"
-                        data-type="sport"
-                    >
-                        Sport
-                    </button>
 
                     <button
                         type="button"
                         class="type-option"
-                        data-type="statement"
-                    >
+                        data-type="sport">
+                        Sport
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="type-option"
+                        data-type="statement">
                         Statement
                     </button>
 
                 </div>
-
             </div>
 
-
-
             <!-- SAVE -->
-
             <button
                 class="save-item"
                 id="saveItem"
-                type="button"
-            >
+                type="button">
+
                 Add to wardrobe
             </button>
-
-
         </div>
-
     </div>
 
-
-
-    <!-- ==================================================
-         JAVASCRIPT
-    ================================================== -->
+    <!-- JAVASCRIPT -->
 
     <script src="script.js"></script>
 
 </body>
-
 </html>

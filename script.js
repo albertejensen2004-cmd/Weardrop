@@ -1,22 +1,7 @@
-// =====================================================
-// CLOSET AI
-// COMPLETE MANUAL VERSION
-// CATEGORY + COLOUR + OPTIONAL FABRIC + STYLE TAGS
-// NO LUNA / NO API
-// =====================================================
-
-
-// =====================================================
-// STORAGE
-// =====================================================
+/* CLOSET AI — MANUAL VERSION. */
 
 const WARDROBE_KEY = "closetAI_wardrobe_v2";
 const OUTFITS_KEY = "closetAI_outfits_v2";
-
-
-// =====================================================
-// APP STATE
-// =====================================================
 
 let selectedImage = "";
 let selectedTypes = [];
@@ -25,2478 +10,1365 @@ let currentFilter = "all";
 let selectedOutfitItems = [];
 
 
-// =====================================================
-// HELPER
-// =====================================================
+/* HELPERS */
 
 function $(id) {
     return document.getElementById(id);
 }
 
-
 function escapeHTML(value) {
-
     const div = document.createElement("div");
-
     div.textContent = value || "";
-
     return div.innerHTML;
-
 }
 
 
-// =====================================================
-// STORAGE
-// =====================================================
+/* STORAGE */
 
 function getWardrobe() {
-
     try {
-
-        return JSON.parse(
-            localStorage.getItem(WARDROBE_KEY)
-        ) || [];
-
+        return JSON.parse(localStorage.getItem(WARDROBE_KEY)) || [];
     } catch (error) {
-
-        console.error(
-            "Could not load wardrobe:",
-            error
-        );
-
+        console.error("Could not load wardrobe:", error);
         return [];
-
     }
-
 }
-
 
 function saveWardrobe(items) {
-
-    localStorage.setItem(
-        WARDROBE_KEY,
-        JSON.stringify(items)
-    );
-
+    localStorage.setItem(WARDROBE_KEY, JSON.stringify(items));
 }
-
 
 function getOutfits() {
-
     try {
-
-        return JSON.parse(
-            localStorage.getItem(OUTFITS_KEY)
-        ) || [];
-
+        return JSON.parse(localStorage.getItem(OUTFITS_KEY)) || [];
     } catch (error) {
-
-        console.error(
-            "Could not load outfits:",
-            error
-        );
-
+        console.error("Could not load outfits:", error);
         return [];
-
     }
-
 }
-
 
 function saveOutfits(outfits) {
-
-    localStorage.setItem(
-        OUTFITS_KEY,
-        JSON.stringify(outfits)
-    );
-
+    localStorage.setItem(OUTFITS_KEY, JSON.stringify(outfits));
 }
 
 
-// =====================================================
-// STYLE / TYPE TAGS
-// =====================================================
-
-const TYPE_OPTIONS = [
-
-    ["basic", "Basic"],
-
-    ["everyday", "Everyday"],
-
-    ["fine", "Fine"],
-
-    ["summer", "Summer"],
-
-    ["winter", "Winter"],
-
-    ["beach", "Beach"],
-
-    ["going-out", "Going out"],
-
-    ["work", "Work"],
-
-    ["cozy", "Cozy"],
-
-    ["sport", "Sport"],
-
-    ["statement", "Statement"]
-
-];
-
-
-function typeLabel(type) {
-
-    const match =
-        TYPE_OPTIONS.find(
-            item => item[0] === type
-        );
-
-
-    return match
-        ? match[1]
-        : type;
-
-}
-
-
-// =====================================================
-// FABRIC
-// =====================================================
-
-const FABRIC_OPTIONS = [
-
-    ["denim", "Denim"],
-
-    ["cotton", "Cotton"],
-
-    ["wool", "Wool"],
-
-    ["knit", "Knit"],
-
-    ["satin", "Satin"],
-
-    ["leather", "Leather"],
-
-    ["other", "Other"]
-
-];
-
-
-function fabricLabel(fabric) {
-
-    if (!fabric) {
-
-        return "";
-
-    }
-
-
-    const match =
-        FABRIC_OPTIONS.find(
-            item => item[0] === fabric
-        );
-
-
-    return match
-        ? match[1]
-        : fabric;
-
-}
-
-
-// =====================================================
-// COLOURS
-// =====================================================
+/* OPTIONS */
 
 const COLOR_OPTIONS = [
-
     ["black", "Black"],
-
     ["white", "White"],
-
     ["beige", "Beige"],
-
     ["cream", "Cream"],
-
     ["brown", "Brown"],
-
     ["blue", "Blue"],
-
     ["navy", "Navy"],
-
     ["light-blue", "Light blue"],
-
     ["red", "Red"],
-
     ["pink", "Pink"],
-
     ["green", "Green"],
-
     ["grey", "Grey"],
-
     ["yellow", "Yellow"],
-
     ["orange", "Orange"],
-
     ["purple", "Purple"],
-
     ["gold", "Gold"],
-
     ["silver", "Silver"],
-
     ["multicolour", "Multicolour"]
-
 ];
 
+const FABRIC_OPTIONS = [
+    ["denim", "Denim"],
+    ["cotton", "Cotton"],
+    ["wool", "Wool"],
+    ["knit", "Knit"],
+    ["satin", "Satin"],
+    ["leather", "Leather"],
+    ["other", "Other"]
+];
 
-function colorLabel(color) {
+const TYPE_OPTIONS = [
+    ["basic", "Basic"],
+    ["everyday", "Everyday"],
+    ["fine", "Fine"],
+    ["summer", "Summer"],
+    ["winter", "Winter"],
+    ["beach", "Beach"],
+    ["going-out", "Going out"],
+    ["work", "Work"],
+    ["cozy", "Cozy"],
+    ["sport", "Sport"],
+    ["statement", "Statement"]
+];
 
-    if (!color) {
-
-        return "";
-
-    }
-
-
-    const match =
-        COLOR_OPTIONS.find(
-            item => item[0] === color
-        );
-
-
-    return match
-        ? match[1]
-        : color;
-
+function colorLabel(value) {
+    const match = COLOR_OPTIONS.find(item => item[0] === value);
+    return match ? match[1] : (value || "");
 }
 
+function fabricLabel(value) {
+    const match = FABRIC_OPTIONS.find(item => item[0] === value);
+    return match ? match[1] : (value || "");
+}
 
-// =====================================================
-// CATEGORY
-// =====================================================
+function typeLabel(value) {
+    const match = TYPE_OPTIONS.find(item => item[0] === value);
+    return match ? match[1] : (value || "");
+}
 
-function categoryLabel(category) {
-
+function categoryLabel(value) {
     const labels = {
-
         top: "Top",
-
         bottom: "Bottom",
-
         dress: "Dress",
-
         shoes: "Shoes",
-
         accessory: "Accessory"
-
     };
 
-
-    return (
-        labels[category] ||
-        category
-    );
-
+    return labels[value] || value || "";
 }
 
-
-function categoryEmoji(category) {
-
-    const emojis = {
-
+function categoryEmoji(value) {
+    const icons = {
         top: "👚",
-
         bottom: "👖",
-
         dress: "👗",
-
         shoes: "👟",
-
         accessory: "👜"
-
     };
 
-
-    return (
-        emojis[category] ||
-        "👗"
-    );
-
+    return icons[value] || "👗";
 }
 
 
-// =====================================================
-// INITIALIZE
-// =====================================================
+/*  APP INIT */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    initApp
-);
-
+document.addEventListener("DOMContentLoaded", initApp);
 
 function initApp() {
 
-    // Navigation
+    $("wardrobeNav")?.addEventListener("click", showWardrobe);
+    $("outfitsNav")?.addEventListener("click", showOutfits);
+    $("favoritesNav")?.addEventListener("click", showFavorites);
+    $("settingsNav")?.addEventListener("click", showSettings);
+    $("logo")?.addEventListener("click", showWardrobe);
 
-    $("wardrobeNav")?.addEventListener(
-        "click",
-        showWardrobe
-    );
+    $("addItemButton")?.addEventListener("click", openAddModal);
+    $("styleOutfitButton")?.addEventListener("click", showOutfitBuilder);
 
+    $("profileButton")?.addEventListener("click", () => {
+        alert("Profile settings can be added later ✨");
+    });
 
-    $("outfitsNav")?.addEventListener(
-        "click",
-        showOutfits
-    );
+    $("closeModal")?.addEventListener("click", closeAddModal);
 
-
-    $("favoritesNav")?.addEventListener(
-        "click",
-        showFavorites
-    );
-
-
-    $("settingsNav")?.addEventListener(
-        "click",
-        showSettings
-    );
-
-
-    $("logo")?.addEventListener(
-        "click",
-        showWardrobe
-    );
-
-
-    // Main buttons
-
-    $("addItemButton")?.addEventListener(
-        "click",
-        openAddModal
-    );
-
-
-    $("styleOutfitButton")?.addEventListener(
-        "click",
-        showOutfitBuilder
-    );
-
-
-    $("profileButton")?.addEventListener(
-        "click",
-        function() {
-
-            alert(
-                "Profile settings can be added later ✨"
-            );
-
+    $("addItemModal")?.addEventListener("click", event => {
+        if (event.target === $("addItemModal")) {
+            closeAddModal();
         }
-    );
+    });
 
-
-    // Modal
-
-    $("closeModal")?.addEventListener(
-        "click",
-        closeAddModal
-    );
-
-
-    $("addItemModal")?.addEventListener(
-        "click",
-        function(event) {
-
-            if (
-                event.target ===
-                $("addItemModal")
-            ) {
-
-                closeAddModal();
-
-            }
-
-        }
-    );
-
-
-    // Image
-
-    $("clothingImage")?.addEventListener(
-        "change",
-        handleImageUpload
-    );
-
-
-    // Save item
-
-    $("saveItem")?.addEventListener(
-        "click",
-        saveClothing
-    );
-
-
-    // Type buttons
+    $("clothingImage")?.addEventListener("change", handleImageUpload);
+    $("saveItem")?.addEventListener("click", saveClothing);
 
     connectTypeButtons();
-
-
-    // Wardrobe filters
-
     setupWardrobeFilters();
-
-
-    // Start
 
     showWardrobe();
 
-
-    console.log(
-        "✨ Closet AI manual version loaded."
-    );
-
+    console.log("✨ Closet AI manual version loaded.");
 }
 
-
-// =====================================================
-// ACTIVE NAVIGATION
-// =====================================================
+/* NAVIGATION */
+function hidePages() {
+    $("wardrobePage")?.classList.add("hidden");
+    $("dynamicPage")?.classList.add("hidden");
+}
 
 function activateNav(activeButton) {
+    document.querySelectorAll(".nav-item").forEach(button => {
+        button.classList.remove("active");
+    });
 
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(
-            function(button) {
-
-                button.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    if (activeButton) {
-
-        activeButton.classList.add(
-            "active"
-        );
-
-    }
-
+    activeButton?.classList.add("active");
 }
-
-
-// =====================================================
-// SHOW WARDROBE
-// =====================================================
 
 function showWardrobe() {
+    currentPage = "wardrobe";
 
-    currentPage =
-        "wardrobe";
+    activateNav($("wardrobeNav"));
+    hidePages();
 
-
-    activateNav(
-        $("wardrobeNav")
-    );
-
-
-    $("dynamicPage")
-        ?.classList
-        .add(
-            "hidden"
-        );
-
-
-    $("wardrobePage")
-        ?.classList
-        .remove(
-            "hidden"
-        );
-
+    $("wardrobePage")?.classList.remove("hidden");
 
     renderWardrobe();
+}
 
+function showOutfits() {
+    currentPage = "outfits";
+
+    activateNav($("outfitsNav"));
+    hidePages();
+
+    $("dynamicPage")?.classList.remove("hidden");
+
+    renderOutfitsPage();
+}
+
+function showOutfitBuilder() {
+    currentPage = "outfit-builder";
+    selectedOutfitItems = [];
+
+    hidePages();
+
+    $("dynamicPage")?.classList.remove("hidden");
+
+    renderCreateOutfitPage();
+}
+
+function showFavorites() {
+    currentPage = "favorites";
+
+    activateNav($("favoritesNav"));
+    hidePages();
+
+    $("dynamicPage")?.classList.remove("hidden");
+
+    renderFavoritesPage();
+}
+
+function showSettings() {
+    currentPage = "settings";
+
+    activateNav($("settingsNav"));
+    hidePages();
+
+    $("dynamicPage")?.classList.remove("hidden");
+
+    renderSettingsPage();
 }
 
 
-// =====================================================
-// ADD ITEM MODAL
-// =====================================================
+/* ADD ITEM */
 
 function openAddModal() {
-
     resetAddForm();
-
-
-    $("addItemModal")
-        ?.classList
-        .add(
-            "active"
-        );
-
+    $("addItemModal")?.classList.add("active");
 }
-
 
 function closeAddModal() {
-
-    $("addItemModal")
-        ?.classList
-        .remove(
-            "active"
-        );
-
+    $("addItemModal")?.classList.remove("active");
 }
-
 
 function resetAddForm() {
 
-    selectedImage =
-        "";
-
-    selectedTypes =
-        [];
-
+    selectedImage = "";
+    selectedTypes = [];
 
     if ($("clothingCategory")) {
-
-        $("clothingCategory").value =
-            "top";
-
+        $("clothingCategory").value = "";
     }
-
 
     if ($("clothingColor")) {
-
-        $("clothingColor").value =
-            "";
-
+        $("clothingColor").value = "";
     }
-
 
     if ($("clothingFabric")) {
-
-        $("clothingFabric").value =
-            "";
-
+        $("clothingFabric").value = "";
     }
-
 
     if ($("clothingImage")) {
-
-        $("clothingImage").value =
-            "";
-
+        $("clothingImage").value = "";
     }
-
 
     if ($("imagePreview")) {
-
-        $("imagePreview").src =
-            "";
-
-        $("imagePreview").style.display =
-            "none";
-
+        $("imagePreview").src = "";
+        $("imagePreview").style.display = "none";
     }
-
 
     if ($("uploadPlaceholder")) {
-
-        $("uploadPlaceholder").style.display =
-            "flex";
-
+        $("uploadPlaceholder").style.display = "flex";
     }
 
-
-    document
-        .querySelectorAll(
-            ".type-option"
-        )
-        .forEach(
-            function(button) {
-
-                button.classList.remove(
-                    "selected"
-                );
-
-            }
-        );
-
+    document.querySelectorAll("#typePicker .type-option").forEach(button => {
+        button.classList.remove("selected");
+    });
 }
-
-
-// =====================================================
-// TYPE BUTTONS
-// =====================================================
 
 function connectTypeButtons() {
 
-    document
-        .querySelectorAll(
-            ".type-option"
-        )
-        .forEach(
-            function(button) {
+    document.querySelectorAll("#typePicker .type-option").forEach(button => {
 
-                if (
-                    button.dataset.connected ===
-                    "true"
-                ) {
+        if (button.dataset.connected === "true") {
+            return;
+        }
 
-                    return;
+        button.dataset.connected = "true";
 
-                }
+        button.addEventListener("click", () => {
 
+            const type = button.dataset.type;
 
-                button.dataset.connected =
-                    "true";
+            if (selectedTypes.includes(type)) {
 
+                selectedTypes = selectedTypes.filter(item => item !== type);
+                button.classList.remove("selected");
 
-                button.addEventListener(
-                    "click",
-                    function() {
+            } else {
 
-                        const type =
-                            button.dataset.type;
-
-
-                        if (
-                            selectedTypes.includes(
-                                type
-                            )
-                        ) {
-
-                            selectedTypes =
-                                selectedTypes.filter(
-                                    item =>
-                                        item !== type
-                                );
-
-
-                            button.classList.remove(
-                                "selected"
-                            );
-
-                        } else {
-
-                            selectedTypes.push(
-                                type
-                            );
-
-
-                            button.classList.add(
-                                "selected"
-                            );
-
-                        }
-
-                    }
-                );
-
+                selectedTypes.push(type);
+                button.classList.add("selected");
             }
-        );
-
+        });
+    });
 }
 
 
-// =====================================================
-// IMAGE UPLOAD
-// =====================================================
+/* IMAGE UPLOAD */
 
 async function handleImageUpload(event) {
 
-    const file =
-        event.target.files?.[0];
-
+    const file = event.target.files?.[0];
 
     if (!file) {
-
         return;
-
     }
-
 
     try {
 
-        selectedImage =
-            await resizeImage(
-                file
-            );
+        selectedImage = await resizeImage(file);
 
-
-        const preview =
-            $("imagePreview");
-
-
-        if (preview) {
-
-            preview.src =
-                selectedImage;
-
-            preview.style.display =
-                "block";
-
+        if ($("imagePreview")) {
+            $("imagePreview").src = selectedImage;
+            $("imagePreview").style.display = "block";
         }
 
-
-        if (
-            $("uploadPlaceholder")
-        ) {
-
-            $("uploadPlaceholder").style.display =
-                "none";
-
+        if ($("uploadPlaceholder")) {
+            $("uploadPlaceholder").style.display = "none";
         }
 
     } catch (error) {
 
-        console.error(
-            error
-        );
-
-
-        alert(
-            "The photo could not be loaded."
-        );
-
+        console.error("Image upload error:", error);
+        alert("The photo could not be loaded.");
     }
-
 }
-
-
-// =====================================================
-// RESIZE IMAGE
-// =====================================================
 
 function resizeImage(file) {
 
-    return new Promise(
-        function(resolve, reject) {
+    return new Promise((resolve, reject) => {
 
-            const reader =
-                new FileReader();
+        const reader = new FileReader();
 
+        reader.onload = event => {
 
-            reader.onload =
-                function(event) {
+            const image = new Image();
 
-                    const image =
-                        new Image();
+            image.onload = () => {
 
+                const max = 900;
 
-                    image.onload =
-                        function() {
+                let width = image.width;
+                let height = image.height;
 
-                            const max =
-                                900;
+                if (width > max || height > max) {
 
+                    if (width > height) {
 
-                            let width =
-                                image.width;
+                        height = height * max / width;
+                        width = max;
 
+                    } else {
 
-                            let height =
-                                image.height;
+                        width = width * max / height;
+                        height = max;
+                    }
+                }
 
+                const canvas = document.createElement("canvas");
 
-                            if (
-                                width > max ||
-                                height > max
-                            ) {
+                canvas.width = Math.round(width);
+                canvas.height = Math.round(height);
 
-                                if (
-                                    width >
-                                    height
-                                ) {
+                canvas
+                    .getContext("2d")
+                    .drawImage(
+                        image,
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
 
-                                    height =
-                                        height *
-                                        max /
-                                        width;
+                resolve(
+                    canvas.toDataURL("image/jpeg", 0.78)
+                );
+            };
 
-                                    width =
-                                        max;
+            image.onerror = reject;
+            image.src = event.target.result;
+        };
 
-                                } else {
-
-                                    width =
-                                        width *
-                                        max /
-                                        height;
-
-                                    height =
-                                        max;
-
-                                }
-
-                            }
-
-
-                            const canvas =
-                                document.createElement(
-                                    "canvas"
-                                );
-
-
-                            canvas.width =
-                                Math.round(
-                                    width
-                                );
-
-
-                            canvas.height =
-                                Math.round(
-                                    height
-                                );
-
-
-                            const ctx =
-                                canvas.getContext(
-                                    "2d"
-                                );
-
-
-                            ctx.drawImage(
-                                image,
-                                0,
-                                0,
-                                canvas.width,
-                                canvas.height
-                            );
-
-
-                            resolve(
-                                canvas.toDataURL(
-                                    "image/jpeg",
-                                    0.78
-                                )
-                            );
-
-                        };
-
-
-                    image.onerror =
-                        reject;
-
-
-                    image.src =
-                        event.target.result;
-
-                };
-
-
-            reader.onerror =
-                reject;
-
-
-            reader.readAsDataURL(
-                file
-            );
-
-        }
-    );
-
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 
-// =====================================================
-// SAVE CLOTHING
-// =====================================================
+/* SAVE CLOTHING */
 
 function saveClothing() {
 
-    const category =
-        $("clothingCategory")
-            ?.value ||
-        "top";
+    const category = $("clothingCategory")?.value || "";
 
+    if (!category) {
+        alert("Please choose a category.");
+        return;
+    }
 
     const item = {
-
         id:
             "item-" +
             Date.now() +
             "-" +
-            Math.random()
-                .toString(36)
-                .slice(2, 8),
+            Math.random().toString(36).slice(2, 8),
 
-        category:
-            category,
-
-        color:
-            $("clothingColor")
-                ?.value ||
-            "",
-
-        fabric:
-            $("clothingFabric")
-                ?.value ||
-            "",
-
-        types:
-            [...selectedTypes],
-
-        image:
-            selectedImage,
-
-        favorite:
-            false,
-
-        createdAt:
-            Date.now()
-
+        category,
+        color: $("clothingColor")?.value || "",
+        fabric: $("clothingFabric")?.value || "",
+        types: [...selectedTypes],
+        image: selectedImage,
+        favorite: false,
+        createdAt: Date.now()
     };
 
+    const wardrobe = getWardrobe();
 
-    const wardrobe =
-        getWardrobe();
-
-
-    wardrobe.push(
-        item
-    );
-
+    wardrobe.push(item);
 
     try {
-
-        saveWardrobe(
-            wardrobe
-        );
-
+        saveWardrobe(wardrobe);
     } catch (error) {
-
-        console.error(
-            error
-        );
-
-
-        alert(
-            "The photo is too large. Try a smaller image."
-        );
-
-
+        console.error(error);
+        alert("The photo is too large. Try a smaller image.");
         return;
-
     }
 
-
     closeAddModal();
-
-
     renderWardrobe();
-
 }
 
 
-// =====================================================
-// WARDROBE FILTERS
-// =====================================================
+/* WARDROBE */
 
 function setupWardrobeFilters() {
 
-    document
-        .querySelectorAll(
-            ".filter"
-        )
-        .forEach(
-            function(button) {
+    document.querySelectorAll("#wardrobePage .filter").forEach(button => {
 
-                button.addEventListener(
-                    "click",
-                    function() {
+        button.addEventListener("click", () => {
 
-                        document
-                            .querySelectorAll(
-                                ".filter"
-                            )
-                            .forEach(
-                                function(btn) {
+            document
+                .querySelectorAll("#wardrobePage .filter")
+                .forEach(item => item.classList.remove("active"));
 
-                                    btn.classList.remove(
-                                        "active"
-                                    );
+            button.classList.add("active");
 
-                                }
-                            );
+            currentFilter = button.dataset.category || "all";
 
-
-                        button.classList.add(
-                            "active"
-                        );
-
-
-                        currentFilter =
-                            button.dataset.category ||
-                            "all";
-
-
-                        renderWardrobe();
-
-                    }
-                );
-
-            }
-        );
-
+            renderWardrobe();
+        });
+    });
 }
-
-
-// =====================================================
-// WARDROBE SEARCH
-// =====================================================
-
-function wardrobeItemMatches(item) {
-
-    if (
-        currentFilter !==
-        "all" &&
-        item.category !==
-        currentFilter
-    ) {
-
-        return false;
-
-    }
-
-
-    const search =
-        $("wardrobeSearch")
-            ?.value
-            .trim()
-            .toLowerCase() ||
-        "";
-
-
-    if (search) {
-
-        const searchable = [
-
-            categoryLabel(
-                item.category
-            ),
-
-            colorLabel(
-                item.color
-            ),
-
-            fabricLabel(
-                item.fabric
-            ),
-
-            ...(item.types || [])
-                .map(typeLabel)
-
-        ]
-            .join(" ")
-            .toLowerCase();
-
-
-        if (
-            !searchable.includes(
-                search
-            )
-        ) {
-
-            return false;
-
-        }
-
-    }
-
-
-    return true;
-
-}
-
-
-// =====================================================
-// RENDER WARDROBE
-// =====================================================
 
 function renderWardrobe() {
 
-    const grid =
-        $("clothingGrid");
-
+    const grid = $("clothingGrid");
 
     if (!grid) {
-
         return;
-
     }
 
+    const wardrobe = getWardrobe();
 
-    const wardrobe =
-        getWardrobe();
+    const items = wardrobe.filter(item => {
+        return currentFilter === "all" ||
+            item.category === currentFilter;
+    });
 
-
-    const filtered =
-        wardrobe.filter(
-            wardrobeItemMatches
-        );
-
-
-    const count =
-        $("itemCount");
-
-
-    if (count) {
-
-        count.textContent =
-            `${wardrobe.length} ${
-                wardrobe.length === 1
-                    ? "item"
-                    : "items"
-            } in your closet`;
-
+    if ($("itemCount")) {
+        $("itemCount").textContent =
+            `${wardrobe.length} ${wardrobe.length === 1 ? "item" : "items"} in your closet`;
     }
 
+    grid.innerHTML = "";
 
-    grid.innerHTML =
-        "";
-
-
-    if (
-        filtered.length ===
-        0
-    ) {
+    if (!items.length) {
 
         grid.innerHTML = `
-
-            <div
-                class="empty-state"
-            >
-
-                <div
-                    style="
-                        font-size:50px;
-                    "
-                >
-
-                    ${
-                        wardrobe.length
-                            ? "🔎"
-                            : "👗"
-                    }
-
-                </div>
-
-
-                <h3>
-
-                    ${
-                        wardrobe.length
-                            ? "No matching items"
-                            : "Your wardrobe is empty"
-                    }
-
-                </h3>
-
-
-                <p>
-
-                    ${
-                        wardrobe.length
-                            ? "Try another filter."
-                            : "Add your first clothing item."
-                    }
-
-                </p>
-
+            <div class="empty-state">
+                <div style="font-size:45px;">👗</div>
+                <h3>No items here</h3>
+                <p>Add something to your wardrobe.</p>
             </div>
-
         `;
 
-
         return;
-
     }
 
-
-    filtered.forEach(
-        function(item) {
-
-            grid.appendChild(
-                createClothingCard(
-                    item
-                )
-            );
-
-        }
-    );
-
+    items.forEach(item => {
+        grid.appendChild(createClothingCard(item));
+    });
 }
-
-
-// =====================================================
-// CLOTHING CARD
-// =====================================================
 
 function createClothingCard(item) {
 
-    const card =
-        document.createElement(
-            "article"
-        );
+    const card = document.createElement("article");
 
+    card.className = "clothing-card";
 
-    card.className =
-        "clothing-card";
-
-
-    card.dataset.id =
-        item.id;
-
-
-    const image =
-        item.image
-
-            ?
-
-            `
+    const imageHTML = item.image
+        ? `
             <img
                 src="${item.image}"
-                alt="${escapeHTML(
-                    categoryLabel(
-                        item.category
-                    )
-                )}"
+                alt="${escapeHTML(categoryLabel(item.category))}"
             >
-            `
-
-            :
-
-            `
-            <div
-                class="placeholder"
-            >
-
-                ${categoryEmoji(
-                    item.category
-                )}
-
+          `
+        : `
+            <div class="placeholder">
+                ${categoryEmoji(item.category)}
             </div>
-            `;
+          `;
 
-
-    const tags =
-        (item.types || [])
-            .map(
-                function(type) {
-
-                    return `
-
-                        <span
-                            class="item-tag"
-                        >
-
-                            ${escapeHTML(
-                                typeLabel(
-                                    type
-                                )
-                            )}
-
-                        </span>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-
-    const detailParts = [];
-
+    const details = [];
 
     if (item.color) {
-
-        detailParts.push(
-            colorLabel(
-                item.color
-            )
-        );
-
+        details.push(colorLabel(item.color));
     }
-
 
     if (item.fabric) {
-
-        detailParts.push(
-            fabricLabel(
-                item.fabric
-            )
-        );
-
+        details.push(fabricLabel(item.fabric));
     }
 
-
-    const details =
-        detailParts
-            .map(
-                escapeHTML
-            )
-            .join(
-                " · "
-            );
-
+    const tags = (item.types || [])
+        .map(type => `
+            <span class="item-tag">
+                ${escapeHTML(typeLabel(type))}
+            </span>
+        `)
+        .join("");
 
     card.innerHTML = `
-
-        <div
-            class="clothing-image"
-        >
-
-            ${image}
-
+        <div class="clothing-image">
+            ${imageHTML}
 
             <button
-                class="heart ${
-                    item.favorite
-                        ? "active"
-                        : ""
-                }"
+                class="heart ${item.favorite ? "active" : ""}"
                 type="button"
                 data-action="favorite"
             >
-
-                ${
-                    item.favorite
-                        ? "♥"
-                        : "♡"
-                }
-
+                ${item.favorite ? "♥" : "♡"}
             </button>
-
         </div>
 
-
-        <div
-            class="clothing-info"
-        >
+        <div class="clothing-info">
 
             <div>
-
                 <h3>
-
                     ${escapeHTML(
-                        categoryLabel(
-                            item.category
-                        )
+                        categoryLabel(item.category)
                     ).toUpperCase()}
-
                 </h3>
 
-
                 <p>
-
                     ${
-                        details ||
-                        "No colour or fabric selected"
+                        details.length
+                            ? escapeHTML(details.join(" · "))
+                            : "No details selected"
                     }
-
                 </p>
 
-
-                <div
-                    class="item-tags"
-                >
-
+                <div class="item-tags">
                     ${tags}
-
                 </div>
-
             </div>
-
 
             <button
                 class="more"
                 type="button"
                 data-action="edit"
             >
-
                 •••
-
             </button>
-
         </div>
-
     `;
 
+    card.querySelector(".clothing-image")?.addEventListener("click", event => {
 
-    // Photo
+        if (event.target.closest(".heart")) {
+            return;
+        }
 
-    card
-        .querySelector(
-            ".clothing-image"
-        )
-        .addEventListener(
-            "click",
-            function(event) {
-
-                if (
-                    event.target.closest(
-                        ".heart"
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                openPhotoModal(
-                    item
-                );
-
-            }
-        );
-
-
-    // Favourite
+        openPhotoModal(item);
+    });
 
     card
-        .querySelector(
-            '[data-action="favorite"]'
-        )
-        ?.addEventListener(
-            "click",
-            function(event) {
+        .querySelector('[data-action="favorite"]')
+        ?.addEventListener("click", event => {
 
-                event.stopPropagation();
-
-
-                toggleFavorite(
-                    item.id
-                );
-
-            }
-        );
-
-
-    // Edit
+            event.stopPropagation();
+            toggleFavorite(item.id);
+        });
 
     card
-        .querySelector(
-            '[data-action="edit"]'
-        )
-        ?.addEventListener(
-            "click",
-            function(event) {
+        .querySelector('[data-action="edit"]')
+        ?.addEventListener("click", event => {
 
-                event.stopPropagation();
-
-
-                openEditModal(
-                    item
-                );
-
-            }
-        );
-
+            event.stopPropagation();
+            openEditModal(item);
+        });
 
     return card;
-
 }
 
 
-// =====================================================
-// PHOTO POPUP
-// =====================================================
+/* ITEM PHOTO MODAL */
 
 function openPhotoModal(item) {
 
     removeTemporaryModals();
 
+    const modal = document.createElement("div");
 
-    const modal =
-        document.createElement(
-            "div"
-        );
+    modal.className = "photo-modal active";
 
-
-    modal.className =
-        "photo-modal active";
-
-
-    const detailParts = [];
-
+    const details = [];
 
     if (item.color) {
-
-        detailParts.push(
-            colorLabel(
-                item.color
-            )
-        );
-
+        details.push(colorLabel(item.color));
     }
-
 
     if (item.fabric) {
-
-        detailParts.push(
-            fabricLabel(
-                item.fabric
-            )
-        );
-
+        details.push(fabricLabel(item.fabric));
     }
 
-
     modal.innerHTML = `
-
-        <div
-            class="photo-modal-content"
-        >
+        <div class="photo-modal-content">
 
             <button
                 class="close-modal"
-                type="button"
                 id="closePhotoViewer"
+                type="button"
             >
-
                 ×
-
             </button>
-
 
             ${
                 item.image
-
-                    ?
-
-                    `
-                    <img
-                        src="${item.image}"
-                        alt="${escapeHTML(
-                            categoryLabel(
-                                item.category
-                            )
-                        )}"
-                    >
-                    `
-
-                    :
-
-                    `
-                    <div
-                        class="placeholder"
-                        style="
-                            height:400px;
-                            background:#f3efeb;
-                        "
-                    >
-
-                        ${categoryEmoji(
-                            item.category
-                        )}
-
-                    </div>
-                    `
+                    ? `
+                        <img
+                            src="${item.image}"
+                            alt="${escapeHTML(
+                                categoryLabel(item.category)
+                            )}"
+                        >
+                      `
+                    : `
+                        <div
+                            class="placeholder"
+                            style="
+                                height:400px;
+                                background:#f2eeea;
+                            "
+                        >
+                            ${categoryEmoji(item.category)}
+                        </div>
+                      `
             }
 
-
-            <h2
-                style="
-                    margin-top:18px;
-                "
-            >
-
+            <h2 style="margin-top:18px;">
                 ${escapeHTML(
-                    categoryLabel(
-                        item.category
-                    )
+                    categoryLabel(item.category)
                 ).toUpperCase()}
-
             </h2>
 
-
-            <p
-                style="
-                    margin-top:6px;
-                    color:#999;
-                "
-            >
-
+            <p style="margin-top:7px;color:#8d857e;">
                 ${
-                    detailParts.length
-                        ? escapeHTML(
-                            detailParts.join(
-                                " · "
-                            )
-                        )
-                        : "No colour or fabric selected"
+                    details.length
+                        ? escapeHTML(details.join(" · "))
+                        : "No details selected"
                 }
-
             </p>
 
-
-            <div
-                class="item-tags"
-                style="
-                    margin-top:12px;
-                "
-            >
-
-                ${
-                    (item.types || [])
-                        .map(
-                            type =>
-                                `
-                                <span
-                                    class="item-tag"
-                                >
-
-                                    ${escapeHTML(
-                                        typeLabel(
-                                            type
-                                        )
-                                    )}
-
-                                </span>
-                                `
-                        )
-                        .join("")
-                }
-
+            <div class="item-tags">
+                ${(item.types || [])
+                    .map(type => `
+                        <span class="item-tag">
+                            ${escapeHTML(typeLabel(type))}
+                        </span>
+                    `)
+                    .join("")}
             </div>
 
         </div>
-
     `;
 
+    document.body.appendChild(modal);
 
-    document.body.appendChild(
-        modal
-    );
-
-
-    $("closePhotoViewer")
-        .addEventListener(
-            "click",
-            function() {
-
-                modal.remove();
-
-            }
-        );
-
-
-    modal.addEventListener(
+    $("closePhotoViewer")?.addEventListener(
         "click",
-        function(event) {
-
-            if (
-                event.target ===
-                modal
-            ) {
-
-                modal.remove();
-
-            }
-
-        }
+        () => modal.remove()
     );
 
+    modal.addEventListener("click", event => {
+        if (event.target === modal) {
+            modal.remove();
+        }
+    });
 }
 
 
-// =====================================================
-// EDIT ITEM
-// =====================================================
+/* EDIT ITEM */
 
 function openEditModal(item) {
 
     removeTemporaryModals();
 
+    const modal = document.createElement("div");
 
-    const modal =
-        document.createElement(
-            "div"
-        );
-
-
-    modal.className =
-        "edit-modal active";
-
+    modal.className = "edit-modal active";
 
     modal.innerHTML = `
-
-        <div
-            class="edit-modal-content"
-        >
+        <div class="edit-modal-content">
 
             <button
                 class="close-modal"
-                type="button"
                 id="closeEditModal"
+                type="button"
             >
-
                 ×
-
             </button>
 
+            <h2>Edit clothing</h2>
 
-            <h2>
-                Edit clothing
-            </h2>
-
-
-            <label
-                class="input-label"
-                style="
-                    margin-top:20px;
-                "
-            >
-
+            <label class="input-label">
                 Category
 
-                <select
-                    id="editItemCategory"
-                >
-
-                    <option value="top">
-                        Tops
-                    </option>
-
-                    <option value="bottom">
-                        Bottoms
-                    </option>
-
-                    <option value="dress">
-                        Dresses
-                    </option>
-
-                    <option value="shoes">
-                        Shoes
-                    </option>
-
-                    <option value="accessory">
-                        Accessories
-                    </option>
-
+                <select id="editItemCategory">
+                    <option value="top">Tops</option>
+                    <option value="bottom">Bottoms</option>
+                    <option value="dress">Dresses</option>
+                    <option value="shoes">Shoes</option>
+                    <option value="accessory">Accessories</option>
                 </select>
-
             </label>
 
-
-            <label
-                class="input-label"
-            >
-
+            <label class="input-label">
                 Colour
 
-                <select
-                    id="editItemColor"
-                >
-
-                    <option value="">
-                        Choose colour
-                    </option>
-
-                    ${
-                        COLOR_OPTIONS
-                            .map(
-                                function(
-                                    [
-                                        value,
-                                        label
-                                    ]
-                                ) {
-
-                                    return `
-
-                                        <option
-                                            value="${value}"
-                                        >
-
-                                            ${label}
-
-                                        </option>
-
-                                    `;
-
-                                }
-                            )
-                            .join("")
-                    }
-
+                <select id="editItemColor">
+                    <option value="">Choose colour</option>
+                    ${COLOR_OPTIONS.map(option => `
+                        <option value="${option[0]}">
+                            ${option[1]}
+                        </option>
+                    `).join("")}
                 </select>
-
             </label>
 
-
-            <label
-                class="input-label"
-            >
-
+            <label class="input-label">
                 Fabric
 
-                <select
-                    id="editItemFabric"
-                >
-
-                    <option value="">
-                        No fabric selected
-                    </option>
-
-                    ${
-                        FABRIC_OPTIONS
-                            .map(
-                                function(
-                                    [
-                                        value,
-                                        label
-                                    ]
-                                ) {
-
-                                    return `
-
-                                        <option
-                                            value="${value}"
-                                        >
-
-                                            ${label}
-
-                                        </option>
-
-                                    `;
-
-                                }
-                            )
-                            .join("")
-                    }
-
+                <select id="editItemFabric">
+                    <option value="">No fabric selected</option>
+                    ${FABRIC_OPTIONS.map(option => `
+                        <option value="${option[0]}">
+                            ${option[1]}
+                        </option>
+                    `).join("")}
                 </select>
-
             </label>
 
-
-            <div
-                class="input-label"
-            >
-
-                Style / Type
+            <div class="input-label">
+                Clothing type
 
                 <div
                     class="tag-picker"
                     id="editTypePicker"
                 ></div>
-
             </div>
 
-
-            <div
-                class="item-action-row"
-            >
+            <div class="item-action-row">
 
                 <button
                     class="edit-save-button"
                     id="saveEditButton"
                     type="button"
                 >
-
                     Save changes
-
                 </button>
-
 
                 <button
                     class="delete-item-button"
                     id="deleteEditButton"
                     type="button"
                 >
-
                     Delete item
-
                 </button>
 
             </div>
-
         </div>
-
     `;
 
+    document.body.appendChild(modal);
 
-    document.body.appendChild(
-        modal
+    $("editItemCategory").value = item.category;
+    $("editItemColor").value = item.color || "";
+    $("editItemFabric").value = item.fabric || "";
+
+    TYPE_OPTIONS.forEach(([value, label]) => {
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className = "type-option";
+        button.dataset.type = value;
+        button.textContent = label;
+
+        if ((item.types || []).includes(value)) {
+            button.classList.add("selected");
+        }
+
+        button.addEventListener("click", () => {
+            button.classList.toggle("selected");
+        });
+
+        $("editTypePicker")?.appendChild(button);
+    });
+
+    $("closeEditModal")?.addEventListener(
+        "click",
+        () => modal.remove()
     );
 
+    $("saveEditButton")?.addEventListener(
+        "click",
+        () => {
 
-    $("editItemCategory").value =
-        item.category;
+            const wardrobe = getWardrobe();
 
-
-    $("editItemColor").value =
-        item.color ||
-        "";
-
-
-    $("editItemFabric").value =
-        item.fabric ||
-        "";
-
-
-    TYPE_OPTIONS.forEach(
-        function(
-            [
-                value,
-                label
-            ]
-        ) {
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.type =
-                "button";
-
-
-            button.className =
-                "type-option";
-
-
-            button.dataset.type =
-                value;
-
-
-            button.textContent =
-                label;
-
-
-            if (
-                (item.types || [])
-                    .includes(
-                        value
-                    )
-            ) {
-
-                button.classList.add(
-                    "selected"
-                );
-
-            }
-
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    button.classList.toggle(
-                        "selected"
-                    );
-
-                }
+            const existing = wardrobe.find(
+                current => current.id === item.id
             );
 
+            if (!existing) {
+                return;
+            }
 
-            $("editTypePicker")
-                .appendChild(
-                    button
+            existing.category =
+                $("editItemCategory").value;
+
+            existing.color =
+                $("editItemColor").value;
+
+            existing.fabric =
+                $("editItemFabric").value;
+
+            existing.types =
+                [...$("editTypePicker").querySelectorAll(
+                    ".type-option.selected"
+                )].map(
+                    button => button.dataset.type
                 );
 
+            saveWardrobe(wardrobe);
+
+            modal.remove();
+
+            renderWardrobe();
         }
     );
 
+    $("deleteEditButton")?.addEventListener(
+        "click",
+        () => {
 
-    // Close
+            modal.remove();
 
-    $("closeEditModal")
-        .addEventListener(
-            "click",
-            function() {
-
-                modal.remove();
-
-            }
-        );
-
-
-    // Save
-
-    $("saveEditButton")
-        .addEventListener(
-            "click",
-            function() {
-
-                const wardrobe =
-                    getWardrobe();
-
-
-                const existing =
-                    wardrobe.find(
-                        current =>
-                            current.id ===
-                            item.id
-                    );
-
-
-                if (!existing) {
-
-                    return;
-
-                }
-
-
-                existing.category =
-                    $("editItemCategory")
-                        .value;
-
-
-                existing.color =
-                    $("editItemColor")
-                        .value;
-
-
-                existing.fabric =
-                    $("editItemFabric")
-                        .value;
-
-
-                existing.types =
-                    [
-                        ...$("editTypePicker")
-                            .querySelectorAll(
-                                ".type-option.selected"
-                            )
-                    ]
-                        .map(
-                            button =>
-                                button.dataset.type
-                        );
-
-
-                saveWardrobe(
-                    wardrobe
-                );
-
-
-                modal.remove();
-
-
-                renderWardrobe();
-
-            }
-        );
-
-
-    // Delete
-
-    $("deleteEditButton")
-        .addEventListener(
-            "click",
-            function() {
-
-                modal.remove();
-
-
-                confirmDeleteItem(
-                    item.id
-                );
-
-            }
-        );
-
+            confirmDeleteItem(item.id);
+        }
+    );
 }
 
 
-// =====================================================
-// DELETE ITEM CONFIRMATION
-// =====================================================
+/* DELETE ITEM */
 
 function confirmDeleteItem(id) {
 
-    const wardrobe =
-        getWardrobe();
+    const modal = document.createElement("div");
 
-
-    const item =
-        wardrobe.find(
-            current =>
-                current.id ===
-                id
-        );
-
-
-    if (!item) {
-
-        return;
-
-    }
-
-
-    const modal =
-        document.createElement(
-            "div"
-        );
-
-
-    modal.className =
-        "delete-modal active";
-
+    modal.className = "delete-modal active";
 
     modal.innerHTML = `
+        <div class="delete-modal-content">
 
-        <div
-            class="delete-modal-content"
-        >
-
-            <h2>
-                Delete item?
-            </h2>
-
+            <h2>Delete item?</h2>
 
             <p
                 style="
                     margin-top:10px;
-                    color:#888;
+                    color:#8d857e;
                     line-height:1.5;
                 "
             >
-
-                Are you sure you want to delete
-                this item from your wardrobe?
-
+                Are you sure you want to delete this item?
             </p>
 
-
-            <div
-                class="item-action-row"
-            >
+            <div class="item-action-row">
 
                 <button
                     class="delete-item-button"
                     id="confirmDelete"
                     type="button"
                 >
-
                     Yes, delete
-
                 </button>
-
 
                 <button
                     class="cancel-button"
                     id="cancelDelete"
                     type="button"
                 >
-
                     Cancel
-
                 </button>
 
             </div>
-
         </div>
-
     `;
 
+    document.body.appendChild(modal);
 
-    document.body.appendChild(
-        modal
+    $("cancelDelete")?.addEventListener(
+        "click",
+        () => modal.remove()
     );
 
+    $("confirmDelete")?.addEventListener(
+        "click",
+        () => {
 
-    $("cancelDelete")
-        .addEventListener(
-            "click",
-            function() {
+            saveWardrobe(
+                getWardrobe().filter(
+                    item => item.id !== id
+                )
+            );
 
-                modal.remove();
+            modal.remove();
 
-            }
-        );
-
-
-    $("confirmDelete")
-        .addEventListener(
-            "click",
-            function() {
-
-                saveWardrobe(
-
-                    wardrobe.filter(
-                        current =>
-                            current.id !==
-                            id
-                    )
-
-                );
-
-
-                modal.remove();
-
-
-                renderWardrobe();
-
-            }
-        );
-
+            renderWardrobe();
+        }
+    );
 }
 
 
-// =====================================================
-// FAVORITES
-// =====================================================
+/* FAVORITES */
 
 function toggleFavorite(id) {
 
-    const wardrobe =
-        getWardrobe();
+    const wardrobe = getWardrobe();
 
-
-    const item =
-        wardrobe.find(
-            current =>
-                current.id ===
-                id
-        );
-
+    const item = wardrobe.find(
+        current => current.id === id
+    );
 
     if (!item) {
-
         return;
-
     }
 
+    item.favorite = !item.favorite;
 
-    item.favorite =
-        !item.favorite;
+    saveWardrobe(wardrobe);
 
-
-    saveWardrobe(
-        wardrobe
-    );
-
-
-    if (
-        currentPage ===
-        "favorites"
-    ) {
-
-        showFavorites();
-
+    if (currentPage === "favorites") {
+        renderFavoritesPage();
     } else {
-
         renderWardrobe();
-
     }
-
 }
 
 
-// =====================================================
-// OUTFITS PAGE
-// =====================================================
+/* 
+   OUTFITS PAGE
+   Uses:
+   .closet-filter-panel
+   .closet-filter-row
+   .closet-filter-label
 
-function showOutfits() {
+   Filters:
+   - Fabric
+   - Colour
+   - Category
 
-    currentPage =
-        "outfits";
+   No search.
+   No type filter.
+ */
 
+function renderOutfitsPage() {
 
-    activateNav(
-        $("outfitsNav")
-    );
-
-
-    $("wardrobePage")
-        ?.classList
-        .add(
-            "hidden"
-        );
-
-
-    $("dynamicPage")
-        ?.classList
-        .remove(
-            "hidden"
-        );
-
-
-    const dynamic =
-        $("dynamicPage");
-
+    const dynamic = $("dynamicPage");
 
     if (!dynamic) {
-
         return;
-
     }
 
-
     dynamic.innerHTML = `
+        <div class="outfits-header">
 
-        <div
-            class="dynamic-page-header"
-        >
+            <h2>Outfits</h2>
 
-            <p
-                class="hero-label"
+            <button
+                class="style-button"
+                id="createOutfitButton"
+                type="button"
             >
-
-                YOUR SAVED LOOKS
-
-            </p>
-
-
-            <h2>
-                My outfits
-            </h2>
-
-
-            <p>
-                Your saved outfits live here.
-            </p>
+                + Create outfit
+            </button>
 
         </div>
-
-
-        <button
-            class="style-button"
-            id="createOutfitButton"
-            type="button"
-        >
-
-            ＋ Create outfit
-
-        </button>
-
-
-        <div
-            id="savedOutfits"
-        ></div>
-
-    `;
-
-
-    $("createOutfitButton")
-        ?.addEventListener(
-            "click",
-            showOutfitBuilder
-        );
-
-
-    renderSavedOutfits();
-
-}
-
-
-// =====================================================
-// CREATE OUTFIT
-// =====================================================
-
-function showOutfitBuilder() {
-
-    currentPage =
-        "outfit-builder";
-
-
-    selectedOutfitItems =
-        [];
-
-
-    $("wardrobePage")
-        ?.classList
-        .add(
-            "hidden"
-        );
-
-
-    $("dynamicPage")
-        ?.classList
-        .remove(
-            "hidden"
-        );
-
-
-    const dynamic =
-        $("dynamicPage");
-
-
-    dynamic.innerHTML = `
-
-        <div
-            class="dynamic-page-header"
-        >
-
-            <p
-                class="hero-label"
-            >
-
-                BUILD YOUR LOOK
-
-            </p>
-
-
-            <h2>
-                Create an outfit
-            </h2>
-
-
-            <p>
-                Filter your wardrobe and swipe
-                through your clothes.
-            </p>
-
-        </div>
-
-
-        <!-- FILTERS -->
 
         <div
             class="closet-filter-panel"
+            id="savedOutfitFilterPanel"
         >
 
-            <div
-                class="closet-filter-row"
-            >
+            <div class="closet-filter-label">
+                Filter outfits
+            </div>
 
-                <div
-                    style="
-                        flex:2;
-                        min-width:180px;
-                    "
-                >
+            <div class="closet-filter-row">
 
-                    <span
-                        class="closet-filter-label"
-                    >
-                        Search
-                    </span>
+                <div>
+                    <label class="closet-filter-label">
+                        Fabric
+                    </label>
 
+                    <select id="savedOutfitFabricFilter">
+                        <option value="all">
+                            All fabrics
+                        </option>
 
-                    <input
-                        id="outfitSearch"
-                        type="text"
-                        placeholder="Black, denim, summer..."
-                    >
+                        ${FABRIC_OPTIONS.map(option => `
+                            <option value="${option[0]}">
+                                ${option[1]}
+                            </option>
+                        `).join("")}
 
+                    </select>
                 </div>
 
+                <div>
+                    <label class="closet-filter-label">
+                        Colour
+                    </label>
+
+                    <select id="savedOutfitColorFilter">
+                        <option value="all">
+                            All colours
+                        </option>
+
+                        ${COLOR_OPTIONS.map(option => `
+                            <option value="${option[0]}">
+                                ${option[1]}
+                            </option>
+                        `).join("")}
+
+                    </select>
+                </div>
+
+                <div>
+                    <label class="closet-filter-label">
+                        Category
+                    </label>
+
+                    <select id="savedOutfitCategoryFilter">
+
+                        <option value="all">
+                            All categories
+                        </option>
+
+                        <option value="top">
+                            Contains a top
+                        </option>
+
+                        <option value="bottom">
+                            Contains bottoms
+                        </option>
+
+                        <option value="dress">
+                            Contains a dress
+                        </option>
+
+                        <option value="shoes">
+                            Contains shoes
+                        </option>
+
+                        <option value="accessory">
+                            Contains accessories
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="savedOutfits"></div>
+    `;
+
+    $("createOutfitButton")?.addEventListener(
+        "click",
+        showOutfitBuilder
+    );
+
+    $("savedOutfitFabricFilter")?.addEventListener(
+        "change",
+        renderSavedOutfits
+    );
+
+    $("savedOutfitColorFilter")?.addEventListener(
+        "change",
+        renderSavedOutfits
+    );
+
+    $("savedOutfitCategoryFilter")?.addEventListener(
+        "change",
+        renderSavedOutfits
+    );
+
+    renderSavedOutfits();
+}
+
+function savedOutfitMatchesFilters(outfit) {
+
+    const fabric =
+        $("savedOutfitFabricFilter")?.value || "all";
+
+    const color =
+        $("savedOutfitColorFilter")?.value || "all";
+
+    const category =
+        $("savedOutfitCategoryFilter")?.value || "all";
+
+    if (
+        fabric !== "all" &&
+        !outfit.items.some(
+            item => item.fabric === fabric
+        )
+    ) {
+        return false;
+    }
+
+    if (
+        color !== "all" &&
+        !outfit.items.some(
+            item => item.color === color
+        )
+    ) {
+        return false;
+    }
+
+    if (
+        category !== "all" &&
+        !outfit.items.some(
+            item => item.category === category
+        )
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+function renderSavedOutfits() {
+
+    const container = $("savedOutfits");
+
+    if (!container) {
+        return;
+    }
+
+    const outfits =
+        getOutfits().filter(
+            savedOutfitMatchesFilters
+        );
+
+    container.innerHTML = "";
+
+    if (!outfits.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+
+                <div style="font-size:42px;">
+                    ✨
+                </div>
+
+                <h3>
+                    No outfits found
+                </h3>
+
+                <p>
+                    Try another filter or create a new outfit.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    outfits.forEach(outfit => {
+
+        const card =
+            createSavedOutfitCard(outfit);
+
+        container.appendChild(card);
+    });
+}
+
+function createSavedOutfitCard(outfit) {
+
+    const card =
+        document.createElement("article");
+
+    card.className =
+        "saved-outfit-card";
+
+    const imageItems =
+        outfit.items
+            .filter(item => item.image)
+            .slice(0, 4);
+
+    const imageHTML =
+        imageItems.length
+            ? imageItems
+                .map(item => `
+                    <img
+                        src="${item.image}"
+                        alt="${escapeHTML(
+                            categoryLabel(item.category)
+                        )}"
+                    >
+                `)
+                .join("")
+            : `
+                <div
+                    style="
+                        width:100%;
+                        height:100%;
+                        grid-column:1 / -1;
+                        grid-row:1 / -1;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        font-size:42px;
+                    "
+                >
+                    ✨
+                </div>
+            `;
+
+    card.innerHTML = `
+        <div class="saved-outfit-thumb-row">
+            ${imageHTML}
+        </div>
+
+        <h3>
+            ${escapeHTML(outfit.name)}
+        </h3>
+
+        <button
+            class="delete-outfit"
+            type="button"
+        >
+            Delete
+        </button>
+    `;
+
+    card.addEventListener("click", event => {
+
+        if (
+            event.target.closest(".delete-outfit")
+        ) {
+            return;
+        }
+
+        showSavedOutfit(outfit.id);
+    });
+
+    card
+        .querySelector(".delete-outfit")
+        ?.addEventListener("click", event => {
+
+            event.stopPropagation();
+
+            deleteOutfit(outfit.id);
+        });
+
+    return card;
+}
+
+
+/* 
+   CREATE OUTFIT PAGE
+   Filters:
+   - Category
+   - Fabric
+   - Colour
+
+   No search.
+   No type filter.
+ */
+
+function renderCreateOutfitPage() {
+
+    const dynamic = $("dynamicPage");
+
+    if (!dynamic) {
+        return;
+    }
+
+    dynamic.innerHTML = `
+        <div class="outfits-header">
+
+            <h2>
+                Create outfit
+            </h2>
+
+            <button
+                class="secondary-button"
+                id="backToOutfitsButton"
+                type="button"
+            >
+                ← Back
+            </button>
+
+        </div>
+
+        <div
+            class="closet-filter-panel"
+            id="builderFilterPanel"
+        >
+
+            <div class="closet-filter-row">
 
                 <div>
 
-                    <span
-                        class="closet-filter-label"
-                    >
+                    <label class="closet-filter-label">
                         Category
-                    </span>
+                    </label>
 
-
-                    <select
-                        id="outfitCategoryFilter"
-                    >
+                    <select id="builderCategoryFilter">
 
                         <option value="all">
-                            All
+                            All categories
                         </option>
 
                         <option value="top">
@@ -2523,1003 +1395,479 @@ function showOutfitBuilder() {
 
                 </div>
 
-
                 <div>
 
-                    <span
-                        class="closet-filter-label"
-                    >
+                    <label class="closet-filter-label">
                         Fabric
-                    </span>
+                    </label>
 
-
-                    <select
-                        id="outfitFabricFilter"
-                    >
+                    <select id="builderFabricFilter">
 
                         <option value="all">
                             All fabrics
                         </option>
 
-                        ${
-                            FABRIC_OPTIONS
-                                .map(
-                                    function(
-                                        [
-                                            value,
-                                            label
-                                        ]
-                                    ) {
-
-                                        return `
-
-                                            <option
-                                                value="${value}"
-                                            >
-
-                                                ${label}
-
-                                            </option>
-
-                                        `;
-
-                                    }
-                                )
-                                .join("")
-                        }
+                        ${FABRIC_OPTIONS.map(option => `
+                            <option value="${option[0]}">
+                                ${option[1]}
+                            </option>
+                        `).join("")}
 
                     </select>
 
                 </div>
 
-
                 <div>
 
-                    <span
-                        class="closet-filter-label"
-                    >
-                        Type
-                    </span>
-
-
-                    <select
-                        id="outfitTypeFilter"
-                    >
-
-                        <option value="all">
-                            All types
-                        </option>
-
-                        ${
-                            TYPE_OPTIONS
-                                .map(
-                                    function(
-                                        [
-                                            value,
-                                            label
-                                        ]
-                                    ) {
-
-                                        return `
-
-                                            <option
-                                                value="${value}"
-                                            >
-
-                                                ${label}
-
-                                            </option>
-
-                                        `;
-
-                                    }
-                                )
-                                .join("")
-                        }
-
-                    </select>
-
-                </div>
-
-
-                <div>
-
-                    <span
-                        class="closet-filter-label"
-                    >
+                    <label class="closet-filter-label">
                         Colour
-                    </span>
+                    </label>
 
-
-                    <select
-                        id="outfitColorFilter"
-                    >
+                    <select id="builderColorFilter">
 
                         <option value="all">
                             All colours
                         </option>
 
-                        ${
-                            COLOR_OPTIONS
-                                .map(
-                                    function(
-                                        [
-                                            value,
-                                            label
-                                        ]
-                                    ) {
-
-                                        return `
-
-                                            <option
-                                                value="${value}"
-                                            >
-
-                                                ${label}
-
-                                            </option>
-
-                                        `;
-
-                                    }
-                                )
-                                .join("")
-                        }
+                        ${COLOR_OPTIONS.map(option => `
+                            <option value="${option[0]}">
+                                ${option[1]}
+                            </option>
+                        `).join("")}
 
                     </select>
 
                 </div>
 
             </div>
-
         </div>
-
-
-        <!-- BUILDER -->
 
         <div
-            class="outfit-builder"
-        >
+            id="outfitCategories"
+            class="outfit-categories"
+        ></div>
 
+        <div class="outfit-stage">
 
-            <div
-                id="outfitCategories"
-            ></div>
-
-
-            <!-- PREVIEW -->
-
-            <div
-                class="outfit-stage"
-            >
-
-                <div
-                    class="outfit-stage-title"
-                >
-
-                    Outfit preview
-
-                </div>
-
-
-                <div
-                    class="outfit-stage-layout"
-                >
-
-                    <div
-                        id="outfitStageLeft"
-                    ></div>
-
-
-                    <div
-                        class="outfit-stage-center"
-                        id="outfitStageCenter"
-                    ></div>
-
-
-                    <div
-                        class="outfit-stage-accessories"
-                        id="outfitStageAccessories"
-                    ></div>
-
-                </div>
-
+            <div class="outfit-stage-title">
+                Outfit preview
             </div>
 
+            <div class="outfit-stage-layout">
 
-            <!-- NAME -->
+                <div id="outfitStageLeft"></div>
 
-            <div
-                class="outfit-name-bottom"
-            >
+                <div
+                    id="outfitStageCenter"
+                    class="outfit-stage-center"
+                ></div>
 
-                <label
-                    class="input-label"
-                >
-
-                    Outfit name
-
-                    <input
-                        type="text"
-                        id="outfitName"
-                        placeholder="e.g. Summer dinner"
-                    >
-
-                </label>
+                <div
+                    id="outfitStageAccessories"
+                    class="outfit-stage-accessories"
+                ></div>
 
             </div>
+        </div>
 
+        <div class="outfit-name-bottom">
 
-            <button
-                class="save-item"
-                id="saveOutfitButton"
-                type="button"
-                style="
-                    margin-top:22px;
-                "
-            >
+            <label class="input-label">
 
-                Save outfit
+                Outfit name
 
-            </button>
+                <input
+                    type="text"
+                    id="outfitName"
+                    placeholder="e.g. Summer dinner"
+                >
 
-
-            <button
-                class="delete-outfit"
-                id="cancelOutfitButton"
-                type="button"
-            >
-
-                Cancel
-
-            </button>
+            </label>
 
         </div>
 
+        <button
+            class="save-item"
+            id="saveOutfitButton"
+            type="button"
+            style="margin-top:20px;"
+        >
+            Save outfit
+        </button>
     `;
 
+    $("backToOutfitsButton")?.addEventListener(
+        "click",
+        showOutfits
+    );
 
-    $("saveOutfitButton")
-        .addEventListener(
-            "click",
-            saveCurrentOutfit
-        );
+    $("builderCategoryFilter")?.addEventListener(
+        "change",
+        renderOutfitRows
+    );
 
+    $("builderFabricFilter")?.addEventListener(
+        "change",
+        renderOutfitRows
+    );
 
-    $("cancelOutfitButton")
-        .addEventListener(
-            "click",
-            showOutfits
-        );
+    $("builderColorFilter")?.addEventListener(
+        "change",
+        renderOutfitRows
+    );
 
-
-    $("outfitSearch")
-        .addEventListener(
-            "input",
-            renderOutfitRows
-        );
-
-
-    $("outfitCategoryFilter")
-        .addEventListener(
-            "change",
-            renderOutfitRows
-        );
-
-
-    $("outfitFabricFilter")
-        .addEventListener(
-            "change",
-            renderOutfitRows
-        );
-
-
-    $("outfitTypeFilter")
-        .addEventListener(
-            "change",
-            renderOutfitRows
-        );
-
-
-    $("outfitColorFilter")
-        .addEventListener(
-            "change",
-            renderOutfitRows
-        );
-
+    $("saveOutfitButton")?.addEventListener(
+        "click",
+        saveCurrentOutfit
+    );
 
     renderOutfitRows();
-
     updateOutfitPreview();
-
 }
 
-
-// =====================================================
-// OUTFIT FILTER
-// =====================================================
-
-function outfitMatchesFilter(item) {
-
-    const search =
-        $("outfitSearch")
-            ?.value
-            .trim()
-            .toLowerCase() ||
-        "";
-
+function builderItemMatches(item) {
 
     const category =
-        $("outfitCategoryFilter")
-            ?.value ||
-        "all";
-
+        $("builderCategoryFilter")?.value || "all";
 
     const fabric =
-        $("outfitFabricFilter")
-            ?.value ||
-        "all";
-
-
-    const type =
-        $("outfitTypeFilter")
-            ?.value ||
-        "all";
-
+        $("builderFabricFilter")?.value || "all";
 
     const color =
-        $("outfitColorFilter")
-            ?.value ||
-        "all";
-
+        $("builderColorFilter")?.value || "all";
 
     if (
-        category !==
-        "all" &&
-        item.category !==
-        category
+        category !== "all" &&
+        item.category !== category
     ) {
-
         return false;
-
     }
-
-
-    // Fabric is optional.
-    // "all" also includes pieces
-    // that have no fabric selected.
 
     if (
-        fabric !==
-        "all" &&
-        item.fabric !==
-        fabric
+        fabric !== "all" &&
+        item.fabric !== fabric
     ) {
-
         return false;
-
     }
-
 
     if (
-        type !==
-        "all" &&
-        !(item.types || [])
-            .includes(
-                type
-            )
+        color !== "all" &&
+        item.color !== color
     ) {
-
         return false;
-
     }
-
-
-    if (
-        color !==
-        "all" &&
-        item.color !==
-        color
-    ) {
-
-        return false;
-
-    }
-
-
-    if (search) {
-
-        const searchable = [
-
-            categoryLabel(
-                item.category
-            ),
-
-            colorLabel(
-                item.color
-            ),
-
-            fabricLabel(
-                item.fabric
-            ),
-
-            ...(item.types || [])
-                .map(typeLabel)
-
-        ]
-            .join(" ")
-            .toLowerCase();
-
-
-        if (
-            !searchable.includes(
-                search
-            )
-        ) {
-
-            return false;
-
-        }
-
-    }
-
 
     return true;
-
 }
-
-
-// =====================================================
-// OUTFIT ROWS
-// =====================================================
 
 function renderOutfitRows() {
 
     const container =
         $("outfitCategories");
 
-
     if (!container) {
-
         return;
-
     }
 
-
     const wardrobe =
-        getWardrobe();
-
-
-    const filtered =
-        wardrobe.filter(
-            outfitMatchesFilter
+        getWardrobe().filter(
+            builderItemMatches
         );
 
+    container.innerHTML = "";
 
-    container.innerHTML =
-        "";
+    const sections = [
+        {
+            key: "top",
+            name: "Tops",
+            multiple: false
+        },
 
+        {
+            key: "bottom",
+            name: "Bottoms",
+            multiple: false
+        },
 
-    if (
-        !filtered.length
-    ) {
+        {
+            key: "dress",
+            name: "Dresses",
+            multiple: false
+        },
 
-        container.innerHTML = `
+        {
+            key: "shoes",
+            name: "Shoes",
+            multiple: false
+        },
 
-            <div
-                class="empty-state"
-            >
+        {
+            key: "accessory",
+            name: "Accessories",
+            multiple: true
+        }
+    ];
 
-                <div
-                    style="
-                        font-size:45px;
-                    "
-                >
+    sections.forEach(sectionData => {
 
-                    🔎
+        const items =
+            wardrobe.filter(
+                item =>
+                    item.category === sectionData.key
+            );
 
-                </div>
+        if (!items.length) {
+            return;
+        }
 
+        const section =
+            document.createElement("section");
+
+        section.className =
+            "outfit-section";
+
+        section.innerHTML = `
+            <div class="outfit-section-header">
 
                 <h3>
-                    No clothes match
+                    ${sectionData.name}
                 </h3>
 
-
-                <p>
-                    Try a different filter.
-                </p>
+                <span>
+                    ${
+                        sectionData.multiple
+                            ? "Choose multiple"
+                            : "Choose one"
+                    }
+                </span>
 
             </div>
 
+            <div class="outfit-carousel">
+
+                <button
+                    class="outfit-carousel-button outfit-prev"
+                    type="button"
+                >
+                    ‹
+                </button>
+
+                <div class="swipe-row"></div>
+
+                <button
+                    class="outfit-carousel-button outfit-next"
+                    type="button"
+                >
+                    ›
+                </button>
+
+            </div>
         `;
 
+        const row =
+            section.querySelector(".swipe-row");
 
-        updateOutfitPreview();
+        items.forEach(item => {
+            row.appendChild(
+                createOutfitItem(item)
+            );
+        });
 
+        const previous =
+            section.querySelector(".outfit-prev");
 
-        return;
+        const next =
+            section.querySelector(".outfit-next");
 
+        container.appendChild(section);
+
+        setupCarousel(
+            row,
+            previous,
+            next
+        );
+    });
+
+    selectedOutfitItems.forEach(selected => {
+
+        container
+            .querySelector(
+                `.outfit-item[data-id="${selected.id}"]`
+            )
+            ?.classList.add("selected");
+    });
+
+    if (!wardrobe.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+
+                <div style="font-size:42px;">
+                    🔎
+                </div>
+
+                <h3>
+                    No clothing matches
+                </h3>
+
+                <p>
+                    Try another category, fabric or colour.
+                </p>
+
+            </div>
+        `;
     }
-
-
-    const categories = [
-
-        {
-            key:
-                "top",
-
-            name:
-                "Tops",
-
-            multiple:
-                false
-
-        },
-
-        {
-            key:
-                "bottom",
-
-            name:
-                "Bottoms",
-
-            multiple:
-                false
-
-        },
-
-        {
-            key:
-                "dress",
-
-            name:
-                "Dresses",
-
-            multiple:
-                false
-
-        },
-
-        {
-            key:
-                "shoes",
-
-            name:
-                "Shoes",
-
-            multiple:
-                false
-
-        },
-
-        {
-            key:
-                "accessory",
-
-            name:
-                "Accessories",
-
-            multiple:
-                true
-
-        }
-
-    ];
-
-
-    categories.forEach(
-        function(category) {
-
-            const items =
-                filtered.filter(
-                    item =>
-                        item.category ===
-                        category.key
-                );
-
-
-            if (
-                !items.length
-            ) {
-
-                return;
-
-            }
-
-
-            const section =
-                document.createElement(
-                    "section"
-                );
-
-
-            section.className =
-                "outfit-section";
-
-
-            section.innerHTML = `
-
-                <div
-                    class="outfit-section-header"
-                >
-
-                    <h3>
-                        ${category.name}
-                    </h3>
-
-
-                    <span>
-
-                        ${
-                            category.multiple
-                                ? "Choose multiple"
-                                : "Choose one"
-                        }
-
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="outfit-carousel"
-                >
-
-                    <button
-                        type="button"
-                        class="outfit-carousel-button outfit-prev"
-                    >
-
-                        ‹
-
-                    </button>
-
-
-                    <div
-                        class="swipe-row"
-                    ></div>
-
-
-                    <button
-                        type="button"
-                        class="outfit-carousel-button outfit-next"
-                    >
-
-                        ›
-
-                    </button>
-
-                </div>
-
-            `;
-
-
-            const row =
-                section.querySelector(
-                    ".swipe-row"
-                );
-
-
-            const previous =
-                section.querySelector(
-                    ".outfit-prev"
-                );
-
-
-            const next =
-                section.querySelector(
-                    ".outfit-next"
-                );
-
-
-            items.forEach(
-                function(item) {
-
-                    row.appendChild(
-                        createOutfitItem(
-                            item,
-                            category.multiple
-                        )
-                    );
-
-                }
-            );
-
-
-            container.appendChild(
-                section
-            );
-
-
-            setupCarouselButtons(
-                row,
-                previous,
-                next
-            );
-
-        }
-    );
-
-
-    selectedOutfitItems.forEach(
-        function(selected) {
-
-            const card =
-                container.querySelector(
-                    `.outfit-item[data-id="${selected.id}"]`
-                );
-
-
-            card?.classList.add(
-                "selected"
-            );
-
-        }
-    );
-
 }
 
+function createOutfitItem(item) {
 
-// =====================================================
-// CAROUSEL BUTTONS
-// =====================================================
+    const card =
+        document.createElement("div");
 
-function setupCarouselButtons(
+    card.className =
+        "outfit-item";
+
+    card.dataset.id =
+        item.id;
+
+    const imageHTML = item.image
+        ? `
+            <img
+                src="${item.image}"
+                alt="${escapeHTML(
+                    categoryLabel(item.category)
+                )}"
+            >
+          `
+        : `
+            <div class="placeholder">
+                ${categoryEmoji(item.category)}
+            </div>
+          `;
+
+    const details = [];
+
+    if (item.color) {
+        details.push(
+            colorLabel(item.color)
+        );
+    }
+
+    if (item.fabric) {
+        details.push(
+            fabricLabel(item.fabric)
+        );
+    }
+
+    card.innerHTML = `
+        <div class="outfit-item-image">
+            ${imageHTML}
+        </div>
+
+        <div class="outfit-item-info">
+
+            <strong>
+                ${escapeHTML(
+                    categoryLabel(item.category)
+                ).toUpperCase()}
+            </strong>
+
+            <span>
+                ${
+                    details.length
+                        ? escapeHTML(
+                            details.join(" · ")
+                        )
+                        : ""
+                }
+            </span>
+
+        </div>
+    `;
+
+    card.addEventListener(
+        "click",
+        () => {
+
+            selectOutfitItem(
+                card,
+                item
+            );
+
+        }
+    );
+
+    return card;
+}
+
+function setupCarousel(
     row,
-    previousButton,
-    nextButton
+    previous,
+    next
 ) {
 
     function updateButtons() {
 
-        const maxScroll =
+        const max =
             row.scrollWidth -
             row.clientWidth;
 
-
-        previousButton.disabled =
+        previous.disabled =
             row.scrollLeft <= 5;
 
-
-        nextButton.disabled =
-            row.scrollLeft >=
-            maxScroll - 5;
-
+        next.disabled =
+            row.scrollLeft >= max - 5;
     }
 
-
-    previousButton.addEventListener(
+    previous.addEventListener(
         "click",
-        function() {
+        () => {
 
             row.scrollBy({
 
                 left:
-                    -(
-                        row.clientWidth *
-                        0.8
-                    ),
+                    -(row.clientWidth * 0.8),
 
                 behavior:
                     "smooth"
-
             });
-
         }
     );
 
-
-    nextButton.addEventListener(
+    next.addEventListener(
         "click",
-        function() {
+        () => {
 
             row.scrollBy({
 
                 left:
-                    row.clientWidth *
-                    0.8,
+                    row.clientWidth * 0.8,
 
                 behavior:
                     "smooth"
-
             });
-
         }
     );
-
 
     row.addEventListener(
         "scroll",
         updateButtons
     );
 
-
     setTimeout(
         updateButtons,
         100
     );
-
 }
 
 
-// =====================================================
-// OUTFIT ITEM
-// =====================================================
-
-function createOutfitItem(
-    item,
-    multiple
-) {
-
-    const card =
-        document.createElement(
-            "div"
-        );
-
-
-    card.className =
-        "outfit-item";
-
-
-    card.dataset.id =
-        item.id;
-
-
-    const image =
-        item.image
-
-            ?
-
-            `
-            <img
-                src="${item.image}"
-                alt="${escapeHTML(
-                    categoryLabel(
-                        item.category
-                    )
-                )}"
-            >
-            `
-
-            :
-
-            `
-            <div
-                class="placeholder"
-            >
-
-                ${categoryEmoji(
-                    item.category
-                )}
-
-            </div>
-
-            `;
-
-
-    const tags =
-        (item.types || [])
-            .slice(
-                0,
-                3
-            )
-            .map(
-                function(type) {
-
-                    return `
-
-                        <span
-                            class="item-tag"
-                        >
-
-                            ${escapeHTML(
-                                typeLabel(
-                                    type
-                                )
-                            )}
-
-                        </span>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-
-    card.innerHTML = `
-
-        <div
-            class="outfit-item-image"
-        >
-
-            ${image}
-
-        </div>
-
-
-        <div
-            class="outfit-item-info"
-        >
-
-            <strong>
-
-                ${escapeHTML(
-                    categoryLabel(
-                        item.category
-                    )
-                ).toUpperCase()}
-
-            </strong>
-
-
-            <span>
-
-                ${
-                    item.color
-                        ? escapeHTML(
-                            colorLabel(
-                                item.color
-                            )
-                        )
-                        : "No colour"
-                }
-
-                ${
-                    item.fabric
-                        ? " · " +
-                          escapeHTML(
-                              fabricLabel(
-                                  item.fabric
-                              )
-                          )
-                        : ""
-                }
-
-            </span>
-
-
-            <div
-                class="outfit-item-tags"
-            >
-
-                ${tags}
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    card.addEventListener(
-        "click",
-        function() {
-
-            selectOutfitItem(
-                card,
-                item,
-                multiple
-            );
-
-        }
-    );
-
-
-    return card;
-
-}
-
-
-// =====================================================
-// SELECT OUTFIT ITEM
-// =====================================================
+/* =========================================================
+   CHOOSE OUTFIT ITEMS
+========================================================= */
 
 function selectOutfitItem(
     card,
-    item,
-    multiple
+    item
 ) {
 
     const alreadySelected =
@@ -3529,10 +1877,7 @@ function selectOutfitItem(
                 item.id
         );
 
-
-    if (
-        alreadySelected
-    ) {
+    if (alreadySelected) {
 
         selectedOutfitItems =
             selectedOutfitItems.filter(
@@ -3541,21 +1886,18 @@ function selectOutfitItem(
                     item.id
             );
 
-
         card.classList.remove(
             "selected"
         );
 
-
         updateOutfitPreview();
 
-
         return;
-
     }
 
-
-    // Dress removes top/bottom.
+    /*
+       Dress replaces top and bottom.
+    */
 
     if (
         item.category ===
@@ -3565,14 +1907,10 @@ function selectOutfitItem(
         selectedOutfitItems =
             selectedOutfitItems.filter(
                 current =>
-                    current.category !==
-                    "dress" &&
-                    current.category !==
-                    "top" &&
-                    current.category !==
-                    "bottom"
+                    current.category !== "dress" &&
+                    current.category !== "top" &&
+                    current.category !== "bottom"
             );
-
 
         document
             .querySelectorAll(
@@ -3584,17 +1922,16 @@ function selectOutfitItem(
                         "selected"
                     )
             );
-
     }
 
-
-    // Top or bottom removes dress.
+    /*
+       Top or bottom removes dress
+       and replaces the same category.
+    */
 
     if (
-        item.category ===
-            "top" ||
-        item.category ===
-            "bottom"
+        item.category === "top" ||
+        item.category === "bottom"
     ) {
 
         selectedOutfitItems =
@@ -3606,13 +1943,12 @@ function selectOutfitItem(
                     "dress"
             );
 
-
         document
             .querySelectorAll(
                 ".outfit-item"
             )
             .forEach(
-                function(element) {
+                element => {
 
                     const selected =
                         selectedOutfitItems.some(
@@ -3621,22 +1957,19 @@ function selectOutfitItem(
                                 element.dataset.id
                         );
 
-
                     if (!selected) {
 
                         element.classList.remove(
                             "selected"
                         );
-
                     }
-
                 }
             );
-
     }
 
-
-    // Shoes = one.
+    /*
+       Only one pair of shoes.
+    */
 
     if (
         item.category ===
@@ -3650,106 +1983,76 @@ function selectOutfitItem(
                     "shoes"
             );
 
-
         document
             .querySelectorAll(
                 ".outfit-item"
             )
             .forEach(
-                function(element) {
+                element => {
+
+                    const currentItem =
+                        getWardrobe().find(
+                            current =>
+                                current.id ===
+                                element.dataset.id
+                        );
 
                     if (
-                        element.dataset.id !==
-                        item.id
+                        currentItem &&
+                        currentItem.category ===
+                        "shoes"
                     ) {
 
-                        const currentItem =
-                            getWardrobe().find(
-                                current =>
-                                    current.id ===
-                                    element.dataset.id
-                            );
-
-
-                        if (
-                            currentItem &&
-                            currentItem.category ===
-                                "shoes"
-                        ) {
-
-                            element.classList.remove(
-                                "selected"
-                            );
-
-                        }
-
+                        element.classList.remove(
+                            "selected"
+                        );
                     }
-
                 }
             );
-
     }
 
-
-    // Accessories can be multiple.
+    /*
+       Accessories can be multiple.
+    */
 
     selectedOutfitItems.push(
         item
     );
 
-
     card.classList.add(
         "selected"
     );
 
-
     updateOutfitPreview();
-
 }
 
 
-// =====================================================
-// OUTFIT PREVIEW
-// =====================================================
+/* =========================================================
+   OUTFIT PREVIEW
+========================================================= */
 
 function updateOutfitPreview() {
 
     const center =
         $("outfitStageCenter");
 
+    const accessories =
+        $("outfitStageAccessories");
 
     const left =
         $("outfitStageLeft");
 
-
-    const accessories =
-        $("outfitStageAccessories");
-
-
     if (
         !center ||
-        !left ||
-        !accessories
+        !accessories ||
+        !left
     ) {
-
         return;
-
     }
 
-
-    center.innerHTML =
-        "";
-
-
-    left.innerHTML =
-        "";
-
-
-    accessories.innerHTML =
-        "";
-
-
-    // Dress
+    center.innerHTML = "";
+    accessories.innerHTML = "";
+    left.innerHTML = "";
 
     const dress =
         selectedOutfitItems.find(
@@ -3757,7 +2060,6 @@ function updateOutfitPreview() {
                 item.category ===
                 "dress"
         );
-
 
     if (dress) {
 
@@ -3776,26 +2078,6 @@ function updateOutfitPreview() {
                     "top"
             );
 
-
-        center.appendChild(
-
-            top
-
-                ?
-
-                makeOutfitPiece(
-                    top
-                )
-
-                :
-
-                makeEmptyPiece(
-                    "Choose a top"
-                )
-
-        );
-
-
         const bottom =
             selectedOutfitItems.find(
                 item =>
@@ -3803,29 +2085,24 @@ function updateOutfitPreview() {
                     "bottom"
             );
 
+        center.appendChild(
+
+            top
+                ? makeOutfitPiece(top)
+                : makeEmptyPiece(
+                    "Choose a top"
+                )
+        );
 
         center.appendChild(
 
             bottom
-
-                ?
-
-                makeOutfitPiece(
-                    bottom
-                )
-
-                :
-
-                makeEmptyPiece(
+                ? makeOutfitPiece(bottom)
+                : makeEmptyPiece(
                     "Choose a bottom"
                 )
-
         );
-
     }
-
-
-    // Shoes
 
     const shoes =
         selectedOutfitItems.find(
@@ -3834,27 +2111,14 @@ function updateOutfitPreview() {
                 "shoes"
         );
 
-
     center.appendChild(
 
         shoes
-
-            ?
-
-            makeOutfitPiece(
-                shoes
-            )
-
-            :
-
-            makeEmptyPiece(
+            ? makeOutfitPiece(shoes)
+            : makeEmptyPiece(
                 "Choose shoes"
             )
-
     );
-
-
-    // Accessories
 
     const accessoriesSelected =
         selectedOutfitItems.filter(
@@ -3862,7 +2126,6 @@ function updateOutfitPreview() {
                 item.category ===
                 "accessory"
         );
-
 
     if (
         !accessoriesSelected.length
@@ -3877,25 +2140,15 @@ function updateOutfitPreview() {
     } else {
 
         accessoriesSelected.forEach(
-            function(item) {
+            item => {
 
                 accessories.appendChild(
-                    makeOutfitPiece(
-                        item
-                    )
+                    makeOutfitPiece(item)
                 );
-
             }
         );
-
     }
-
 }
-
-
-// =====================================================
-// OUTFIT PIECE
-// =====================================================
 
 function makeOutfitPiece(item) {
 
@@ -3904,49 +2157,38 @@ function makeOutfitPiece(item) {
             "div"
         );
 
-
     element.className =
         "outfit-piece";
 
-
     element.innerHTML = `
-
         ${
             item.image
 
-                ?
+                ? `
+                    <img
+                        src="${item.image}"
+                        alt="${escapeHTML(
+                            categoryLabel(
+                                item.category
+                            )
+                        )}"
+                    >
+                  `
 
-                `
-                <img
-                    src="${item.image}"
-                    alt="${escapeHTML(
-                        categoryLabel(
+                : `
+                    <div
+                        class="placeholder"
+                        style="
+                            height:115px;
+                            font-size:40px;
+                        "
+                    >
+                        ${categoryEmoji(
                             item.category
-                        )
-                    )}"
-                >
-                `
-
-                :
-
-                `
-                <div
-                    class="placeholder"
-                    style="
-                        height:125px;
-                        font-size:40px;
-                    "
-                >
-
-                    ${categoryEmoji(
-                        item.category
-                    )}
-
-                </div>
-
-                `
+                        )}
+                    </div>
+                  `
         }
-
 
         <div
             class="outfit-piece-name"
@@ -3958,26 +2200,11 @@ function makeOutfitPiece(item) {
                 )
             ).toUpperCase()}
 
-            ${
-                item.color
-                    ? " · " +
-                      escapeHTML(
-                          colorLabel(
-                              item.color
-                          )
-                      )
-                    : ""
-            }
-
         </div>
-
     `;
 
-
     return element;
-
 }
-
 
 function makeEmptyPiece(text) {
 
@@ -3986,31 +2213,24 @@ function makeEmptyPiece(text) {
             "div"
         );
 
-
     element.className =
         "outfit-empty-piece";
-
 
     element.textContent =
         text;
 
-
     return element;
-
 }
 
 
-// =====================================================
-// SAVE OUTFIT
-// =====================================================
+/* =========================================================
+   SAVE OUTFIT
+========================================================= */
 
 function saveCurrentOutfit() {
 
     const name =
-        $("outfitName")
-            ?.value
-            .trim();
-
+        $("outfitName")?.value.trim();
 
     if (!name) {
 
@@ -4018,30 +2238,21 @@ function saveCurrentOutfit() {
             "Please give your outfit a name."
         );
 
-
-        $("outfitName")
-            ?.focus();
-
+        $("outfitName")?.focus();
 
         return;
-
     }
 
-
     if (
-        selectedOutfitItems.length ===
-        0
+        !selectedOutfitItems.length
     ) {
 
         alert(
             "Choose at least one clothing item."
         );
 
-
         return;
-
     }
-
 
     const outfit = {
 
@@ -4049,8 +2260,7 @@ function saveCurrentOutfit() {
             "outfit-" +
             Date.now(),
 
-        name:
-            name,
+        name,
 
         items:
             selectedOutfitItems.map(
@@ -4077,298 +2287,34 @@ function saveCurrentOutfit() {
                     image:
                         item.image ||
                         ""
-
                 })
             ),
 
         createdAt:
             Date.now()
-
     };
-
 
     const outfits =
         getOutfits();
-
 
     outfits.unshift(
         outfit
     );
 
-
     saveOutfits(
         outfits
     );
 
-
     selectedOutfitItems =
         [];
 
-
-    alert(
-        "Outfit saved! ✨"
-    );
-
-
     showOutfits();
-
 }
 
 
-// =====================================================
-// SAVED OUTFITS
-// =====================================================
-
-function renderSavedOutfits() {
-
-    const container =
-        $("savedOutfits");
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
-    const outfits =
-        getOutfits();
-
-
-    if (
-        !outfits.length
-    ) {
-
-        container.innerHTML = `
-
-            <div
-                class="empty-state"
-            >
-
-                <div
-                    style="
-                        font-size:48px;
-                    "
-                >
-
-                    ✨
-
-                </div>
-
-
-                <h3>
-                    No saved outfits
-                </h3>
-
-
-                <p>
-                    Click Create outfit to make
-                    your first look.
-                </p>
-
-            </div>
-
-        `;
-
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        outfits
-            .map(
-                function(outfit) {
-
-                    const images =
-                        outfit.items
-                            .filter(
-                                item =>
-                                    item.image
-                            )
-                            .map(
-                                item =>
-
-                                    `
-                                    <img
-                                        src="${item.image}"
-                                        alt="${escapeHTML(
-                                            categoryLabel(
-                                                item.category
-                                            )
-                                        )}"
-                                    >
-                                    `
-                            )
-                            .join("");
-
-
-                    return `
-
-                        <article
-                            class="saved-outfit-card"
-                            data-outfit-id="${outfit.id}"
-                        >
-
-
-                            <div
-                                class="saved-outfit-thumb-row"
-                            >
-
-                                ${
-                                    images ||
-
-                                    `
-                                    <span
-                                        class="selected-chip"
-                                    >
-
-                                        No photos
-
-                                    </span>
-                                    `
-                                }
-
-                            </div>
-
-
-                            <h3>
-
-                                ${escapeHTML(
-                                    outfit.name
-                                )}
-
-                            </h3>
-
-
-                            <p
-                                class="saved-outfit-description"
-                            >
-
-                                ${
-                                    outfit.items.length
-                                }
-
-                                ${
-                                    outfit.items.length ===
-                                    1
-
-                                        ? "piece"
-
-                                        : "pieces"
-
-                                }
-
-                            </p>
-
-
-                            <div
-                                class="selected-outfit-items"
-                            >
-
-                                ${
-                                    outfit.items
-                                        .map(
-                                            item =>
-
-                                                `
-                                                <span
-                                                    class="selected-chip"
-                                                >
-
-                                                    ${escapeHTML(
-                                                        categoryLabel(
-                                                            item.category
-                                                        )
-                                                    )}
-
-                                                </span>
-
-                                                `
-                                        )
-                                        .join("")
-                                }
-
-                            </div>
-
-
-                            <button
-                                class="delete-outfit"
-                                type="button"
-                                data-delete-outfit="${outfit.id}"
-                            >
-
-                                Delete outfit
-
-                            </button>
-
-                        </article>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-
-    // Open saved outfit
-
-    container
-        .querySelectorAll(
-            ".saved-outfit-card"
-        )
-        .forEach(
-            function(card) {
-
-                card.addEventListener(
-                    "click",
-                    function() {
-
-                        showSavedOutfit(
-                            card.dataset.outfitId
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-    // Delete
-
-    container
-        .querySelectorAll(
-            "[data-delete-outfit]"
-        )
-        .forEach(
-            function(button) {
-
-                button.addEventListener(
-                    "click",
-                    function(event) {
-
-                        event.stopPropagation();
-
-
-                        deleteOutfit(
-                            button.dataset.deleteOutfit
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-}
-
-
-// =====================================================
-// SHOW SAVED OUTFIT
-// =====================================================
+/* =========================================================
+   SHOW SAVED OUTFIT
+========================================================= */
 
 function showSavedOutfit(id) {
 
@@ -4379,136 +2325,56 @@ function showSavedOutfit(id) {
                 id
         );
 
-
     if (!outfit) {
-
         return;
-
     }
-
-
-    $("wardrobePage")
-        ?.classList
-        .add(
-            "hidden"
-        );
-
-
-    $("dynamicPage")
-        ?.classList
-        .remove(
-            "hidden"
-        );
-
 
     const dynamic =
         $("dynamicPage");
 
+    if (!dynamic) {
+        return;
+    }
 
     dynamic.innerHTML = `
-
-        <div
-            class="dynamic-page-header"
-        >
-
-            <p
-                class="hero-label"
-            >
-
-                SAVED OUTFIT
-
-            </p>
-
+        <div class="outfits-header">
 
             <h2>
-
                 ${escapeHTML(
                     outfit.name
                 )}
-
             </h2>
 
-
-            <p>
-
-                ${outfit.items.length}
-
-                ${
-                    outfit.items.length ===
-                    1
-
-                        ? "piece"
-
-                        : "pieces"
-
-                }
-
-            </p>
+            <button
+                class="secondary-button"
+                id="backFromSavedOutfit"
+                type="button"
+            >
+                ← Back
+            </button>
 
         </div>
 
-
-        <div
-            class="outfit-stage"
-        >
+        <div class="outfit-stage">
 
             <div
-                class="outfit-stage-title"
-            >
-
-                Your saved look
-
-            </div>
-
+                class="outfit-stage-center"
+                id="savedOutfitCenter"
+            ></div>
 
             <div
-                class="outfit-stage-layout"
-            >
-
-                <div></div>
-
-
-                <div
-                    class="outfit-stage-center"
-                    id="savedCenter"
-                ></div>
-
-
-                <div
-                    class="outfit-stage-accessories"
-                    id="savedAccessories"
-                ></div>
-
-            </div>
+                class="outfit-stage-accessories"
+                id="savedOutfitAccessories"
+            ></div>
 
         </div>
-
-
-        <button
-            class="delete-outfit"
-            id="backToOutfits"
-            type="button"
-            style="
-                margin-top:18px;
-            "
-        >
-
-            ← Back to outfits
-
-        </button>
-
     `;
 
-
     const center =
-        $("savedCenter");
-
+        $("savedOutfitCenter");
 
     const accessories =
-        $("savedAccessories");
-
-
-    // Dress
+        $("savedOutfitAccessories");
 
     const dress =
         outfit.items.find(
@@ -4516,7 +2382,6 @@ function showSavedOutfit(id) {
                 item.category ===
                 "dress"
         );
-
 
     if (dress) {
 
@@ -4535,6 +2400,12 @@ function showSavedOutfit(id) {
                     "top"
             );
 
+        const bottom =
+            outfit.items.find(
+                item =>
+                    item.category ===
+                    "bottom"
+            );
 
         if (top) {
 
@@ -4543,17 +2414,7 @@ function showSavedOutfit(id) {
                     top
                 )
             );
-
         }
-
-
-        const bottom =
-            outfit.items.find(
-                item =>
-                    item.category ===
-                    "bottom"
-            );
-
 
         if (bottom) {
 
@@ -4562,11 +2423,8 @@ function showSavedOutfit(id) {
                     bottom
                 )
             );
-
         }
-
     }
-
 
     const shoes =
         outfit.items.find(
@@ -4575,7 +2433,6 @@ function showSavedOutfit(id) {
                 "shoes"
         );
 
-
     if (shoes) {
 
         center.appendChild(
@@ -4583,9 +2440,7 @@ function showSavedOutfit(id) {
                 shoes
             )
         );
-
     }
-
 
     outfit.items
         .filter(
@@ -4594,30 +2449,26 @@ function showSavedOutfit(id) {
                 "accessory"
         )
         .forEach(
-            function(item) {
+            item => {
 
                 accessories.appendChild(
                     makeOutfitPiece(
                         item
                     )
                 );
-
             }
         );
 
-
-    $("backToOutfits")
-        ?.addEventListener(
-            "click",
-            showOutfits
-        );
-
+    $("backFromSavedOutfit")?.addEventListener(
+        "click",
+        showOutfits
+    );
 }
 
 
-// =====================================================
-// DELETE OUTFIT
-// =====================================================
+/* =========================================================
+   DELETE OUTFIT
+========================================================= */
 
 function deleteOutfit(id) {
 
@@ -4628,17 +2479,11 @@ function deleteOutfit(id) {
     ) {
 
         return;
-
     }
-
-
-    const outfits =
-        getOutfits();
-
 
     saveOutfits(
 
-        outfits.filter(
+        getOutfits().filter(
             outfit =>
                 outfit.id !==
                 id
@@ -4646,322 +2491,180 @@ function deleteOutfit(id) {
 
     );
 
-
     renderSavedOutfits();
-
 }
 
 
-// =====================================================
-// FAVORITES
-// =====================================================
+/* =========================================================
+   FAVORITES
+========================================================= */
 
-function showFavorites() {
-
-    currentPage =
-        "favorites";
-
-
-    activateNav(
-        $("favoritesNav")
-    );
-
-
-    $("wardrobePage")
-        ?.classList
-        .add(
-            "hidden"
-        );
-
-
-    $("dynamicPage")
-        ?.classList
-        .remove(
-            "hidden"
-        );
-
+function renderFavoritesPage() {
 
     const dynamic =
         $("dynamicPage");
 
-
-    const favorites =
-        getWardrobe()
-            .filter(
-                item =>
-                    item.favorite
-            );
-
+    if (!dynamic) {
+        return;
+    }
 
     dynamic.innerHTML = `
-
-        <div
-            class="dynamic-page-header"
-        >
-
-            <p
-                class="hero-label"
-            >
-
-                YOUR PICKS
-
-            </p>
-
+        <div class="outfits-header">
 
             <h2>
                 Favorites
             </h2>
 
-
-            <p>
-                The pieces you love most.
-            </p>
-
         </div>
-
 
         <div
             class="clothing-grid"
             id="favoritesGrid"
         ></div>
-
     `;
-
 
     const grid =
         $("favoritesGrid");
 
+    const favorites =
+        getWardrobe().filter(
+            item =>
+                item.favorite
+        );
 
-    if (
-        !favorites.length
-    ) {
+    if (!favorites.length) {
 
         grid.innerHTML = `
+            <div class="empty-state">
 
-            <div
-                class="empty-state"
-            >
-
-                <div
-                    style="
-                        font-size:50px;
-                    "
-                >
-
+                <div style="font-size:44px;">
                     ♡
-
                 </div>
-
 
                 <h3>
                     No favorites yet
                 </h3>
 
-
                 <p>
-                    Tap the heart on any clothing item.
+                    Tap the heart on a clothing item.
                 </p>
 
             </div>
-
         `;
 
-
         return;
-
     }
 
-
     favorites.forEach(
-        function(item) {
+        item => {
 
             grid.appendChild(
                 createClothingCard(
                     item
                 )
             );
-
         }
     );
-
 }
 
 
-// =====================================================
-// SETTINGS
-// =====================================================
+/* =========================================================
+   SETTINGS
+========================================================= */
 
-function showSettings() {
+function renderSettingsPage() {
 
-    currentPage =
-        "settings";
+    const dynamic =
+        $("dynamicPage");
 
+    if (!dynamic) {
+        return;
+    }
 
-    activateNav(
-        $("settingsNav")
-    );
-
-
-    $("wardrobePage")
-        ?.classList
-        .add(
-            "hidden"
-        );
-
-
-    $("dynamicPage")
-        ?.classList
-        .remove(
-            "hidden"
-        );
-
-
-    const wardrobe =
-        getWardrobe();
-
-
-    const outfits =
-        getOutfits();
-
-
-    $("dynamicPage").innerHTML = `
-
-        <div
-            class="dynamic-page-header"
-        >
-
-            <p
-                class="hero-label"
-            >
-
-                APP SETTINGS
-
-            </p>
-
+    dynamic.innerHTML = `
+        <div class="outfits-header">
 
             <h2>
                 Settings
             </h2>
 
-
-            <p>
-                Manage your manual wardrobe.
-            </p>
-
         </div>
 
-
-        <div
-            class="settings-card"
-        >
+        <div class="settings-card">
 
             <h3>
                 Wardrobe
             </h3>
 
-
             <p>
+                ${getWardrobe().length}
+                clothing items.
 
-                You currently have
-
-                <strong>
-                    ${wardrobe.length}
-                </strong>
-
-                clothing items and
-
-                <strong>
-                    ${outfits.length}
-                </strong>
-
+                ${getOutfits().length}
                 saved outfits.
-
             </p>
 
         </div>
 
-
-        <div
-            class="settings-card"
-        >
+        <div class="settings-card">
 
             <h3>
                 AI Stylist
             </h3>
 
-
             <p>
-
                 Luna is currently switched off.
-                We'll add her later after the manual
-                wardrobe and phone version are ready.
-
             </p>
 
         </div>
 
-
-        <div
-            class="settings-card"
-        >
+        <div class="settings-card">
 
             <h3>
                 Reset wardrobe
             </h3>
-
 
             <button
                 class="danger-button"
                 id="clearDataButton"
                 type="button"
             >
-
                 Delete all data
-
             </button>
 
         </div>
-
     `;
 
+    $("clearDataButton")?.addEventListener(
+        "click",
+        () => {
 
-    $("clearDataButton")
-        ?.addEventListener(
-            "click",
-            function() {
+            if (
+                !confirm(
+                    "Are you sure? This cannot be undone."
+                )
+            ) {
 
-                if (
-                    !confirm(
-                        "Are you sure? This cannot be undone."
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                localStorage.removeItem(
-                    WARDROBE_KEY
-                );
-
-
-                localStorage.removeItem(
-                    OUTFITS_KEY
-                );
-
-
-                showWardrobe();
-
+                return;
             }
-        );
 
+            localStorage.removeItem(
+                WARDROBE_KEY
+            );
+
+            localStorage.removeItem(
+                OUTFITS_KEY
+            );
+
+            showWardrobe();
+        }
+    );
 }
 
 
-// =====================================================
-// REMOVE TEMPORARY MODALS
-// =====================================================
+/* =========================================================
+   CLEANUP
+========================================================= */
 
 function removeTemporaryModals() {
 
@@ -4970,11 +2673,8 @@ function removeTemporaryModals() {
             ".photo-modal, .edit-modal, .delete-modal"
         )
         .forEach(
-            function(modal) {
-
+            modal => {
                 modal.remove();
-
             }
         );
-
 }
