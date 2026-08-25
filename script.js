@@ -43,7 +43,189 @@ let currentFilter = "all";
 
 let selectedOutfitItems = [];
 
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
 
+function setupMobileSidebar() {
+
+    const sidebar =
+        document.querySelector(".sidebar");
+
+    if (!sidebar) {
+        return;
+    }
+
+
+    /* Create hamburger button */
+
+    let toggle =
+        document.querySelector(
+            ".sidebar-toggle"
+        );
+
+
+    if (!toggle) {
+
+        toggle =
+            document.createElement("button");
+
+        toggle.className =
+            "sidebar-toggle";
+
+        toggle.type =
+            "button";
+
+        toggle.innerHTML =
+            "☰";
+
+        toggle.setAttribute(
+            "aria-label",
+            "Open menu"
+        );
+
+        document.body.appendChild(
+            toggle
+        );
+    }
+
+
+    /* Create overlay */
+
+    let overlay =
+        document.querySelector(
+            ".sidebar-overlay"
+        );
+
+
+    if (!overlay) {
+
+        overlay =
+            document.createElement("div");
+
+        overlay.className =
+            "sidebar-overlay";
+
+        document.body.appendChild(
+            overlay
+        );
+    }
+
+
+    function closeSidebar() {
+
+        sidebar.classList.remove(
+            "mobile-open"
+        );
+
+        overlay.classList.remove(
+            "active"
+        );
+
+        toggle.innerHTML =
+            "☰";
+
+        toggle.setAttribute(
+            "aria-label",
+            "Open menu"
+        );
+    }
+
+
+    function toggleSidebar() {
+
+        const open =
+            sidebar.classList.toggle(
+                "mobile-open"
+            );
+
+
+        overlay.classList.toggle(
+            "active",
+            open
+        );
+
+
+        toggle.innerHTML =
+            open
+                ? "×"
+                : "☰";
+
+
+        toggle.setAttribute(
+            "aria-label",
+            open
+                ? "Close menu"
+                : "Open menu"
+        );
+    }
+
+
+    toggle.addEventListener(
+        "click",
+        toggleSidebar
+    );
+
+
+    overlay.addEventListener(
+        "click",
+        closeSidebar
+    );
+
+
+    /*
+       Close menu when a navigation item
+       is selected on the phone.
+    */
+
+    sidebar
+        .querySelectorAll(
+            ".nav-item"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        if (
+                            window.innerWidth <=
+                            820
+                        ) {
+
+                            closeSidebar();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /*
+       Automatically close the mobile menu
+       if the screen becomes desktop-sized.
+    */
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+            if (
+                window.innerWidth > 820
+            ) {
+
+                closeSidebar();
+
+            }
+
+        }
+    );
+
+}
 /* =========================================================
    03. HELPER
 ========================================================= */
@@ -269,6 +451,8 @@ document.addEventListener(
 
 
 function initApp() {
+
+    setupMobileSidebar();
 
     /* Navigation */
 
