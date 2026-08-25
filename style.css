@@ -1022,3 +1022,88 @@ img {
         justify-content: center;
     }
 }
+/* =========================================================
+   SAVED OUTFITS — COMPACT DISPLAY
+========================================================= */
+
+#savedOutfits,
+.saved-outfits-grid {
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(2, minmax(280px, 380px)) !important;
+
+    gap: 20px !important;
+
+    justify-content: start;
+}
+
+
+/* Smaller outfit card */
+
+.saved-outfit-card {
+    width: 100%;
+
+    padding: 12px !important;
+
+    border-radius: 16px;
+
+    cursor: pointer;
+}
+
+
+/* Smaller outfit image */
+
+.saved-outfit-thumb-row {
+    width: 100% !important;
+
+    aspect-ratio: 1 / 0.68 !important;
+
+    border-radius: 12px;
+
+    gap: 3px;
+}
+
+
+/* Keep images nicely contained */
+
+.saved-outfit-thumb-row img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+
+/* Outfit name */
+
+.saved-outfit-card h3 {
+    margin: 10px 2px 2px !important;
+
+    font-size: 15px !important;
+
+    font-weight: 600;
+}
+
+
+/* Hide delete button from the card */
+
+.saved-outfit-card .delete-outfit {
+    display: none !important;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    #savedOutfits,
+    .saved-outfits-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .saved-outfit-card {
+        max-width: 380px;
+    }
+
+}
