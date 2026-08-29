@@ -25,7 +25,7 @@ const supabase = createClient(
 );
 
 
-const TABLE_NAME = "wardrobe";
+const TABLE_NAME = "clothing_items";
 const STORAGE_BUCKET = "wardrobe-images";
 
 
