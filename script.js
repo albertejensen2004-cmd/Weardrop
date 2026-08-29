@@ -1,21 +1,22 @@
 // =====================================================
-// CLOSET AI
+// THE WARDROBE
 // SUPABASE CLOUD VERSION
 // =====================================================
 
-import { createClient } from
-    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+import {
+    createClient
+} from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 
 // =====================================================
-// SUPABASE
+// SUPABASE CONNECTION
 // =====================================================
 
 const SUPABASE_URL =
     "https://jppmfciofyhpxzcfcmz.supabase.co";
 
 const SUPABASE_ANON_KEY =
-    "PASTE_YOUR_ANON_KEY_HERE";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwcG1mb2Npb2Z5aHB4emNmY216Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMTYxNTEsImV4cCI6MjEwMzU5MjE1MX0.zqJQo2MC4P0XNG1mMNFJ2_5_jEeHTsz7cOiTQD2MYw4";
 
 const supabase =
     createClient(
@@ -25,150 +26,171 @@ const supabase =
 
 
 // =====================================================
-// SETTINGS
+// SUPABASE SETTINGS
 // =====================================================
 
-const CLOTHING_TABLE = "clothing";
-const IMAGE_BUCKET = "clothing-images";
+const CLOTHING_TABLE =
+    "clothing_items";
+
+const IMAGE_BUCKET =
+    "clothing-images";
+
+
+// =====================================================
+// OLD LOCAL STORAGE
+// =====================================================
+
+const OLD_WARDROBE_KEY =
+    "closetAI_wardrobe_v2";
 
 
 // =====================================================
 // ELEMENTS
 // =====================================================
 
+const $ = id =>
+    document.getElementById(id);
+
+
 const wardrobePage =
-    document.getElementById("wardrobePage");
+    $("wardrobePage");
 
 const dynamicPage =
-    document.getElementById("dynamicPage");
+    $("dynamicPage");
 
 const wardrobeNav =
-    document.getElementById("wardrobeNav");
+    $("wardrobeNav");
 
 const outfitsNav =
-    document.getElementById("outfitsNav");
+    $("outfitsNav");
 
 const favoritesNav =
-    document.getElementById("favoritesNav");
+    $("favoritesNav");
 
 const settingsNav =
-    document.getElementById("settingsNav");
+    $("settingsNav");
 
 const logo =
-    document.getElementById("logo");
+    $("logo");
 
 const addItemButton =
-    document.getElementById("addItemButton");
+    $("addItemButton");
 
 const styleOutfitButton =
-    document.getElementById("styleOutfitButton");
+    $("styleOutfitButton");
 
 const addItemModal =
-    document.getElementById("addItemModal");
+    $("addItemModal");
 
 const closeModal =
-    document.getElementById("closeModal");
+    $("closeModal");
 
 const clothingImage =
-    document.getElementById("clothingImage");
+    $("clothingImage");
 
 const imagePreview =
-    document.getElementById("imagePreview");
+    $("imagePreview");
 
 const uploadPlaceholder =
-    document.getElementById("uploadPlaceholder");
-
-const clothingName =
-    document.getElementById("clothingName");
+    $("uploadPlaceholder");
 
 const clothingCategory =
-    document.getElementById("clothingCategory");
+    $("clothingCategory");
+
+const clothingColor =
+    $("clothingColor");
+
+const clothingFabric =
+    $("clothingFabric");
 
 const saveItemButton =
-    document.getElementById("saveItem");
+    $("saveItem");
 
 const clothingGrid =
-    document.getElementById("clothingGrid");
+    $("clothingGrid");
 
 const itemCount =
-    document.getElementById("itemCount");
+    $("itemCount");
 
 
 // =====================================================
 // STATE
 // =====================================================
 
-let selectedImageFile = null;
-let selectedImagePreview = "";
-let selectedTypes = [];
+let selectedImageFile =
+    null;
 
-let currentFilter = "all";
-let currentPage = "wardrobe";
+let selectedImagePreview =
+    "";
 
-let selectedOutfitItems = [];
+let selectedTypes =
+    [];
+
+let currentFilter =
+    "all";
+
+let currentPage =
+    "wardrobe";
+
+let selectedOutfitItems =
+    [];
 
 
 // =====================================================
-// OPEN MODAL
+// OPEN ADD MODAL
 // =====================================================
 
 function openAddModal() {
 
     resetForm();
 
-    addItemModal.classList.add("active");
+    addItemModal?.classList.add(
+        "active"
+    );
+
 }
 
 
 // =====================================================
-// CLOSE MODAL
+// CLOSE ADD MODAL
 // =====================================================
 
 function closeAddModal() {
 
-    addItemModal.classList.remove("active");
-}
-
-
-if (addItemButton) {
-
-    addItemButton.addEventListener(
-        "click",
-        openAddModal
+    addItemModal?.classList.remove(
+        "active"
     );
 
 }
 
 
-if (closeModal) {
-
-    closeModal.addEventListener(
-        "click",
-        closeAddModal
-    );
-
-}
+addItemButton?.addEventListener(
+    "click",
+    openAddModal
+);
 
 
-if (addItemModal) {
+closeModal?.addEventListener(
+    "click",
+    closeAddModal
+);
 
-    addItemModal.addEventListener(
-        "click",
-        function(event) {
 
-            if (
-                event.target ===
-                addItemModal
-            ) {
+addItemModal?.addEventListener(
+    "click",
+    event => {
 
-                closeAddModal();
+        if (
+            event.target ===
+            addItemModal
+        ) {
 
-            }
+            closeAddModal();
 
         }
-    );
 
-}
+    }
+);
 
 
 // =====================================================
@@ -178,22 +200,25 @@ if (addItemModal) {
 function resizeImage(file) {
 
     return new Promise(
-        function(resolve, reject) {
+        (resolve, reject) => {
 
             const reader =
                 new FileReader();
 
+
             reader.onload =
-                function(event) {
+                event => {
 
                     const image =
                         new Image();
 
-                    image.onload =
-                        function() {
 
-                            const max =
+                    image.onload =
+                        () => {
+
+                            const maxSize =
                                 1200;
+
 
                             let width =
                                 image.width;
@@ -203,8 +228,10 @@ function resizeImage(file) {
 
 
                             if (
-                                width > max ||
-                                height > max
+                                width >
+                                maxSize ||
+                                height >
+                                maxSize
                             ) {
 
                                 if (
@@ -214,21 +241,21 @@ function resizeImage(file) {
 
                                     height =
                                         height *
-                                        max /
+                                        maxSize /
                                         width;
 
                                     width =
-                                        max;
+                                        maxSize;
 
                                 } else {
 
                                     width =
                                         width *
-                                        max /
+                                        maxSize /
                                         height;
 
                                     height =
-                                        max;
+                                        maxSize;
 
                                 }
 
@@ -240,17 +267,23 @@ function resizeImage(file) {
                                     "canvas"
                                 );
 
+
                             canvas.width =
-                                Math.round(width);
+                                Math.round(
+                                    width
+                                );
 
                             canvas.height =
-                                Math.round(height);
+                                Math.round(
+                                    height
+                                );
 
 
                             const context =
                                 canvas.getContext(
                                     "2d"
                                 );
+
 
                             context.drawImage(
                                 image,
@@ -262,13 +295,13 @@ function resizeImage(file) {
 
 
                             canvas.toBlob(
-                                function(blob) {
+                                blob => {
 
                                     if (!blob) {
 
                                         reject(
                                             new Error(
-                                                "Could not resize image."
+                                                "Could not process image."
                                             )
                                         );
 
@@ -276,7 +309,10 @@ function resizeImage(file) {
 
                                     }
 
-                                    resolve(blob);
+
+                                    resolve(
+                                        blob
+                                    );
 
                                 },
                                 "image/jpeg",
@@ -287,7 +323,12 @@ function resizeImage(file) {
 
 
                     image.onerror =
-                        reject;
+                        () =>
+                            reject(
+                                new Error(
+                                    "Could not read image."
+                                )
+                            );
 
 
                     image.src =
@@ -297,10 +338,17 @@ function resizeImage(file) {
 
 
             reader.onerror =
-                reject;
+                () =>
+                    reject(
+                        new Error(
+                            "Could not read file."
+                        )
+                    );
 
 
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(
+                file
+            );
 
         }
     );
@@ -312,198 +360,82 @@ function resizeImage(file) {
 // IMAGE SELECT
 // =====================================================
 
-if (clothingImage) {
+clothingImage?.addEventListener(
+    "change",
+    async event => {
 
-    clothingImage.addEventListener(
-        "change",
-        async function(event) {
-
-            const file =
-                event.target.files?.[0];
-
-            if (!file) {
-                return;
-            }
+        const file =
+            event.target.files?.[0];
 
 
-            try {
-
-                selectedImageFile =
-                    await resizeImage(file);
-
-
-                selectedImagePreview =
-                    URL.createObjectURL(
-                        selectedImageFile
-                    );
-
-
-                if (imagePreview) {
-
-                    imagePreview.src =
-                        selectedImagePreview;
-
-                    imagePreview.style.display =
-                        "block";
-
-                }
-
-
-                if (uploadPlaceholder) {
-
-                    uploadPlaceholder.style.display =
-                        "none";
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "Image error:",
-                    error
-                );
-
-                alert(
-                    "The photo could not be loaded."
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-// =====================================================
-// UPLOAD IMAGE TO SUPABASE STORAGE
-// =====================================================
-
-async function uploadImage(file) {
-
-    if (!file) {
-
-        return null;
-
-    }
-
-
-    const fileName =
-        `${crypto.randomUUID()}.jpg`;
-
-
-    const filePath =
-        `clothing/${fileName}`;
-
-
-    const {
-        data,
-        error
-    } =
-        await supabase.storage
-            .from(IMAGE_BUCKET)
-            .upload(
-                filePath,
-                file,
-                {
-                    contentType:
-                        "image/jpeg",
-
-                    upsert:
-                        false
-                }
-            );
-
-
-    if (error) {
-
-        console.error(
-            "Storage upload error:",
-            error
-        );
-
-        throw error;
-
-    }
-
-
-    const {
-        data: publicData
-    } =
-        supabase.storage
-            .from(IMAGE_BUCKET)
-            .getPublicUrl(
-                data.path
-            );
-
-
-    return publicData.publicUrl;
-
-}
-
-
-// =====================================================
-// DELETE IMAGE FROM STORAGE
-// =====================================================
-
-async function deleteImage(imageUrl) {
-
-    if (!imageUrl) {
-        return;
-    }
-
-
-    try {
-
-        const marker =
-            `/storage/v1/object/public/${IMAGE_BUCKET}/`;
-
-        const index =
-            imageUrl.indexOf(marker);
-
-
-        if (index === -1) {
+        if (!file) {
             return;
         }
 
 
-        const path =
-            imageUrl.substring(
-                index +
-                marker.length
+        try {
+
+            selectedImageFile =
+                await resizeImage(
+                    file
+                );
+
+
+            selectedImagePreview =
+                URL.createObjectURL(
+                    selectedImageFile
+                );
+
+
+            if (imagePreview) {
+
+                imagePreview.src =
+                    selectedImagePreview;
+
+                imagePreview.style.display =
+                    "block";
+
+            }
+
+
+            if (uploadPlaceholder) {
+
+                uploadPlaceholder.style.display =
+                    "none";
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                error
             );
 
 
-        await supabase.storage
-            .from(IMAGE_BUCKET)
-            .remove([
-                path
-            ]);
+            alert(
+                "The photo could not be loaded."
+            );
 
-    } catch (error) {
-
-        console.error(
-            "Could not delete image:",
-            error
-        );
+        }
 
     }
-
-}
+);
 
 
 // =====================================================
-// TYPE PICKER
+// TYPE BUTTONS
 // =====================================================
 
 document
-    .querySelectorAll(".type-option")
+    .querySelectorAll(
+        "#typePicker .type-option"
+    )
     .forEach(
-        function(button) {
+        button => {
 
             button.addEventListener(
                 "click",
-                function() {
+                () => {
 
                     const type =
                         button.dataset.type;
@@ -517,14 +449,9 @@ document
 
                         selectedTypes =
                             selectedTypes.filter(
-                                function(item) {
-
-                                    return (
-                                        item !==
-                                        type
-                                    );
-
-                                }
+                                item =>
+                                    item !==
+                                    type
                             );
 
 
@@ -553,7 +480,7 @@ document
 
 
 // =====================================================
-// LOAD WARDROBE FROM SUPABASE
+// GET CLOTHING FROM SUPABASE
 // =====================================================
 
 async function getWardrobe() {
@@ -563,7 +490,9 @@ async function getWardrobe() {
         error
     } =
         await supabase
-            .from(CLOTHING_TABLE)
+            .from(
+                CLOTHING_TABLE
+            )
             .select("*")
             .order(
                 "created_at",
@@ -576,7 +505,7 @@ async function getWardrobe() {
     if (error) {
 
         console.error(
-            "Could not load wardrobe:",
+            "Supabase wardrobe error:",
             error
         );
 
@@ -591,40 +520,108 @@ async function getWardrobe() {
 
 
 // =====================================================
-// SAVE CLOTHING
+// UPLOAD IMAGE
 // =====================================================
 
-if (saveItemButton) {
+async function uploadImage(
+    file
+) {
 
-    saveItemButton.addEventListener(
-        "click",
-        saveClothing
+    if (!file) {
+
+        return null;
+
+    }
+
+
+    const fileName =
+        `${crypto.randomUUID()}.jpg`;
+
+
+    const filePath =
+        `clothing/${fileName}`;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabase.storage
+            .from(
+                IMAGE_BUCKET
+            )
+            .upload(
+                filePath,
+                file,
+                {
+                    contentType:
+                        "image/jpeg",
+
+                    upsert:
+                        false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Image upload error:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    const {
+        data: publicUrlData
+    } =
+        supabase.storage
+            .from(
+                IMAGE_BUCKET
+            )
+            .getPublicUrl(
+                data.path
+            );
+
+
+    return (
+        publicUrlData.publicUrl
     );
 
 }
 
 
+// =====================================================
+// SAVE CLOTHING ITEM
+// =====================================================
+
+saveItemButton?.addEventListener(
+    "click",
+    saveClothing
+);
+
+
 async function saveClothing() {
 
-    const name =
-        clothingName.value.trim();
-
     const category =
-        clothingCategory.value;
+        clothingCategory?.value ||
+        "";
+
+    const color =
+        clothingColor?.value ||
+        "";
+
+    const fabric =
+        clothingFabric?.value ||
+        "";
 
 
-    if (!name) {
-
-        alert(
-            "Please give your clothing a name."
-        );
-
-        clothingName.focus();
-
-        return;
-
-    }
-
+    // -------------------------------
+    // VALIDATION
+    // -------------------------------
 
     if (!category) {
 
@@ -637,6 +634,21 @@ async function saveClothing() {
     }
 
 
+    if (!selectedImageFile) {
+
+        alert(
+            "Please add a photo first."
+        );
+
+        return;
+
+    }
+
+
+    // -------------------------------
+    // BUTTON STATE
+    // -------------------------------
+
     saveItemButton.disabled =
         true;
 
@@ -646,48 +658,38 @@ async function saveClothing() {
 
     try {
 
-        let imageUrl =
-            null;
+        // ---------------------------
+        // UPLOAD PHOTO
+        // ---------------------------
+
+        const imageUrl =
+            await uploadImage(
+                selectedImageFile
+            );
 
 
-        // Upload image first
-
-        if (selectedImageFile) {
-
-            imageUrl =
-                await uploadImage(
-                    selectedImageFile
-                );
-
-        }
-
-
-        // Insert clothing record
+        // ---------------------------
+        // DATABASE RECORD
+        // ---------------------------
 
         const {
             data,
             error
         } =
             await supabase
-                .from(CLOTHING_TABLE)
+                .from(
+                    CLOTHING_TABLE
+                )
                 .insert({
-                    name:
-                        name,
 
                     category:
                         category,
 
                     color:
-                        document.getElementById(
-                            "clothingColor"
-                        )?.value ||
-                        null,
+                        color || null,
 
                     fabric:
-                        document.getElementById(
-                            "clothingFabric"
-                        )?.value ||
-                        null,
+                        fabric || null,
 
                     types:
                         selectedTypes,
@@ -703,6 +705,7 @@ async function saveClothing() {
 
                     last_worn:
                         null
+
                 })
                 .select()
                 .single();
@@ -711,19 +714,9 @@ async function saveClothing() {
         if (error) {
 
             console.error(
-                "Database error:",
+                "Database save error:",
                 error
             );
-
-            // Remove uploaded image if DB failed
-
-            if (imageUrl) {
-
-                await deleteImage(
-                    imageUrl
-                );
-
-            }
 
             throw error;
 
@@ -736,7 +729,13 @@ async function saveClothing() {
         );
 
 
+        // ---------------------------
+        // CLOSE + REFRESH
+        // ---------------------------
+
         closeAddModal();
+
+        resetForm();
 
         await renderWardrobe();
 
@@ -744,14 +743,16 @@ async function saveClothing() {
     } catch (error) {
 
         console.error(
+            "SAVE ERROR:",
             error
         );
 
 
         alert(
-            "Could not save the clothing item.\n\n" +
+            "Could not save the item.\n\n" +
             error.message
         );
+
 
     } finally {
 
@@ -782,14 +783,6 @@ function resetForm() {
         [];
 
 
-    if (clothingName) {
-
-        clothingName.value =
-            "";
-
-    }
-
-
     if (clothingCategory) {
 
         clothingCategory.value =
@@ -798,27 +791,17 @@ function resetForm() {
     }
 
 
-    const color =
-        document.getElementById(
-            "clothingColor"
-        );
+    if (clothingColor) {
 
-    if (color) {
-
-        color.value =
+        clothingColor.value =
             "";
 
     }
 
 
-    const fabric =
-        document.getElementById(
-            "clothingFabric"
-        );
+    if (clothingFabric) {
 
-    if (fabric) {
-
-        fabric.value =
+        clothingFabric.value =
             "";
 
     }
@@ -852,83 +835,26 @@ function resetForm() {
 
 
     document
-        .querySelectorAll(".type-option")
+        .querySelectorAll(
+            "#typePicker .type-option"
+        )
         .forEach(
-            function(button) {
-
+            button =>
                 button.classList.remove(
                     "selected"
-                );
-
-            }
+                )
         );
 
 }
 
 
 // =====================================================
-// TYPE LABEL
+// LABEL HELPERS
 // =====================================================
 
-function typeLabel(type) {
-
-    const labels = {
-
-        basic:
-            "Basic",
-
-        everyday:
-            "Everyday",
-
-        fine:
-            "Fine",
-
-        summer:
-            "Summer",
-
-        hot:
-            "Hot weather",
-
-        winter:
-            "Winter",
-
-        beach:
-            "Beach",
-
-        party:
-            "Party",
-
-        "going-out":
-            "Going out",
-
-        work:
-            "Work",
-
-        cozy:
-            "Cozy",
-
-        sport:
-            "Sport",
-
-        statement:
-            "Statement"
-
-    };
-
-
-    return (
-        labels[type] ||
-        type
-    );
-
-}
-
-
-// =====================================================
-// CATEGORY LABEL
-// =====================================================
-
-function categoryLabel(category) {
+function categoryLabel(
+    category
+) {
 
     const labels = {
 
@@ -958,11 +884,168 @@ function categoryLabel(category) {
 }
 
 
-// =====================================================
-// CATEGORY EMOJI
-// =====================================================
+function colorLabel(
+    color
+) {
 
-function categoryEmoji(category) {
+    const labels = {
+
+        black:
+            "Black",
+
+        white:
+            "White",
+
+        beige:
+            "Beige",
+
+        cream:
+            "Cream",
+
+        brown:
+            "Brown",
+
+        blue:
+            "Blue",
+
+        navy:
+            "Navy",
+
+        "light-blue":
+            "Light blue",
+
+        red:
+            "Red",
+
+        pink:
+            "Pink",
+
+        green:
+            "Green",
+
+        grey:
+            "Grey",
+
+        yellow:
+            "Yellow",
+
+        orange:
+            "Orange",
+
+        purple:
+            "Purple",
+
+        gold:
+            "Gold",
+
+        silver:
+            "Silver",
+
+        multicolour:
+            "Multicolour"
+
+    };
+
+
+    return (
+        labels[color] ||
+        color
+    );
+
+}
+
+
+function fabricLabel(
+    fabric
+) {
+
+    const labels = {
+
+        denim:
+            "Denim",
+
+        cotton:
+            "Cotton",
+
+        wool:
+            "Wool",
+
+        knit:
+            "Knit",
+
+        satin:
+            "Satin",
+
+        leather:
+            "Leather",
+
+        other:
+            "Other"
+
+    };
+
+
+    return (
+        labels[fabric] ||
+        fabric
+    );
+
+}
+
+
+function typeLabel(
+    type
+) {
+
+    const labels = {
+
+        basic:
+            "Basic",
+
+        everyday:
+            "Everyday",
+
+        fine:
+            "Fine",
+
+        summer:
+            "Summer",
+
+        winter:
+            "Winter",
+
+        beach:
+            "Beach",
+
+        "going-out":
+            "Going out",
+
+        work:
+            "Work",
+
+        cozy:
+            "Cozy",
+
+        sport:
+            "Sport",
+
+        statement:
+            "Statement"
+
+    };
+
+
+    return (
+        labels[type] ||
+        type
+    );
+
+}
+
+
+function categoryEmoji(
+    category
+) {
 
     const emojis = {
 
@@ -996,15 +1079,19 @@ function categoryEmoji(category) {
 // ESCAPE HTML
 // =====================================================
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     const div =
         document.createElement(
             "div"
         );
 
+
     div.textContent =
         value || "";
+
 
     return div.innerHTML;
 
@@ -1023,12 +1110,19 @@ async function renderWardrobe() {
 
 
     clothingGrid.innerHTML = `
+
         <div class="empty-state">
+
             <div style="font-size:45px;">
                 ⏳
             </div>
-            <p>Loading your wardrobe...</p>
+
+            <p>
+                Loading your wardrobe...
+            </p>
+
         </div>
+
     `;
 
 
@@ -1038,8 +1132,20 @@ async function renderWardrobe() {
             await getWardrobe();
 
 
-        clothingGrid.innerHTML =
-            "";
+        const filtered =
+            currentFilter === "all"
+
+                ?
+
+                wardrobe
+
+                :
+
+                wardrobe.filter(
+                    item =>
+                        item.category ===
+                        currentFilter
+                );
 
 
         if (itemCount) {
@@ -1054,19 +1160,8 @@ async function renderWardrobe() {
         }
 
 
-        const filtered =
-            currentFilter === "all"
-                ? wardrobe
-                : wardrobe.filter(
-                    function(item) {
-
-                        return (
-                            item.category ===
-                            currentFilter
-                        );
-
-                    }
-                );
+        clothingGrid.innerHTML =
+            "";
 
 
         if (
@@ -1074,7 +1169,9 @@ async function renderWardrobe() {
         ) {
 
             clothingGrid.innerHTML = `
+
                 <div class="empty-state">
+
                     <div style="font-size:50px;">
                         ${
                             wardrobe.length
@@ -1084,21 +1181,27 @@ async function renderWardrobe() {
                     </div>
 
                     <h3>
+
                         ${
                             wardrobe.length
                                 ? "No items here"
                                 : "Your wardrobe is empty"
                         }
+
                     </h3>
 
                     <p>
+
                         ${
                             wardrobe.length
                                 ? "Try another category."
                                 : "Add your first clothing item."
                         }
+
                     </p>
+
                 </div>
+
             `;
 
             return;
@@ -1107,7 +1210,7 @@ async function renderWardrobe() {
 
 
         filtered.forEach(
-            function(item) {
+            item => {
 
                 clothingGrid.appendChild(
                     createClothingCard(
@@ -1130,7 +1233,9 @@ async function renderWardrobe() {
 
 
         clothingGrid.innerHTML = `
+
             <div class="empty-state">
+
                 <div style="font-size:45px;">
                     ⚠️
                 </div>
@@ -1144,7 +1249,9 @@ async function renderWardrobe() {
                         error.message
                     )}
                 </p>
+
             </div>
+
         `;
 
     }
@@ -1156,7 +1263,9 @@ async function renderWardrobe() {
 // CLOTHING CARD
 // =====================================================
 
-function createClothingCard(item) {
+function createClothingCard(
+    item
+) {
 
     const card =
         document.createElement(
@@ -1168,12 +1277,12 @@ function createClothingCard(item) {
         "clothing-card";
 
 
-    card.dataset.category =
-        item.category;
-
-
     card.dataset.id =
         item.id;
+
+
+    card.dataset.category =
+        item.category;
 
 
     const imageUrl =
@@ -1182,38 +1291,75 @@ function createClothingCard(item) {
         "";
 
 
-    const image =
+    const imageHTML =
         imageUrl
 
             ?
 
-            `<img
-                src="${escapeHTML(imageUrl)}"
-                alt="${escapeHTML(item.name)}"
+            `
+            <img
+                src="${escapeHTML(
+                    imageUrl
+                )}"
+                alt="${escapeHTML(
+                    categoryLabel(
+                        item.category
+                    )
+                )}"
                 loading="lazy"
-            >`
+            >
+            `
 
             :
 
-            `<div class="placeholder">
+            `
+            <div class="placeholder">
                 ${categoryEmoji(
                     item.category
                 )}
-            </div>`;
+            </div>
+            `;
+
+
+    const details = [];
+
+
+    if (item.color) {
+
+        details.push(
+            colorLabel(
+                item.color
+            )
+        );
+
+    }
+
+
+    if (item.fabric) {
+
+        details.push(
+            fabricLabel(
+                item.fabric
+            )
+        );
+
+    }
 
 
     const tags =
         (item.types || [])
             .map(
-                function(type) {
+                type => `
 
-                    return `
-                        <span class="item-tag">
-                            ${typeLabel(type)}
-                        </span>
-                    `;
+                    <span class="item-tag">
+                        ${escapeHTML(
+                            typeLabel(
+                                type
+                            )
+                        )}
+                    </span>
 
-                }
+                `
             )
             .join("");
 
@@ -1228,7 +1374,7 @@ function createClothingCard(item) {
 
         <div class="clothing-image">
 
-            ${image}
+            ${imageHTML}
 
             <button
                 class="heart ${
@@ -1254,15 +1400,21 @@ function createClothingCard(item) {
             <div>
 
                 <h3>
-                    ${escapeHTML(
-                        item.name
-                    )}
+                    ${categoryLabel(
+                        item.category
+                    ).toUpperCase()}
                 </h3>
 
                 <p>
-                    ${categoryLabel(
-                        item.category
-                    )}
+                    ${
+                        details.length
+                            ? escapeHTML(
+                                details.join(
+                                    " · "
+                                )
+                            )
+                            : "No details selected"
+                    }
                 </p>
 
                 <div class="item-tags">
@@ -1273,7 +1425,7 @@ function createClothingCard(item) {
                     style="
                         display:block;
                         margin-top:8px;
-                        opacity:.65;
+                        opacity:.6;
                     "
                 >
                     Worn ${wearCount} ${
@@ -1315,11 +1467,11 @@ function attachCardButtons() {
             '[data-action="favorite"]'
         )
         .forEach(
-            function(button) {
+            button => {
 
                 button.addEventListener(
                     "click",
-                    async function(event) {
+                    event => {
 
                         event.stopPropagation();
 
@@ -1330,7 +1482,7 @@ function attachCardButtons() {
                             );
 
 
-                        await toggleFavorite(
+                        toggleFavorite(
                             card.dataset.id
                         );
 
@@ -1346,11 +1498,11 @@ function attachCardButtons() {
             '[data-action="delete"]'
         )
         .forEach(
-            function(button) {
+            button => {
 
                 button.addEventListener(
                     "click",
-                    async function(event) {
+                    event => {
 
                         event.stopPropagation();
 
@@ -1361,7 +1513,7 @@ function attachCardButtons() {
                             );
 
 
-                        await deleteItem(
+                        deleteItem(
                             card.dataset.id
                         );
 
@@ -1378,7 +1530,9 @@ function attachCardButtons() {
 // FAVORITE
 // =====================================================
 
-async function toggleFavorite(id) {
+async function toggleFavorite(
+    id
+) {
 
     try {
 
@@ -1387,8 +1541,12 @@ async function toggleFavorite(id) {
             error: findError
         } =
             await supabase
-                .from(CLOTHING_TABLE)
-                .select("*")
+                .from(
+                    CLOTHING_TABLE
+                )
+                .select(
+                    "favorite"
+                )
                 .eq(
                     "id",
                     id
@@ -1405,10 +1563,14 @@ async function toggleFavorite(id) {
             error
         } =
             await supabase
-                .from(CLOTHING_TABLE)
+                .from(
+                    CLOTHING_TABLE
+                )
                 .update({
+
                     favorite:
                         !item.favorite
+
                 })
                 .eq(
                     "id",
@@ -1421,24 +1583,14 @@ async function toggleFavorite(id) {
         }
 
 
-        if (
-            currentPage ===
-            "favorites"
-        ) {
-
-            await showFavorites();
-
-        } else {
-
-            await renderWardrobe();
-
-        }
+        await renderWardrobe();
 
     } catch (error) {
 
         console.error(
             error
         );
+
 
         alert(
             "Could not update favorite."
@@ -1453,7 +1605,9 @@ async function toggleFavorite(id) {
 // DELETE ITEM
 // =====================================================
 
-async function deleteItem(id) {
+async function deleteItem(
+    id
+) {
 
     try {
 
@@ -1462,7 +1616,9 @@ async function deleteItem(id) {
             error: findError
         } =
             await supabase
-                .from(CLOTHING_TABLE)
+                .from(
+                    CLOTHING_TABLE
+                )
                 .select("*")
                 .eq(
                     "id",
@@ -1478,7 +1634,7 @@ async function deleteItem(id) {
 
         if (
             !confirm(
-                `Delete "${item.name}"?`
+                "Delete this clothing item?"
             )
         ) {
 
@@ -1491,7 +1647,9 @@ async function deleteItem(id) {
             error
         } =
             await supabase
-                .from(CLOTHING_TABLE)
+                .from(
+                    CLOTHING_TABLE
+                )
                 .delete()
                 .eq(
                     "id",
@@ -1504,11 +1662,6 @@ async function deleteItem(id) {
         }
 
 
-        await deleteImage(
-            item.image_url
-        );
-
-
         await renderWardrobe();
 
 
@@ -1517,6 +1670,7 @@ async function deleteItem(id) {
         console.error(
             error
         );
+
 
         alert(
             "Could not delete item."
@@ -1528,106 +1682,29 @@ async function deleteItem(id) {
 
 
 // =====================================================
-// MARK ITEM AS WORN
-// =====================================================
-
-async function markItemAsWorn(id) {
-
-    try {
-
-        const {
-            data: item,
-            error: findError
-        } =
-            await supabase
-                .from(CLOTHING_TABLE)
-                .select(
-                    "wear_count"
-                )
-                .eq(
-                    "id",
-                    id
-                )
-                .single();
-
-
-        if (findError) {
-            throw findError;
-        }
-
-
-        const {
-            error
-        } =
-            await supabase
-                .from(CLOTHING_TABLE)
-                .update({
-
-                    wear_count:
-                        Number(
-                            item.wear_count ||
-                            0
-                        ) + 1,
-
-                    last_worn:
-                        new Date()
-                            .toISOString()
-
-                })
-                .eq(
-                    "id",
-                    id
-                );
-
-
-        if (error) {
-            throw error;
-        }
-
-
-        await renderWardrobe();
-
-
-    } catch (error) {
-
-        console.error(
-            error
-        );
-
-        alert(
-            "Could not update wear count."
-        );
-
-    }
-
-}
-
-
-// =====================================================
-// FILTERS
+// WARDROBE FILTERS
 // =====================================================
 
 document
-    .querySelectorAll(".filter")
+    .querySelectorAll(
+        "#wardrobePage .filter"
+    )
     .forEach(
-        function(button) {
+        button => {
 
             button.addEventListener(
                 "click",
-                async function() {
+                async () => {
 
                     document
                         .querySelectorAll(
-                            ".filter"
+                            "#wardrobePage .filter"
                         )
                         .forEach(
-                            function(btn) {
-
-                                btn.classList.remove(
+                            filter =>
+                                filter.classList.remove(
                                     "active"
-                                );
-
-                            }
+                                )
                         );
 
 
@@ -1637,7 +1714,8 @@ document
 
 
                     currentFilter =
-                        button.dataset.category;
+                        button.dataset.category ||
+                        "all";
 
 
                     await renderWardrobe();
@@ -1650,51 +1728,46 @@ document
 
 
 // =====================================================
-// PAGE HELPERS
+// PAGE NAVIGATION
 // =====================================================
 
-function activateNav(button) {
+function hidePages() {
+
+    wardrobePage?.classList.add(
+        "hidden"
+    );
+
+    dynamicPage?.classList.add(
+        "hidden"
+    );
+
+}
+
+
+function activateNav(
+    activeButton
+) {
 
     document
         .querySelectorAll(
             ".nav-item"
         )
         .forEach(
-            function(nav) {
-
-                nav.classList.remove(
+            button =>
+                button.classList.remove(
                     "active"
-                );
-
-            }
+                )
         );
 
 
-    if (button) {
-
-        button.classList.add(
-            "active"
-        );
-
-    }
-
-}
-
-
-function showDynamicPage() {
-
-    wardrobePage.classList.add(
-        "hidden"
-    );
-
-    dynamicPage.classList.remove(
-        "hidden"
+    activeButton?.classList.add(
+        "active"
     );
 
 }
 
 
-async function showWardrobe() {
+function showWardrobe() {
 
     currentPage =
         "wardrobe";
@@ -1705,17 +1778,27 @@ async function showWardrobe() {
     );
 
 
-    dynamicPage.classList.add(
+    hidePages();
+
+
+    wardrobePage?.classList.remove(
         "hidden"
     );
 
 
-    wardrobePage.classList.remove(
+    renderWardrobe();
+
+}
+
+
+function showDynamicPage() {
+
+    hidePages();
+
+
+    dynamicPage?.classList.remove(
         "hidden"
     );
-
-
-    await renderWardrobe();
 
 }
 
@@ -1756,7 +1839,6 @@ async function showFavorites() {
 
         </div>
 
-
         <div
             class="clothing-grid"
             id="favoritesGrid"
@@ -1766,9 +1848,7 @@ async function showFavorites() {
 
 
     const grid =
-        document.getElementById(
-            "favoritesGrid"
-        );
+        $("favoritesGrid");
 
 
     try {
@@ -1778,7 +1858,9 @@ async function showFavorites() {
             error
         } =
             await supabase
-                .from(CLOTHING_TABLE)
+                .from(
+                    CLOTHING_TABLE
+                )
                 .select("*")
                 .eq(
                     "favorite",
@@ -1797,12 +1879,9 @@ async function showFavorites() {
         }
 
 
-        const favorites =
-            data || [];
-
-
         if (
-            favorites.length === 0
+            !data ||
+            data.length === 0
         ) {
 
             grid.innerHTML = `
@@ -1818,7 +1897,7 @@ async function showFavorites() {
                     </h3>
 
                     <p>
-                        Tap the heart on any clothing item.
+                        Tap the heart on a clothing item.
                     </p>
 
                 </div>
@@ -1830,16 +1909,13 @@ async function showFavorites() {
         }
 
 
-        favorites.forEach(
-            function(item) {
-
+        data.forEach(
+            item =>
                 grid.appendChild(
                     createClothingCard(
                         item
                     )
-                );
-
-            }
+                )
         );
 
 
@@ -1852,13 +1928,19 @@ async function showFavorites() {
             error
         );
 
+
         grid.innerHTML = `
+
             <div class="empty-state">
+
                 ⚠️
+
                 <p>
                     Could not load favorites.
                 </p>
+
             </div>
+
         `;
 
     }
@@ -1869,6 +1951,43 @@ async function showFavorites() {
 // =====================================================
 // OUTFITS
 // =====================================================
+
+const OUTFITS_KEY =
+    "closetAI_outfits_v2";
+
+
+function getOutfits() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                OUTFITS_KEY
+            )
+        ) || [];
+
+    } catch {
+
+        return [];
+
+    }
+
+}
+
+
+function saveOutfits(
+    outfits
+) {
+
+    localStorage.setItem(
+        OUTFITS_KEY,
+        JSON.stringify(
+            outfits
+        )
+    );
+
+}
+
 
 async function showOutfits() {
 
@@ -1893,22 +2012,71 @@ async function showOutfits() {
             </p>
 
             <h2>
-                My outfits
+                Outfits
             </h2>
 
             <p>
-                Create and save outfits using your own clothes.
+                Create outfits from your wardrobe.
             </p>
+
+        </div>
+
+
+        <div class="outfit-filter-panel">
+
+            <label class="outfit-filter-field">
+
+                <span>
+                    Fabric
+                </span>
+
+                <select id="savedOutfitFabricFilter">
+
+                    <option value="all">
+                        All fabrics
+                    </option>
+
+                    <option value="denim">
+                        Denim
+                    </option>
+
+                    <option value="cotton">
+                        Cotton
+                    </option>
+
+                    <option value="wool">
+                        Wool
+                    </option>
+
+                    <option value="knit">
+                        Knit
+                    </option>
+
+                    <option value="satin">
+                        Satin
+                    </option>
+
+                    <option value="leather">
+                        Leather
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </label>
 
         </div>
 
 
         <button
             class="style-button"
-            id="newOutfitButton"
+            id="createOutfitButton"
             type="button"
         >
-            ＋ Create outfit
+            + Create outfit
         </button>
 
 
@@ -1917,19 +2085,12 @@ async function showOutfits() {
     `;
 
 
-    document
-        .getElementById(
-            "newOutfitButton"
-        )
-        .addEventListener(
+    $("createOutfitButton")
+        ?.addEventListener(
             "click",
             showOutfitBuilder
         );
 
-
-    // For now outfits stay in localStorage.
-    // We will move them to Supabase after
-    // the wardrobe system is confirmed working.
 
     renderSavedOutfits();
 
@@ -1942,15 +2103,19 @@ async function showOutfits() {
 
 async function showOutfitBuilder() {
 
+    currentPage =
+        "outfit-builder";
+
+
+    selectedOutfitItems =
+        [];
+
+
     showDynamicPage();
 
 
     const wardrobe =
         await getWardrobe();
-
-
-    selectedOutfitItems =
-        [];
 
 
     dynamicPage.innerHTML = `
@@ -1966,8 +2131,7 @@ async function showOutfitBuilder() {
             </h2>
 
             <p>
-                Swipe through your clothes and tap
-                the pieces you want to wear.
+                Choose pieces from your wardrobe.
             </p>
 
         </div>
@@ -1975,26 +2139,13 @@ async function showOutfitBuilder() {
 
         <div class="outfit-builder">
 
-            <label class="input-label">
-
-                Outfit name
-
-                <input
-                    type="text"
-                    id="outfitName"
-                    placeholder="e.g. Summer dinner"
-                >
-
-            </label>
-
-
             <div id="outfitCategories"></div>
 
 
             <div class="selected-outfit">
 
                 <strong>
-                    Your selected outfit
+                    Selected pieces
                 </strong>
 
 
@@ -2016,7 +2167,6 @@ async function showOutfitBuilder() {
                 class="save-item"
                 id="saveOutfitButton"
                 type="button"
-                style="margin-top:20px;"
             >
                 Save outfit!
             </button>
@@ -2024,40 +2174,6 @@ async function showOutfitBuilder() {
         </div>
 
     `;
-
-
-    if (
-        wardrobe.length === 0
-    ) {
-
-        document
-            .getElementById(
-                "outfitCategories"
-            )
-            .innerHTML = `
-
-                <div class="empty-state">
-
-                    <div style="font-size:45px;">
-                        👗
-                    </div>
-
-                    <h3>
-                        Add clothes first
-                    </h3>
-
-                    <p>
-                        Your outfit creator uses
-                        the clothes in your wardrobe.
-                    </p>
-
-                </div>
-
-            `;
-
-        return;
-
-    }
 
 
     const categories = [
@@ -2121,24 +2237,17 @@ async function showOutfitBuilder() {
 
 
     const container =
-        document.getElementById(
-            "outfitCategories"
-        );
+        $("outfitCategories");
 
 
     categories.forEach(
-        function(category) {
+        category => {
 
             const items =
                 wardrobe.filter(
-                    function(item) {
-
-                        return (
-                            item.category ===
-                            category.key
-                        );
-
-                    }
+                    item =>
+                        item.category ===
+                        category.key
                 );
 
 
@@ -2197,7 +2306,7 @@ async function showOutfitBuilder() {
 
 
             items.forEach(
-                function(item) {
+                item => {
 
                     row.appendChild(
                         createOutfitItem(
@@ -2218,11 +2327,8 @@ async function showOutfitBuilder() {
     );
 
 
-    document
-        .getElementById(
-            "saveOutfitButton"
-        )
-        .addEventListener(
+    $("saveOutfitButton")
+        ?.addEventListener(
             "click",
             saveCurrentOutfit
         );
@@ -2253,33 +2359,29 @@ function createOutfitItem(
         item.id;
 
 
-    const imageUrl =
-        item.image_url ||
-        item.image ||
-        "";
-
-
     const image =
-        imageUrl
+        item.image_url
 
             ?
 
-            `<img
-                src="${escapeHTML(imageUrl)}"
-                alt="${escapeHTML(item.name)}"
-                loading="lazy"
-            >`
+            `
+            <img
+                src="${escapeHTML(
+                    item.image_url
+                )}"
+                alt=""
+            >
+            `
 
             :
 
-            `<div
-                class="placeholder"
-                style="font-size:50px;"
-            >
+            `
+            <div class="placeholder">
                 ${categoryEmoji(
                     item.category
                 )}
-            </div>`;
+            </div>
+            `;
 
 
     element.innerHTML = `
@@ -2294,15 +2396,28 @@ function createOutfitItem(
         <div class="outfit-item-info">
 
             <strong>
-                ${escapeHTML(
-                    item.name
+                ${categoryLabel(
+                    item.category
                 )}
             </strong>
 
             <span>
-                ${categoryLabel(
-                    item.category
-                )}
+                ${
+                    [
+                        item.color
+                            ? colorLabel(
+                                item.color
+                            )
+                            : "",
+                        item.fabric
+                            ? fabricLabel(
+                                item.fabric
+                            )
+                            : ""
+                    ]
+                    .filter(Boolean)
+                    .join(" · ")
+                }
             </span>
 
         </div>
@@ -2312,13 +2427,91 @@ function createOutfitItem(
 
     element.addEventListener(
         "click",
-        function() {
+        () => {
 
-            handleOutfitSelection(
-                element,
-                item,
-                multiple
-            );
+            const exists =
+                selectedOutfitItems.some(
+                    selected =>
+                        selected.id ===
+                        item.id
+                );
+
+
+            if (exists) {
+
+                selectedOutfitItems =
+                    selectedOutfitItems.filter(
+                        selected =>
+                            selected.id !==
+                            item.id
+                    );
+
+
+                element.classList.remove(
+                    "selected"
+                );
+
+            } else {
+
+                if (!multiple) {
+
+                    selectedOutfitItems =
+                        selectedOutfitItems.filter(
+                            selected =>
+                                selected.category !==
+                                item.category
+                        );
+
+
+                    document
+                        .querySelectorAll(
+                            `.outfit-item`
+                        )
+                        .forEach(
+                            card => {
+
+                                if (
+                                    card.dataset.id !==
+                                    item.id
+                                ) {
+
+                                    const cardItem =
+                                        wardrobeItemById(
+                                            card.dataset.id
+                                        );
+
+                                    if (
+                                        cardItem?.category ===
+                                        item.category
+                                    ) {
+
+                                        card.classList.remove(
+                                            "selected"
+                                        );
+
+                                    }
+
+                                }
+
+                            }
+                        );
+
+                }
+
+
+                selectedOutfitItems.push(
+                    item
+                );
+
+
+                element.classList.add(
+                    "selected"
+                );
+
+            }
+
+
+            updateSelectedOutfit();
 
         }
     );
@@ -2329,132 +2522,48 @@ function createOutfitItem(
 }
 
 
-// =====================================================
-// OUTFIT SELECTION
-// =====================================================
-
-function handleOutfitSelection(
-    element,
-    item,
-    multiple
+function wardrobeItemById(
+    id
 ) {
 
-    const alreadySelected =
-        selectedOutfitItems.some(
-            function(selected) {
-
-                return (
-                    selected.id ===
-                    item.id
-                );
-
-            }
+    const cards =
+        document.querySelectorAll(
+            ".outfit-item"
         );
 
 
-    if (
-        alreadySelected
+    for (
+        const card of cards
     ) {
 
-        selectedOutfitItems =
-            selectedOutfitItems.filter(
-                function(selected) {
+        if (
+            card.dataset.id ===
+            id
+        ) {
 
-                    return (
-                        selected.id !==
-                        item.id
-                    );
-
-                }
-            );
-
-
-        element.classList.remove(
-            "selected"
-        );
-
-
-        updateSelectedOutfit();
-
-        return;
-
-    }
-
-
-    if (!multiple) {
-
-        const sameCategory =
-            selectedOutfitItems.find(
-                function(selected) {
-
-                    return (
-                        selected.category ===
-                        item.category
-                    );
-
-                }
-            );
-
-
-        if (sameCategory) {
-
-            selectedOutfitItems =
-                selectedOutfitItems.filter(
-                    function(selected) {
-
-                        return (
-                            selected.category !==
-                            item.category
-                        );
-
-                    }
-                );
-
-
-            document
-                .querySelectorAll(
-                    `.outfit-item[data-id="${sameCategory.id}"]`
-                )
-                .forEach(
-                    function(card) {
-
-                        card.classList.remove(
-                            "selected"
-                        );
-
-                    }
-                );
+            return {
+                category:
+                    card.dataset.category
+            };
 
         }
 
     }
 
 
-    selectedOutfitItems.push(
-        item
-    );
-
-
-    element.classList.add(
-        "selected"
-    );
-
-
-    updateSelectedOutfit();
+    return null;
 
 }
 
 
 // =====================================================
-// SELECTED OUTFIT PREVIEW
+// SELECTED OUTFIT
 // =====================================================
 
 function updateSelectedOutfit() {
 
     const container =
-        document.getElementById(
-            "selectedOutfitItems"
-        );
+        $("selectedOutfitItems");
 
 
     if (!container) {
@@ -2463,7 +2572,8 @@ function updateSelectedOutfit() {
 
 
     if (
-        selectedOutfitItems.length === 0
+        selectedOutfitItems.length ===
+        0
     ) {
 
         container.innerHTML = `
@@ -2482,19 +2592,23 @@ function updateSelectedOutfit() {
     container.innerHTML =
         selectedOutfitItems
             .map(
-                function(item) {
+                item => `
 
-                    return `
+                    <span class="selected-chip">
 
-                        <span class="selected-chip">
-                            ${escapeHTML(
-                                item.name
-                            )}
-                        </span>
+                        ${
+                            colorLabel(
+                                item.color ||
+                                ""
+                            ) ||
+                            categoryLabel(
+                                item.category
+                            )
+                        }
 
-                    `;
+                    </span>
 
-                }
+                `
             )
             .join("");
 
@@ -2502,79 +2616,18 @@ function updateSelectedOutfit() {
 
 
 // =====================================================
-// OUTFIT LOCAL STORAGE
-// =====================================================
-
-const OUTFITS_KEY =
-    "closetAI_outfits_v2";
-
-
-function getOutfits() {
-
-    try {
-
-        return JSON.parse(
-            localStorage.getItem(
-                OUTFITS_KEY
-            )
-        ) || [];
-
-    } catch {
-
-        return [];
-
-    }
-
-}
-
-
-function saveOutfits(outfits) {
-
-    localStorage.setItem(
-        OUTFITS_KEY,
-        JSON.stringify(
-            outfits
-        )
-    );
-
-}
-
-
-// =====================================================
-// SAVE CURRENT OUTFIT
+// SAVE OUTFIT
 // =====================================================
 
 function saveCurrentOutfit() {
 
-    const nameInput =
-        document.getElementById(
-            "outfitName"
-        );
-
-
-    const name =
-        nameInput.value.trim();
-
-
-    if (!name) {
-
-        alert(
-            "Please give your outfit a name."
-        );
-
-        nameInput.focus();
-
-        return;
-
-    }
-
-
     if (
-        selectedOutfitItems.length === 0
+        selectedOutfitItems.length ===
+        0
     ) {
 
         alert(
-            "Choose at least one clothing item."
+            "Choose at least one piece."
         );
 
         return;
@@ -2588,35 +2641,29 @@ function saveCurrentOutfit() {
             "outfit-" +
             Date.now(),
 
-        name:
-            name,
-
         items:
             selectedOutfitItems.map(
-                function(item) {
+                item => ({
 
-                    return {
+                    id:
+                        item.id,
 
-                        id:
-                            item.id,
+                    category:
+                        item.category,
 
-                        name:
-                            item.name,
+                    color:
+                        item.color,
 
-                        category:
-                            item.category,
+                    fabric:
+                        item.fabric,
 
-                        types:
-                            item.types || [],
+                    image_url:
+                        item.image_url,
 
-                        image:
-                            item.image_url ||
-                            item.image ||
-                            ""
+                    types:
+                        item.types || []
 
-                    };
-
-                }
+                })
             ),
 
         createdAt:
@@ -2639,10 +2686,6 @@ function saveCurrentOutfit() {
     );
 
 
-    selectedOutfitItems =
-        [];
-
-
     alert(
         "Outfit saved! ✨"
     );
@@ -2660,9 +2703,7 @@ function saveCurrentOutfit() {
 function renderSavedOutfits() {
 
     const container =
-        document.getElementById(
-            "savedOutfits"
-        );
+        $("savedOutfits");
 
 
     if (!container) {
@@ -2691,7 +2732,7 @@ function renderSavedOutfits() {
                 </h3>
 
                 <p>
-                    Create your first outfit above.
+                    Create your first outfit.
                 </p>
 
             </div>
@@ -2706,51 +2747,26 @@ function renderSavedOutfits() {
     container.innerHTML =
         outfits
             .map(
-                function(outfit) {
+                outfit => {
 
                     const images =
                         outfit.items
                             .filter(
-                                function(item) {
-
-                                    return item.image;
-
-                                }
+                                item =>
+                                    item.image_url
                             )
                             .map(
-                                function(item) {
+                                item => `
 
-                                    return `
+                                    <img
+                                        src="${escapeHTML(
+                                            item.image_url
+                                        )}"
+                                        alt=""
+                                        loading="lazy"
+                                    >
 
-                                        <img
-                                            src="${escapeHTML(item.image)}"
-                                            alt="${escapeHTML(item.name)}"
-                                            loading="lazy"
-                                        >
-
-                                    `;
-
-                                }
-                            )
-                            .join("");
-
-
-                    const names =
-                        outfit.items
-                            .map(
-                                function(item) {
-
-                                    return `
-
-                                        <span class="selected-chip">
-                                            ${escapeHTML(
-                                                item.name
-                                            )}
-                                        </span>
-
-                                    `;
-
-                                }
+                                `
                             )
                             .join("");
 
@@ -2758,36 +2774,33 @@ function renderSavedOutfits() {
                     return `
 
                         <article
-                            class="saved-outfit"
+                            class="saved-outfit-card"
                         >
 
+                            <div
+                                class="saved-outfit-thumb-row"
+                            >
+
+                                ${images}
+
+                            </div>
+
+
                             <h3>
-                                ${escapeHTML(
-                                    outfit.name
-                                )}
+                                Outfit
                             </h3>
 
 
                             <p
                                 class="saved-outfit-description"
                             >
-                                ${outfit.items.length}
+
+                                ${
+                                    outfit.items.length
+                                }
                                 pieces
+
                             </p>
-
-
-                            <div
-                                class="saved-outfit-images"
-                            >
-                                ${images}
-                            </div>
-
-
-                            <div
-                                class="selected-outfit-items"
-                            >
-                                ${names}
-                            </div>
 
 
                             <button
@@ -2812,11 +2825,11 @@ function renderSavedOutfits() {
             ".delete-outfit"
         )
         .forEach(
-            function(button) {
+            button => {
 
                 button.addEventListener(
                     "click",
-                    function() {
+                    () => {
 
                         deleteOutfit(
                             button.dataset.outfitId
@@ -2835,7 +2848,9 @@ function renderSavedOutfits() {
 // DELETE OUTFIT
 // =====================================================
 
-function deleteOutfit(id) {
+function deleteOutfit(
+    id
+) {
 
     if (
         !confirm(
@@ -2854,14 +2869,9 @@ function deleteOutfit(id) {
 
     saveOutfits(
         outfits.filter(
-            function(outfit) {
-
-                return (
-                    outfit.id !==
-                    id
-                );
-
-            }
+            outfit =>
+                outfit.id !==
+                id
         )
     );
 
@@ -2889,8 +2899,20 @@ async function showSettings() {
     showDynamicPage();
 
 
-    const wardrobe =
-        await getWardrobe();
+    let wardrobe = [];
+
+
+    try {
+
+        wardrobe =
+            await getWardrobe();
+
+    } catch {
+
+        wardrobe =
+            [];
+
+    }
 
 
     const outfits =
@@ -2910,7 +2932,7 @@ async function showSettings() {
             </h2>
 
             <p>
-                Manage your wardrobe.
+                Manage your digital wardrobe.
             </p>
 
         </div>
@@ -2950,22 +2972,8 @@ async function showSettings() {
             </h3>
 
             <p>
-                Your clothing and images are stored
-                securely in Supabase.
-            </p>
-
-        </div>
-
-
-        <div class="settings-card">
-
-            <h3>
-                AI Stylist
-            </h3>
-
-            <p>
-                Luna is currently switched off.
-                We're building the manual wardrobe first.
+                Your clothing photos are stored
+                in Supabase Storage.
             </p>
 
         </div>
@@ -2979,94 +2987,48 @@ async function showSettings() {
 // NAVIGATION
 // =====================================================
 
-if (wardrobeNav) {
-
-    wardrobeNav.addEventListener(
-        "click",
-        showWardrobe
-    );
-
-}
+wardrobeNav?.addEventListener(
+    "click",
+    showWardrobe
+);
 
 
-if (outfitsNav) {
-
-    outfitsNav.addEventListener(
-        "click",
-        showOutfits
-    );
-
-}
+outfitsNav?.addEventListener(
+    "click",
+    showOutfits
+);
 
 
-if (favoritesNav) {
-
-    favoritesNav.addEventListener(
-        "click",
-        showFavorites
-    );
-
-}
+favoritesNav?.addEventListener(
+    "click",
+    showFavorites
+);
 
 
-if (settingsNav) {
-
-    settingsNav.addEventListener(
-        "click",
-        showSettings
-    );
-
-}
+settingsNav?.addEventListener(
+    "click",
+    showSettings
+);
 
 
-if (logo) {
-
-    logo.addEventListener(
-        "click",
-        showWardrobe
-    );
-
-}
+logo?.addEventListener(
+    "click",
+    showWardrobe
+);
 
 
-if (styleOutfitButton) {
-
-    styleOutfitButton.addEventListener(
-        "click",
-        showOutfitBuilder
-    );
-
-}
-
-
-const profileButton =
-    document.getElementById(
-        "profileButton"
-    );
-
-
-if (profileButton) {
-
-    profileButton.addEventListener(
-        "click",
-        function() {
-
-            alert(
-                "Profile settings can be added later ✨"
-            );
-
-        }
-    );
-
-}
+styleOutfitButton?.addEventListener(
+    "click",
+    showOutfitBuilder
+);
 
 
 // =====================================================
-// START APP
+// START
 // =====================================================
 
 console.log(
-    "Closet AI Supabase version starting..."
+    "The Wardrobe + Supabase loaded."
 );
 
 
