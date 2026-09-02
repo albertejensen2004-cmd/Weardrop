@@ -1,6 +1,6 @@
 /* =========================================================
    CLOSET AI
-   SUPABASE VERSION
+   Supabase wardrobe + outfit builder
    ========================================================= */
 
 import { createClient } from
@@ -12,38 +12,51 @@ import { createClient } from
    ========================================================= */
 
 const SUPABASE_URL =
-    "https://jppmfo ciofyhpxzcfcmz.supabase.co"
-        .replace(" ", "");
+    "https://jppmfociofyhpxzcfcmz.supabase.co";
 
-const SUPABASE_ANON_KEY =
+const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwcG1mb2Npb2Z5aHB4emNmY216Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMTYxNTEsImV4cCI6MjEwMzU5MjE1MX0.zqJQo2MC4P0XNG1mMNFJ2_5_jEeHTsz7cOiTQD2MYw4";
 
+const STORAGE_BUCKET =
+    "clothing";
 
-const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
+const CLOTHING_TABLE =
+    "clothing_items";
+
+const OUTFITS_TABLE =
+    "outfits";
 
 
-const TABLE_NAME = "clothing_items";
-const STORAGE_BUCKET = "wardrobe-images";
+const supabase =
+    createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
 /* =========================================================
-   APP STATE
+   GLOBAL STATE
    ========================================================= */
 
 let wardrobe = [];
 
-let selectedImageFile = null;
-let selectedImagePreview = "";
+let outfits = [];
+
+let currentPage = "wardrobe";
+
+let currentWardrobeFilter = "all";
 
 let selectedTypes = [];
 
-let currentPage = "wardrobe";
-let currentFilter = "all";
+let selectedImageFile = null;
 
 let selectedOutfitItems = [];
+
+let builderFilters = {
+    category: "all",
+    fabric: "all",
+    color: "all"
+};
 
 
 /* =========================================================
@@ -57,180 +70,260 @@ function $(id) {
 
 function escapeHTML(value) {
 
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        value ?? "";
-
-    return div.innerHTML;
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
-/* =========================================================
-   LABELS
-   ========================================================= */
-
-const COLOR_OPTIONS = [
-
-    ["black", "Black"],
-    ["white", "White"],
-    ["beige", "Beige"],
-    ["cream", "Cream"],
-    ["brown", "Brown"],
-    ["blue", "Blue"],
-    ["navy", "Navy"],
-    ["light-blue", "Light blue"],
-    ["red", "Red"],
-    ["pink", "Pink"],
-    ["green", "Green"],
-    ["grey", "Grey"],
-    ["yellow", "Yellow"],
-    ["orange", "Orange"],
-    ["purple", "Purple"],
-    ["gold", "Gold"],
-    ["silver", "Silver"],
-    ["multicolour", "Multicolour"]
-
-];
-
-
-const FABRIC_OPTIONS = [
-
-    ["denim", "Denim"],
-    ["cotton", "Cotton"],
-    ["wool", "Wool"],
-    ["knit", "Knit"],
-    ["satin", "Satin"],
-    ["leather", "Leather"],
-    ["other", "Other"]
-
-];
-
-
-const TYPE_OPTIONS = [
-
-    ["basic", "Basic"],
-    ["everyday", "Everyday"],
-    ["fine", "Fine"],
-    ["summer", "Summer"],
-    ["winter", "Winter"],
-    ["beach", "Beach"],
-    ["going-out", "Going out"],
-    ["work", "Work"],
-    ["cozy", "Cozy"],
-    ["sport", "Sport"],
-    ["statement", "Statement"],
-    ["party", "Party"]
-
-];
-
-
-function colorLabel(value) {
-
-    const match =
-        COLOR_OPTIONS.find(
-            item => item[0] === value
-        );
-
-    return match
-        ? match[1]
-        : value || "";
-}
-
-
-function fabricLabel(value) {
-
-    const match =
-        FABRIC_OPTIONS.find(
-            item => item[0] === value
-        );
-
-    return match
-        ? match[1]
-        : value || "";
-}
-
-
-function typeLabel(value) {
-
-    const match =
-        TYPE_OPTIONS.find(
-            item => item[0] === value
-        );
-
-    return match
-        ? match[1]
-        : value || "";
-}
-
-
-function categoryLabel(value) {
+function categoryLabel(category) {
 
     const labels = {
 
-        top: "Top",
-        bottom: "Bottom",
-        dress: "Dress",
-        shoes: "Shoes",
-        accessory: "Accessory"
+        top:
+            "Tops",
 
+        bottom:
+            "Bottoms",
+
+        dress:
+            "Dresses",
+
+        sweater:
+            "Sweaters",
+
+        cardigan:
+            "Cardigans / Overtop",
+
+        skirt:
+            "Skirts",
+
+        shoes:
+            "Shoes",
+
+        accessory:
+            "Accessories"
     };
 
-    return labels[value] ||
-        value ||
-        "";
+    return labels[category] ||
+        category ||
+        "Other";
 }
 
 
-function categoryEmoji(value) {
+function categoryEmoji(category) {
 
-    const icons = {
+    const emojis = {
 
         top: "👚",
         bottom: "👖",
         dress: "👗",
-        shoes: "👟",
+        sweater: "🧶",
+        cardigan: "🧥",
+        skirt: "👗",
+        shoes: "👠",
         accessory: "👜"
-
     };
 
-    return icons[value] ||
-        "👗";
+    return emojis[category] || "👕";
+}
+
+
+function formatLabel(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, letter =>
+            letter.toUpperCase()
+        );
 }
 
 
 /* =========================================================
-   INITIALISE
+   NORMALISE CLOTHING FROM SUPABASE
    ========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    initApp
-);
+function normaliseClothing(item) {
+
+    return {
+
+        id:
+            item.id,
+
+        category:
+            item.category || "",
+
+        color:
+            item.color || "",
+
+        fabric:
+            item.fabric || "",
+
+        types:
+            Array.isArray(item.types)
+                ? item.types
+                : [],
+
+        image:
+            item.image_url || "",
+
+        image_url:
+            item.image_url || "",
+
+        favorite:
+            Boolean(item.favorite),
+
+        wear_count:
+            Number(item.wear_count || 0),
+
+        last_worn:
+            item.last_worn || null,
+
+        created_at:
+            item.created_at || null
+    };
+}
 
 
-async function initApp() {
+/* =========================================================
+   LOAD WARDROBE FROM SUPABASE
+   ========================================================= */
 
-    console.log(
-        "✨ Closet AI starting..."
+async function loadWardrobe() {
+
+    const {
+        data,
+        error
+    } = await supabase
+        .from(CLOTHING_TABLE)
+        .select("*")
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+    if (error) {
+
+        console.error(
+            "Could not load wardrobe:",
+            error
+        );
+
+        showError(
+            "Could not load your wardrobe: " +
+            error.message
+        );
+
+        return;
+    }
+
+    wardrobe =
+        (data || [])
+            .map(normaliseClothing);
+
+    renderWardrobe();
+
+    updateItemCount();
+}
+
+
+/* =========================================================
+   LOAD OUTFITS FROM SUPABASE
+   ========================================================= */
+
+async function loadOutfits() {
+
+    const {
+        data,
+        error
+    } = await supabase
+        .from(OUTFITS_TABLE)
+        .select("*")
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+    if (error) {
+
+        console.error(
+            "Could not load outfits:",
+            error
+        );
+
+        outfits = [];
+
+        return;
+    }
+
+    outfits =
+        data || [];
+}
+
+
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
+
+function showError(message) {
+
+    console.error(message);
+
+    const existing =
+        document.querySelector(
+            ".app-error-message"
+        );
+
+    if (existing) {
+        existing.remove();
+    }
+
+    const errorBox =
+        document.createElement("div");
+
+    errorBox.className =
+        "app-error-message";
+
+    errorBox.textContent =
+        message;
+
+    Object.assign(
+        errorBox.style,
+        {
+            position: "fixed",
+            bottom: "20px",
+            left: "20px",
+            right: "20px",
+            zIndex: "9999",
+            padding: "14px 18px",
+            borderRadius: "12px",
+            background: "#f4e8e6",
+            color: "#8c514a",
+            border: "1px solid #dfc6c1",
+            fontSize: "14px"
+        }
     );
 
+    document.body.appendChild(
+        errorBox
+    );
 
-    connectNavigation();
+    setTimeout(() => {
 
-    connectAddItem();
+        errorBox.remove();
 
-    connectTypeButtons();
-
-    setupWardrobeFilters();
-
-
-    await loadWardrobe();
-
-
-    showWardrobe();
-
+    }, 7000);
 }
 
 
@@ -238,7 +331,3668 @@ async function initApp() {
    NAVIGATION
    ========================================================= */
 
-function connectNavigation() {
+function hidePages() {
+
+    const wardrobePage =
+        $("wardrobePage");
+
+    const dynamicPage =
+        $("dynamicPage");
+
+    if (wardrobePage) {
+
+        wardrobePage.classList.add(
+            "hidden"
+        );
+    }
+
+    if (dynamicPage) {
+
+        dynamicPage.classList.add(
+            "hidden"
+        );
+    }
+}
+
+
+function showWardrobe() {
+
+    currentPage =
+        "wardrobe";
+
+    hidePages();
+
+    $("wardrobePage")
+        ?.classList
+        .remove("hidden");
+
+    activateNav(
+        $("wardrobeNav")
+    );
+
+    renderWardrobe();
+}
+
+
+function showDynamicPage() {
+
+    hidePages();
+
+    $("dynamicPage")
+        ?.classList
+        .remove("hidden");
+}
+
+
+function activateNav(button) {
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(item => {
+
+            item.classList.remove(
+                "active"
+            );
+        });
+
+    button
+        ?.classList
+        .add("active");
+}
+
+
+/* =========================================================
+   WARDROBE
+   ========================================================= */
+
+function updateItemCount() {
+
+    const count =
+        $("itemCount");
+
+    if (!count) {
+        return;
+    }
+
+    count.textContent =
+        `${wardrobe.length} ${
+            wardrobe.length === 1
+                ? "item"
+                : "items"
+        } in your closet`;
+}
+
+
+function renderWardrobe() {
+
+    const grid =
+        $("clothingGrid");
+
+    if (!grid) {
+        return;
+    }
+
+    const filtered =
+        wardrobe.filter(item => {
+
+            if (
+                currentWardrobeFilter ===
+                "all"
+            ) {
+                return true;
+            }
+
+            return (
+                item.category ===
+                currentWardrobeFilter
+            );
+        });
+
+    grid.innerHTML = "";
+
+    if (!filtered.length) {
+
+        grid.innerHTML = `
+            <div class="empty-state">
+
+                <div
+                    style="font-size:42px;"
+                >
+                    👗
+                </div>
+
+                <h3>
+                    No clothing found
+                </h3>
+
+                <p>
+                    Add something to your wardrobe.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    filtered.forEach(item => {
+
+        grid.appendChild(
+            createClothingCard(item)
+        );
+
+    });
+
+    updateItemCount();
+}
+
+
+/* =========================================================
+   CLOTHING CARD
+   ========================================================= */
+
+function createClothingCard(item) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+    card.className =
+        "clothing-card";
+
+    const imageHTML =
+        item.image
+            ? `
+                <img
+                    src="${escapeHTML(
+                        item.image
+                    )}"
+                    alt="${escapeHTML(
+                        categoryLabel(
+                            item.category
+                        )
+                    )}"
+                >
+            `
+            : `
+                <div class="placeholder">
+                    ${categoryEmoji(
+                        item.category
+                    )}
+                </div>
+            `;
+
+    const types =
+        item.types
+            .slice(0, 4)
+            .map(type => `
+                <span class="item-tag">
+                    ${escapeHTML(
+                        formatLabel(type)
+                    )}
+                </span>
+            `)
+            .join("");
+
+    card.innerHTML = `
+
+        <div
+            class="clothing-image"
+            data-id="${escapeHTML(item.id)}"
+        >
+
+            ${imageHTML}
+
+            <button
+                class="heart ${
+                    item.favorite
+                        ? "active"
+                        : ""
+                }"
+                type="button"
+                aria-label="Favourite"
+            >
+                ${
+                    item.favorite
+                        ? "♥"
+                        : "♡"
+                }
+            </button>
+
+        </div>
+
+        <div class="clothing-info">
+
+            <div>
+
+                <h3>
+                    ${escapeHTML(
+                        categoryLabel(
+                            item.category
+                        )
+                    )}
+                </h3>
+
+                <p>
+                    ${escapeHTML(
+                        formatLabel(
+                            item.color
+                        )
+                    )}
+                    ${
+                        item.fabric
+                            ? " · " +
+                              escapeHTML(
+                                  formatLabel(
+                                      item.fabric
+                                  )
+                              )
+                            : ""
+                    }
+                </p>
+
+                ${
+                    types
+                        ? `
+                            <div class="item-tags">
+                                ${types}
+                            </div>
+                        `
+                        : ""
+                }
+
+            </div>
+
+        </div>
+    `;
+
+
+    card
+        .querySelector(".heart")
+        ?.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                toggleFavorite(
+                    item
+                );
+            }
+        );
+
+
+    card
+        .querySelector(".clothing-image")
+        ?.addEventListener(
+            "click",
+            () => {
+
+                openPhoto(
+                    item.image
+                );
+            }
+        );
+
+
+    return card;
+}
+
+
+/* =========================================================
+   FAVOURITE
+   ========================================================= */
+
+async function toggleFavorite(item) {
+
+    const newValue =
+        !item.favorite;
+
+    const {
+        error
+    } = await supabase
+        .from(CLOTHING_TABLE)
+        .update({
+            favorite: newValue
+        })
+        .eq(
+            "id",
+            item.id
+        );
+
+    if (error) {
+
+        showError(
+            "Could not update favourite: " +
+            error.message
+        );
+
+        return;
+    }
+
+    item.favorite =
+        newValue;
+
+    renderWardrobe();
+}
+
+
+/* =========================================================
+   PHOTO VIEW
+   ========================================================= */
+
+function openPhoto(image) {
+
+    if (!image) {
+        return;
+    }
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+    modal.className =
+        "photo-modal active";
+
+    modal.innerHTML = `
+
+        <div class="photo-modal-content">
+
+            <button
+                class="close-modal"
+                type="button"
+            >
+                ×
+            </button>
+
+            <img
+                src="${escapeHTML(image)}"
+                alt="Clothing"
+            >
+
+        </div>
+    `;
+
+    document.body.appendChild(
+        modal
+    );
+
+    modal
+        .querySelector(".close-modal")
+        ?.addEventListener(
+            "click",
+            () => modal.remove()
+        );
+
+    modal.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                modal
+            ) {
+                modal.remove();
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   ADD ITEM MODAL
+   ========================================================= */
+
+function openAddModal() {
+
+    resetAddForm();
+
+    $("addItemModal")
+        ?.classList
+        .add("active");
+}
+
+
+function closeAddModal() {
+
+    $("addItemModal")
+        ?.classList
+        .remove("active");
+}
+
+
+function resetAddForm() {
+
+    selectedTypes = [];
+
+    selectedImageFile = null;
+
+    const imageInput =
+        $("clothingImage");
+
+    const imagePreview =
+        $("imagePreview");
+
+    const placeholder =
+        $("uploadPlaceholder");
+
+    if (imageInput) {
+        imageInput.value = "";
+    }
+
+    if (imagePreview) {
+
+        imagePreview.src = "";
+
+        imagePreview.style.display =
+            "none";
+    }
+
+    if (placeholder) {
+
+        placeholder.style.display =
+            "flex";
+    }
+
+    const clothingColor = $("clothingColor");
+    if (clothingColor) {
+        clothingColor.value = "";
+    }
+
+    const clothingFabric = $("clothingFabric");
+    if (clothingFabric) {
+        clothingFabric.value = "";
+    }
+
+    document
+        .querySelectorAll(
+            ".type-option"
+        )
+        .forEach(button => {
+
+            button.classList.remove(
+                "selected"
+            );
+        });
+}
+
+
+/* =========================================================
+   IMAGE COMPRESSION
+   ========================================================= */
+
+function compressImage(file) {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                event => {
+
+                    const image =
+                        new Image();
+
+                    image.onload =
+                        () => {
+
+                            const maxSize =
+                                1000;
+
+                            let width =
+                                image.width;
+
+                            let height =
+                                image.height;
+
+                            if (
+                                width >
+                                    maxSize ||
+                                height >
+                                    maxSize
+                            ) {
+
+                                if (
+                                    width >
+                                    height
+                                ) {
+
+                                    height =
+                                        height *
+                                        maxSize /
+                                        width;
+
+                                    width =
+                                        maxSize;
+
+                                } else {
+
+                                    width =
+                                        width *
+                                        maxSize /
+                                        height;
+
+                                    height =
+                                        maxSize;
+                                }
+                            }
+
+                            const canvas =
+                                document.createElement(
+                                    "canvas"
+                                );
+
+                            canvas.width =
+                                width;
+
+                            canvas.height =
+                                height;
+
+                            const context =
+                                canvas.getContext(
+                                    "2d"
+                                );
+
+                            context.drawImage(
+                                image,
+                                0,
+                                0,
+                                width,
+                                height
+                            );
+
+                            canvas.toBlob(
+                                blob => {
+
+                                    if (!blob) {
+
+                                        reject(
+                                            new Error(
+                                                "Could not compress image."
+                                            )
+                                        );
+
+                                        return;
+                                    }
+
+                                    resolve(
+                                        blob
+                                    );
+
+                                },
+                                "image/jpeg",
+                                0.78
+                            );
+                        };
+
+                    image.onerror =
+                        () => reject(
+                            new Error(
+                                "Could not read image."
+                            )
+                        );
+
+                    image.src =
+                        event.target.result;
+                };
+
+            reader.onerror =
+                () => reject(
+                    new Error(
+                        "Could not read file."
+                    )
+                );
+
+            reader.readAsDataURL(
+                file
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   IMAGE INPUT
+   ========================================================= */
+
+function setupImageInput() {
+
+    const input =
+        $("clothingImage");
+
+    if (!input) {
+        return;
+    }
+
+    input.addEventListener(
+        "change",
+        async event => {
+
+            const file =
+                event.target.files?.[0];
+
+            if (!file) {
+                return;
+            }
+
+            selectedImageFile =
+                file;
+
+            const preview =
+                $("imagePreview");
+
+            const placeholder =
+                $("uploadPlaceholder");
+
+            if (preview) {
+
+                preview.src =
+                    URL.createObjectURL(
+                        file
+                    );
+
+                preview.style.display =
+                    "block";
+            }
+
+            if (placeholder) {
+
+                placeholder.style.display =
+                    "none";
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   CLOTHING TYPE OPTIONS
+   ========================================================= */
+
+const extraTypes = [
+
+    {
+        value: "open-back",
+        label: "Open Back"
+    },
+
+    {
+        value: "loose-fit",
+        label: "Loose Fit"
+    },
+
+    {
+        value: "tight-fit",
+        label: "Tight Fit"
+    },
+
+    {
+        value: "cropped",
+        label: "Cropped"
+    },
+
+    {
+        value: "long",
+        label: "Long"
+    },
+
+    {
+        value: "mini",
+        label: "Mini"
+    },
+
+    {
+        value: "glitter",
+        label: "Glitter"
+    }
+];
+
+
+function setupTypeOptions() {
+
+    const picker =
+        $("typePicker");
+
+    if (!picker) {
+        return;
+    }
+
+    extraTypes.forEach(
+        type => {
+
+            const exists =
+                picker.querySelector(
+                    `[data-type="${type.value}"]`
+                );
+
+            if (exists) {
+                return;
+            }
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type =
+                "button";
+
+            button.className =
+                "type-option";
+
+            button.dataset.type =
+                type.value;
+
+            button.textContent =
+                type.label;
+
+            picker.appendChild(
+                button
+            );
+        }
+    );
+
+    picker
+        .querySelectorAll(
+            ".type-option"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const type =
+                        button.dataset.type;
+
+                    if (
+                        selectedTypes.includes(
+                            type
+                        )
+                    ) {
+
+                        selectedTypes =
+                            selectedTypes.filter(
+                                value =>
+                                    value !==
+                                    type
+                            );
+
+                        button.classList.remove(
+                            "selected"
+                        );
+
+                    } else {
+
+                        selectedTypes.push(
+                            type
+                        );
+
+                        button.classList.add(
+                            "selected"
+                        );
+                    }
+                }
+            );
+        });
+}
+
+
+/* =========================================================
+   ADD NEW CATEGORIES / FABRIC
+   ========================================================= */
+
+function addOptionIfMissing(
+    select,
+    value,
+    label
+) {
+
+    if (!select) {
+        return;
+    }
+
+    const exists =
+        [...select.options]
+            .some(
+                option =>
+                    option.value ===
+                    value
+            );
+
+    if (exists) {
+        return;
+    }
+
+    const option =
+        document.createElement(
+            "option"
+        );
+
+    option.value =
+        value;
+
+    option.textContent =
+        label;
+
+    select.appendChild(
+        option
+    );
+}
+
+
+function setupNewCategories() {
+
+    const category =
+        $("clothingCategory");
+
+    addOptionIfMissing(
+        category,
+        "sweater",
+        "Sweaters"
+    );
+
+    addOptionIfMissing(
+        category,
+        "cardigan",
+        "Cardigans / Overtop"
+    );
+
+    addOptionIfMissing(
+        category,
+        "skirt",
+        "Skirts"
+    );
+}
+
+
+function setupPolyester() {
+
+    const fabric =
+        $("clothingFabric");
+
+    addOptionIfMissing(
+        fabric,
+        "polyester",
+        "Polyester"
+    );
+}
+
+
+/* =========================================================
+   SAVE CLOTHING ITEM
+   ========================================================= */
+
+async function saveClothingItem() {
+
+    const category =
+        $("clothingCategory")
+            ?.value;
+
+    const color =
+        $("clothingColor")
+            ?.value;
+
+    const fabric =
+        $("clothingFabric")
+            ?.value;
+
+    if (!selectedImageFile) {
+
+        alert(
+            "Please add a photo first."
+        );
+
+        return;
+    }
+
+    if (!category) {
+
+        alert(
+            "Please choose a category."
+        );
+
+        return;
+    }
+
+
+    const saveButton =
+        $("saveItem");
+
+    if (saveButton) {
+
+        saveButton.disabled =
+            true;
+
+        saveButton.textContent =
+            "Uploading...";
+    }
+
+
+    try {
+
+        const compressed =
+            await compressImage(
+                selectedImageFile
+            );
+
+        const fileName =
+            `${crypto.randomUUID()}.jpg`;
+
+        const storagePath =
+            fileName;
+
+
+        /* -----------------------------------------
+           UPLOAD PHOTO
+           ----------------------------------------- */
+
+        const {
+            error: uploadError
+        } = await supabase
+            .storage
+            .from(STORAGE_BUCKET)
+            .upload(
+                storagePath,
+                compressed,
+                {
+                    contentType:
+                        "image/jpeg",
+
+                    cacheControl:
+                        "31536000",
+
+                    upsert:
+                        false
+                }
+            );
+
+
+        if (uploadError) {
+
+            throw uploadError;
+        }
+
+
+        /* -----------------------------------------
+           GET PUBLIC IMAGE URL
+           ----------------------------------------- */
+
+        const {
+            data: publicData
+        } =
+            supabase
+                .storage
+                .from(
+                    STORAGE_BUCKET
+                )
+                .getPublicUrl(
+                    storagePath
+                );
+
+
+        const imageURL =
+            publicData.publicUrl;
+
+
+        /* -----------------------------------------
+           SAVE DATABASE ROW
+           ----------------------------------------- */
+
+        const {
+            data,
+            error
+        } = await supabase
+            .from(CLOTHING_TABLE)
+            .insert({
+
+                category:
+                    category,
+
+                color:
+                    color || null,
+
+                fabric:
+                    fabric || null,
+
+                types:
+                    selectedTypes,
+
+                image_url:
+                    imageURL,
+
+                favorite:
+                    false,
+
+                wear_count:
+                    0
+
+            })
+            .select()
+            .single();
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        wardrobe.unshift(
+            normaliseClothing(
+                data
+            )
+        );
+
+
+        closeAddModal();
+
+        renderWardrobe();
+
+        updateItemCount();
+
+        alert(
+            "Added to your wardrobe ✨"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Save item error:",
+            error
+        );
+
+        showError(
+            "Could not add item: " +
+            error.message
+        );
+
+    } finally {
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                false;
+
+            saveButton.textContent =
+                "Add to wardrobe";
+        }
+    }
+}
+
+
+/* =========================================================
+   OUTFITS PAGE
+   ========================================================= */
+
+async function showOutfits() {
+
+    currentPage =
+        "outfits";
+
+    activateNav(
+        $("outfitsNav")
+    );
+
+    showDynamicPage();
+
+    await loadOutfits();
+
+    renderOutfitsPage();
+}
+
+
+function renderOutfitsPage() {
+
+    const dynamic =
+        $("dynamicPage");
+
+    if (!dynamic) {
+        return;
+    }
+
+    dynamic.innerHTML = `
+
+        <div class="outfits-header">
+
+            <div>
+
+                <p class="hero-label">
+                    YOUR LOOKS
+                </p>
+
+                <h2>
+                    My outfits
+                </h2>
+
+                <p>
+                    Create and save outfits
+                    using your wardrobe.
+                </p>
+
+            </div>
+
+            <button
+                class="style-button"
+                id="createOutfitButton"
+                type="button"
+            >
+                + Create outfit
+            </button>
+
+        </div>
+
+
+        <div class="outfit-filter-panel">
+
+            <label
+                class="outfit-filter-field"
+            >
+
+                <span>
+                    Fabric
+                </span>
+
+                <select
+                    id="outfitFabricFilter"
+                >
+                    <option value="all">
+                        All fabrics
+                    </option>
+                </select>
+
+            </label>
+
+
+            <label
+                class="outfit-filter-field"
+            >
+
+                <span>
+                    Colour
+                </span>
+
+                <select
+                    id="outfitColorFilter"
+                >
+                    <option value="all">
+                        All colours
+                    </option>
+                </select>
+
+            </label>
+
+
+            <label
+                class="outfit-filter-field"
+            >
+
+                <span>
+                    Category
+                </span>
+
+                <select
+                    id="outfitCategoryFilter"
+                >
+                    <option value="all">
+                        All categories
+                    </option>
+                </select>
+
+            </label>
+
+        </div>
+
+
+        <div
+            id="savedOutfits"
+            class="saved-outfits-grid"
+        ></div>
+
+    `;
+
+
+    $("createOutfitButton")
+        ?.addEventListener(
+            "click",
+            showOutfitBuilder
+        );
+
+
+    setupOutfitFilters();
+
+    renderSavedOutfits();
+}
+
+
+/* =========================================================
+   OUTFIT FILTERS
+   ========================================================= */
+
+function setupOutfitFilters() {
+
+    const fabrics =
+        [...new Set(
+            wardrobe
+                .map(
+                    item =>
+                        item.fabric
+                )
+                .filter(Boolean)
+        )]
+        .sort();
+
+    const colors =
+        [...new Set(
+            wardrobe
+                .map(
+                    item =>
+                        item.color
+                )
+                .filter(Boolean)
+        )]
+        .sort();
+
+    const categories =
+        [...new Set(
+            wardrobe
+                .map(
+                    item =>
+                        item.category
+                )
+                .filter(Boolean)
+        )]
+        .sort();
+
+
+    const fabricSelect =
+        $("outfitFabricFilter");
+
+    const colorSelect =
+        $("outfitColorFilter");
+
+    const categorySelect =
+        $("outfitCategoryFilter");
+
+
+    fabrics.forEach(
+        fabric => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                fabric;
+
+            option.textContent =
+                formatLabel(
+                    fabric
+                );
+
+            fabricSelect
+                ?.appendChild(
+                    option
+                );
+        }
+    );
+
+
+    colors.forEach(
+        color => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                color;
+
+            option.textContent =
+                formatLabel(
+                    color
+                );
+
+            colorSelect
+                ?.appendChild(
+                    option
+                );
+        }
+    );
+
+
+    categories.forEach(
+        category => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                category;
+
+            option.textContent =
+                categoryLabel(
+                    category
+                );
+
+            categorySelect
+                ?.appendChild(
+                    option
+                );
+        }
+    );
+
+
+    [
+        fabricSelect,
+        colorSelect,
+        categorySelect
+    ]
+    .forEach(select => {
+
+        select?.addEventListener(
+            "change",
+            renderSavedOutfits
+        );
+
+    });
+}
+
+
+/* =========================================================
+   FILTER SAVED OUTFITS
+   ========================================================= */
+
+function outfitMatchesFilters(
+    outfit
+) {
+
+    const fabric =
+        $("outfitFabricFilter")
+            ?.value || "all";
+
+    const color =
+        $("outfitColorFilter")
+            ?.value || "all";
+
+    const category =
+        $("outfitCategoryFilter")
+            ?.value || "all";
+
+
+    const items =
+        Array.isArray(
+            outfit.items
+        )
+            ? outfit.items
+            : [];
+
+
+    if (
+        fabric !== "all" &&
+        !items.some(
+            item =>
+                item.fabric ===
+                fabric
+        )
+    ) {
+        return false;
+    }
+
+
+    if (
+        color !== "all" &&
+        !items.some(
+            item =>
+                item.color ===
+                color
+        )
+    ) {
+        return false;
+    }
+
+
+    if (
+        category !== "all" &&
+        !items.some(
+            item =>
+                item.category ===
+                category
+        )
+    ) {
+        return false;
+    }
+
+
+    return true;
+}
+
+
+/* =========================================================
+   SAVED OUTFITS
+   ========================================================= */
+
+function renderSavedOutfits() {
+
+    const container =
+        $("savedOutfits");
+
+    if (!container) {
+        return;
+    }
+
+
+    const filtered =
+        outfits.filter(
+            outfitMatchesFilters
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    if (!filtered.length) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                <div
+                    style="font-size:42px;"
+                >
+                    ✨
+                </div>
+
+                <h3>
+                    No saved outfits
+                </h3>
+
+                <p>
+                    Create your first
+                    outfit above.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    filtered.forEach(
+        outfit => {
+
+            container.appendChild(
+                createSavedOutfitCard(
+                    outfit
+                )
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   SAVED OUTFIT CARD
+   ========================================================= */
+
+function createSavedOutfitCard(
+    outfit
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+    card.className =
+        "saved-outfit-card";
+
+
+    const items =
+        Array.isArray(
+            outfit.items
+        )
+            ? outfit.items
+            : [];
+
+
+    const images =
+        items
+            .filter(
+                item =>
+                    item.image
+            )
+            .slice(0, 4);
+
+
+    let imageHTML =
+        "";
+
+
+    if (images.length) {
+
+        imageHTML =
+            images
+                .map(
+                    item => `
+                        <img
+                            src="${escapeHTML(
+                                item.image
+                            )}"
+                            alt="${escapeHTML(
+                                categoryLabel(
+                                    item.category
+                                )
+                            )}"
+                        >
+                    `
+                )
+                .join("");
+
+    } else {
+
+        imageHTML = `
+
+            <div
+                style="
+                    grid-column:1/-1;
+                    grid-row:1/-1;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:42px;
+                "
+            >
+                ✨
+            </div>
+
+        `;
+    }
+
+
+    const name =
+        outfit.name?.trim()
+            ? outfit.name
+            : "Untitled outfit";
+
+
+    card.innerHTML = `
+
+        <div
+            class="saved-outfit-thumb-row"
+        >
+            ${imageHTML}
+        </div>
+
+        <h3>
+            ${escapeHTML(name)}
+        </h3>
+
+        <p
+            class="saved-outfit-description"
+        >
+            ${items.length}
+            ${
+                items.length === 1
+                    ? "piece"
+                    : "pieces"
+            }
+        </p>
+
+    `;
+
+
+    card.addEventListener(
+        "click",
+        () => {
+
+            showSavedOutfit(
+                outfit.id
+            );
+
+        }
+    );
+
+
+    return card;
+}
+
+
+/* =========================================================
+   CREATE OUTFIT
+   ========================================================= */
+
+function showOutfitBuilder() {
+
+    currentPage =
+        "outfit-builder";
+
+    selectedOutfitItems =
+        [];
+
+
+    showDynamicPage();
+
+
+    const dynamic =
+        $("dynamicPage");
+
+    if (!dynamic) {
+        return;
+    }
+
+
+    dynamic.innerHTML = `
+
+        <div class="outfits-header">
+
+            <div>
+
+                <button
+                    class="secondary-button"
+                    id="backToOutfitsButton"
+                    type="button"
+                >
+                    ← Back to outfits
+                </button>
+
+                <p
+                    class="hero-label"
+                    style="margin-top:14px;"
+                >
+                    MANUAL STYLING
+                </p>
+
+                <h2>
+                    Create your outfit
+                </h2>
+
+                <p>
+                    Choose the pieces
+                    you want to wear.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="outfit-builder">
+
+            <div
+                class="outfit-filter-panel"
+                style="margin-bottom:28px;"
+            >
+
+                <label
+                    class="outfit-filter-field"
+                >
+
+                    <span>
+                        Category
+                    </span>
+
+                    <select
+                        id="builderCategoryFilter"
+                    >
+                        <option value="all">
+                            All categories
+                        </option>
+                    </select>
+
+                </label>
+
+
+                <label
+                    class="outfit-filter-field"
+                >
+
+                    <span>
+                        Fabric
+                    </span>
+
+                    <select
+                        id="builderFabricFilter"
+                    >
+                        <option value="all">
+                            All fabrics
+                        </option>
+                    </select>
+
+                </label>
+
+
+                <label
+                    class="outfit-filter-field"
+                >
+
+                    <span>
+                        Colour
+                    </span>
+
+                    <select
+                        id="builderColorFilter"
+                    >
+                        <option value="all">
+                            All colours
+                        </option>
+                    </select>
+
+                </label>
+
+            </div>
+
+
+            <div
+                id="outfitCategories"
+                class="outfit-categories"
+            ></div>
+
+
+            <section
+                class="outfit-stage"
+                id="outfitStage"
+            >
+
+                <div class="outfit-stage-title">
+                    YOUR OUTFIT
+                </div>
+
+                <div
+                    id="outfitStageContent"
+                    class="outfit-stage-layout"
+                >
+                    <div
+                        class="outfit-stage-center"
+                    >
+                        <div
+                            class="outfit-empty-piece"
+                        >
+                            Select clothing
+                            pieces above
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <div class="outfit-name-bottom">
+
+                <label class="input-label">
+
+                    Outfit name
+                    <span
+                        style="
+                            color:var(--muted);
+                            font-weight:400;
+                        "
+                    >
+                        optional
+                    </span>
+
+                    <input
+                        type="text"
+                        id="outfitName"
+                        placeholder="e.g. Summer dinner"
+                    >
+
+                </label>
+
+
+                <button
+                    class="save-item"
+                    id="saveOutfitButton"
+                    type="button"
+                >
+                    Save outfit
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    $("backToOutfitsButton")
+        ?.addEventListener(
+            "click",
+            showOutfits
+        );
+
+
+    $("saveOutfitButton")
+        ?.addEventListener(
+            "click",
+            saveOutfit
+        );
+
+
+    setupBuilderFilters();
+
+    renderOutfitCategories();
+
+    updateOutfitStage();
+}
+
+
+/* =========================================================
+   BUILDER FILTERS
+   ========================================================= */
+
+function setupBuilderFilters() {
+
+    const categories =
+        [...new Set(
+            wardrobe
+                .map(
+                    item =>
+                        item.category
+                )
+                .filter(Boolean)
+        )]
+        .sort();
+
+    const fabrics =
+        [...new Set(
+            wardrobe
+                .map(
+                    item =>
+                        item.fabric
+                )
+                .filter(Boolean)
+        )]
+        .sort();
+
+    const colors =
+        [...new Set(
+            wardrobe
+                .map(
+                    item =>
+                        item.color
+                )
+                .filter(Boolean)
+        )]
+        .sort();
+
+
+    const categorySelect =
+        $("builderCategoryFilter");
+
+    const fabricSelect =
+        $("builderFabricFilter");
+
+    const colorSelect =
+        $("builderColorFilter");
+
+
+    categories.forEach(
+        category => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                category;
+
+            option.textContent =
+                categoryLabel(
+                    category
+                );
+
+            categorySelect
+                ?.appendChild(
+                    option
+                );
+        }
+    );
+
+
+    fabrics.forEach(
+        fabric => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                fabric;
+
+            option.textContent =
+                formatLabel(
+                    fabric
+                );
+
+            fabricSelect
+                ?.appendChild(
+                    option
+                );
+        }
+    );
+
+
+    colors.forEach(
+        color => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                color;
+
+            option.textContent =
+                formatLabel(
+                    color
+                );
+
+            colorSelect
+                ?.appendChild(
+                    option
+                );
+        }
+    );
+
+
+    [
+        categorySelect,
+        fabricSelect,
+        colorSelect
+    ]
+    .forEach(select => {
+
+        select?.addEventListener(
+            "change",
+            () => {
+
+                builderFilters = {
+
+                    category:
+                        categorySelect
+                            ?.value ||
+                        "all",
+
+                    fabric:
+                        fabricSelect
+                            ?.value ||
+                        "all",
+
+                    color:
+                        colorSelect
+                            ?.value ||
+                        "all"
+                };
+
+                renderOutfitCategories();
+            }
+        );
+    });
+}
+
+
+/* =========================================================
+   OUTFIT CATEGORY ROWS
+   ========================================================= */
+
+const outfitSections = [
+
+    {
+        key: "top",
+        label: "Tops"
+    },
+
+    {
+        key: "sweater",
+        label: "Sweaters"
+    },
+
+    {
+        key: "cardigan",
+        label: "Cardigans / Overtop"
+    },
+
+    {
+        key: "bottom",
+        label: "Bottoms"
+    },
+
+    {
+        key: "skirt",
+        label: "Skirts"
+    },
+
+    {
+        key: "dress",
+        label: "Dresses"
+    },
+
+    {
+        key: "shoes",
+        label: "Shoes"
+    },
+
+    {
+        key: "accessory",
+        label: "Accessories"
+    }
+];
+
+
+function renderOutfitCategories() {
+
+    const container =
+        $("outfitCategories");
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    const filteredWardrobe =
+        wardrobe.filter(
+            item => {
+
+                if (
+                    builderFilters.category !==
+                    "all" &&
+                    item.category !==
+                    builderFilters.category
+                ) {
+                    return false;
+                }
+
+
+                if (
+                    builderFilters.fabric !==
+                    "all" &&
+                    item.fabric !==
+                    builderFilters.fabric
+                ) {
+                    return false;
+                }
+
+
+                if (
+                    builderFilters.color !==
+                    "all" &&
+                    item.color !==
+                    builderFilters.color
+                ) {
+                    return false;
+                }
+
+
+                return true;
+            }
+        );
+
+
+    let visibleSectionCount =
+        0;
+
+
+    outfitSections.forEach(
+        section => {
+
+            const items =
+                filteredWardrobe.filter(
+                    item =>
+                        item.category ===
+                        section.key
+                );
+
+
+            if (!items.length) {
+                return;
+            }
+
+
+            visibleSectionCount++;
+
+
+            const sectionElement =
+                createOutfitSection(
+                    section,
+                    items
+                );
+
+
+            container.appendChild(
+                sectionElement
+            );
+        }
+    );
+
+
+    if (
+        visibleSectionCount === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                <div
+                    style="font-size:42px;"
+                >
+                    👗
+                </div>
+
+                <h3>
+                    No clothing matches
+                </h3>
+
+                <p>
+                    Try changing your filters.
+                </p>
+
+            </div>
+
+        `;
+    }
+}
+
+
+/* =========================================================
+   CREATE SWIPE ROW
+   ========================================================= */
+
+function createOutfitSection(
+    section,
+    items
+) {
+
+    const wrapper =
+        document.createElement(
+            "section"
+        );
+
+    wrapper.className =
+        "outfit-section";
+
+
+    const selectedCount =
+        selectedOutfitItems.filter(
+            item =>
+                item.category ===
+                section.key
+        ).length;
+
+
+    wrapper.innerHTML = `
+
+        <div
+            class="outfit-section-header"
+        >
+
+            <h3>
+                ${escapeHTML(
+                    section.label
+                )}
+            </h3>
+
+            <span>
+                ${
+                    selectedCount
+                        ? `${selectedCount} selected`
+                        : `${items.length} pieces`
+                }
+            </span>
+
+        </div>
+
+
+        <div class="outfit-carousel">
+
+            <button
+                class="outfit-carousel-button"
+                type="button"
+                aria-label="Previous"
+            >
+                ‹
+            </button>
+
+
+            <div
+                class="swipe-row"
+            ></div>
+
+
+            <button
+                class="outfit-carousel-button"
+                type="button"
+                aria-label="Next"
+            >
+                ›
+            </button>
+
+        </div>
+
+    `;
+
+
+    const row =
+        wrapper.querySelector(
+            ".swipe-row"
+        );
+
+
+    items.forEach(
+        item => {
+
+            row.appendChild(
+                createOutfitItemCard(
+                    item
+                )
+            );
+
+        }
+    );
+
+
+    const buttons =
+        wrapper.querySelectorAll(
+            ".outfit-carousel-button"
+        );
+
+
+    buttons[0]?.addEventListener(
+        "click",
+        () => {
+
+            row.scrollBy({
+                left: -350,
+                behavior: "smooth"
+            });
+        }
+    );
+
+
+    buttons[1]?.addEventListener(
+        "click",
+        () => {
+
+            row.scrollBy({
+                left: 350,
+                behavior: "smooth"
+            });
+        }
+    );
+
+
+    return wrapper;
+}
+
+
+/* =========================================================
+   OUTFIT ITEM CARD
+   ========================================================= */
+
+function createOutfitItemCard(
+    item
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+    card.className =
+        "outfit-item";
+
+    card.dataset.id =
+        item.id;
+
+
+    const selected =
+        selectedOutfitItems.some(
+            selectedItem =>
+                selectedItem.id ===
+                item.id
+        );
+
+
+    if (selected) {
+
+        card.classList.add(
+            "selected"
+        );
+    }
+
+
+    const types =
+        item.types
+            .slice(0, 2)
+            .map(
+                type => `
+                    <span>
+                        ${escapeHTML(
+                            formatLabel(type)
+                        )}
+                    </span>
+                `
+            )
+            .join("");
+
+
+    card.innerHTML = `
+
+        <div
+            class="outfit-item-image"
+        >
+
+            ${
+                item.image
+                    ? `
+                        <img
+                            src="${escapeHTML(
+                                item.image
+                            )}"
+                            alt=""
+                        >
+                    `
+                    : `
+                        <div class="placeholder">
+                            ${categoryEmoji(
+                                item.category
+                            )}
+                        </div>
+                    `
+            }
+
+        </div>
+
+
+        <div
+            class="outfit-item-info"
+        >
+
+            <strong>
+                ${escapeHTML(
+                    categoryLabel(
+                        item.category
+                    )
+                )}
+            </strong>
+
+            <span>
+                ${escapeHTML(
+                    formatLabel(
+                        item.color
+                    )
+                )}
+                ${
+                    item.fabric
+                        ? " · " +
+                          escapeHTML(
+                              formatLabel(
+                                  item.fabric
+                              )
+                          )
+                        : ""
+                }
+            </span>
+
+            ${
+                types
+                    ? `
+                        <div
+                            class="outfit-item-tags"
+                        >
+                            ${types}
+                        </div>
+                    `
+                    : ""
+            }
+
+        </div>
+
+    `;
+
+
+    card.addEventListener(
+        "click",
+        () => {
+
+            toggleOutfitItem(
+                item,
+                card
+            );
+
+        }
+    );
+
+
+    return card;
+}
+
+
+/* =========================================================
+   SELECT OUTFIT ITEM
+   ========================================================= */
+
+function toggleOutfitItem(
+    item,
+    card
+) {
+
+    const existingIndex =
+        selectedOutfitItems.findIndex(
+            selected =>
+                selected.id ===
+                item.id
+        );
+
+
+    if (
+        existingIndex !== -1
+    ) {
+
+        selectedOutfitItems.splice(
+            existingIndex,
+            1
+        );
+
+        card.classList.remove(
+            "selected"
+        );
+
+        updateOutfitStage();
+
+        renderOutfitCategories();
+
+        return;
+    }
+
+
+    /*
+       Allow multiple accessories.
+
+       Other clothing categories only
+       allow one selected piece.
+    */
+
+    if (
+        item.category !==
+        "accessory"
+    ) {
+
+        const existing =
+            selectedOutfitItems.find(
+                selected =>
+                    selected.category ===
+                    item.category
+            );
+
+
+        if (existing) {
+
+            selectedOutfitItems =
+                selectedOutfitItems.filter(
+                    selected =>
+                        selected.category !==
+                        item.category
+                );
+
+
+            document
+                .querySelectorAll(
+                    `.outfit-item[data-id="${existing.id}"]`
+                )
+                .forEach(
+                    element =>
+                        element.classList.remove(
+                            "selected"
+                        )
+                );
+        }
+    }
+
+
+    selectedOutfitItems.push(
+        item
+    );
+
+
+    card.classList.add(
+        "selected"
+    );
+
+
+    updateOutfitStage();
+
+    renderOutfitCategories();
+}
+
+
+/* =========================================================
+   OUTFIT PREVIEW
+   ========================================================= */
+
+function updateOutfitStage() {
+
+    const container =
+        $("outfitStageContent");
+
+    if (!container) {
+        return;
+    }
+
+
+    if (
+        selectedOutfitItems.length ===
+        0
+    ) {
+
+        container.innerHTML = `
+
+            <div
+                class="outfit-stage-center"
+            >
+
+                <div
+                    class="outfit-empty-piece"
+                >
+                    Select clothing pieces
+                    above to build your outfit.
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    const mainItems =
+        selectedOutfitItems.filter(
+            item =>
+                item.category !==
+                "accessory"
+        );
+
+
+    const accessories =
+        selectedOutfitItems.filter(
+            item =>
+                item.category ===
+                "accessory"
+        );
+
+
+    const mainHTML =
+        mainItems.length
+            ? mainItems
+                .map(
+                    item => `
+
+                        <div
+                            class="outfit-piece"
+                        >
+
+                            ${
+                                item.image
+                                    ? `
+                                        <img
+                                            src="${escapeHTML(
+                                                item.image
+                                            )}"
+                                            alt=""
+                                        >
+                                    `
+                                    : `
+                                        <div
+                                            class="placeholder"
+                                            style="
+                                                height:115px;
+                                                font-size:36px;
+                                            "
+                                        >
+                                            ${categoryEmoji(
+                                                item.category
+                                            )}
+                                        </div>
+                                    `
+                            }
+
+                            <div
+                                class="outfit-piece-name"
+                            >
+                                ${escapeHTML(
+                                    categoryLabel(
+                                        item.category
+                                    )
+                                )}
+                            </div>
+
+                        </div>
+
+                    `
+                )
+                .join("")
+            : `
+                <div
+                    class="outfit-empty-piece"
+                >
+                    Add clothing
+                </div>
+            `;
+
+
+    const accessoryHTML =
+        accessories.length
+            ? accessories
+                .map(
+                    item => `
+
+                        <div
+                            class="outfit-piece"
+                        >
+
+                            ${
+                                item.image
+                                    ? `
+                                        <img
+                                            src="${escapeHTML(
+                                                item.image
+                                            )}"
+                                            alt=""
+                                        >
+                                    `
+                                    : `
+                                        <div
+                                            class="placeholder"
+                                            style="
+                                                height:80px;
+                                                font-size:28px;
+                                            "
+                                        >
+                                            👜
+                                        </div>
+                                    `
+                            }
+
+                            <div
+                                class="outfit-piece-name"
+                            >
+                                Accessory
+                            </div>
+
+                        </div>
+
+                    `
+                )
+                .join("")
+            : "";
+
+
+    container.innerHTML = `
+
+        <div></div>
+
+        <div
+            class="outfit-stage-center"
+        >
+
+            ${mainHTML}
+
+        </div>
+
+
+        <div
+            class="outfit-stage-accessories"
+        >
+
+            ${accessoryHTML}
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   SAVE OUTFIT TO SUPABASE
+   ========================================================= */
+
+async function saveOutfit() {
+
+    if (
+        selectedOutfitItems.length ===
+        0
+    ) {
+
+        alert(
+            "Please select at least one clothing item."
+        );
+
+        return;
+    }
+
+
+    const name =
+        $("outfitName")
+            ?.value
+            .trim() || null;
+
+
+    const saveButton =
+        $("saveOutfitButton");
+
+
+    if (saveButton) {
+
+        saveButton.disabled =
+            true;
+
+        saveButton.textContent =
+            "Saving...";
+    }
+
+
+    try {
+
+        const items =
+            selectedOutfitItems.map(
+                item => ({
+
+                    id:
+                        item.id,
+
+                    category:
+                        item.category,
+
+                    color:
+                        item.color,
+
+                    fabric:
+                        item.fabric,
+
+                    types:
+                        item.types || [],
+
+                    image:
+                        item.image || ""
+                })
+            );
+
+
+        const {
+            data,
+            error
+        } = await supabase
+            .from(OUTFITS_TABLE)
+            .insert({
+
+                name:
+                    name,
+
+                comment:
+                    null,
+
+                items:
+                    items,
+
+                wear_count:
+                    0,
+
+                last_worn:
+                    null
+
+            })
+            .select()
+            .single();
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        outfits.unshift(
+            data
+        );
+
+
+        selectedOutfitItems =
+            [];
+
+
+        alert(
+            "Outfit saved ✨"
+        );
+
+
+        await showOutfits();
+
+
+    } catch (error) {
+
+        console.error(
+            "Save outfit error:",
+            error
+        );
+
+        showError(
+            "Could not save outfit: " +
+            error.message
+        );
+
+    } finally {
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                false;
+
+            saveButton.textContent =
+                "Save outfit";
+        }
+    }
+}
+
+
+/* =========================================================
+   SAVED OUTFIT DETAIL
+   ========================================================= */
+
+function showSavedOutfit(
+    outfitId
+) {
+
+    const outfit =
+        outfits.find(
+            item =>
+                item.id ===
+                outfitId
+        );
+
+
+    if (!outfit) {
+        return;
+    }
+
+
+    showDynamicPage();
+
+
+    const dynamic =
+        $("dynamicPage");
+
+    if (!dynamic) {
+        return;
+    }
+
+
+    const items =
+        Array.isArray(
+            outfit.items
+        )
+            ? outfit.items
+            : [];
+
+
+    const images =
+        items
+            .filter(
+                item =>
+                    item.image
+            );
+
+
+    const imageHTML =
+        images.length
+            ? images
+                .map(
+                    item => `
+
+                        <div
+                            class="saved-outfit-detail-image"
+                        >
+
+                            <img
+                                src="${escapeHTML(
+                                    item.image
+                                )}"
+                                alt="${escapeHTML(
+                                    categoryLabel(
+                                        item.category
+                                    )
+                                )}"
+                            >
+
+                            <span>
+                                ${escapeHTML(
+                                    categoryLabel(
+                                        item.category
+                                    )
+                                )}
+                            </span>
+
+                        </div>
+
+                    `
+                )
+                .join("")
+            : `
+
+                <div
+                    class="empty-state"
+                >
+                    No photos available.
+                </div>
+
+            `;
+
+
+    dynamic.innerHTML = `
+
+        <div
+            class="outfits-header"
+        >
+
+            <div>
+
+                <button
+                    class="secondary-button"
+                    id="backFromOutfitButton"
+                    type="button"
+                >
+                    ← Back to outfits
+                </button>
+
+                <p
+                    class="hero-label"
+                    style="margin-top:16px;"
+                >
+                    SAVED LOOK
+                </p>
+
+                <h2>
+                    ${
+                        outfit.name
+                            ? escapeHTML(
+                                outfit.name
+                            )
+                            : "Untitled outfit"
+                    }
+                </h2>
+
+                <p>
+                    ${items.length}
+                    ${
+                        items.length === 1
+                            ? "piece"
+                            : "pieces"
+                    }
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="saved-outfit-detail-gallery"
+        >
+            ${imageHTML}
+        </div>
+
+
+        <div
+            class="settings-card"
+            style="margin-top:24px;"
+        >
+
+            <h3>
+                Comment
+            </h3>
+
+            <textarea
+                id="outfitComment"
+                placeholder="Add a note about this outfit..."
+                rows="4"
+                style="
+                    width:100%;
+                    margin-top:12px;
+                    padding:12px;
+                    border:1px solid var(--line);
+                    border-radius:12px;
+                    resize:vertical;
+                    font:inherit;
+                "
+            >${escapeHTML(
+                outfit.comment || ""
+            )}</textarea>
+
+
+            <button
+                class="save-item"
+                id="saveOutfitComment"
+                type="button"
+                style="margin-top:14px;"
+            >
+                Save comment
+            </button>
+
+        </div>
+
+
+        <div
+            class="settings-card"
+            style="margin-top:14px;"
+        >
+
+            <h3>
+                Wear tracking
+            </h3>
+
+            <p>
+                Worn
+                <strong>
+                    ${Number(
+                        outfit.wear_count || 0
+                    )}
+                </strong>
+                ${
+                    Number(
+                        outfit.wear_count || 0
+                    ) === 1
+                        ? "time"
+                        : "times"
+                }.
+            </p>
+
+
+            <button
+                class="secondary-button"
+                id="wearOutfitButton"
+                type="button"
+                style="margin-top:12px;"
+            >
+                I wore this outfit
+            </button>
+
+        </div>
+
+
+        <div
+            style="
+                margin-top:24px;
+            "
+        >
+
+            <button
+                class="danger-button"
+                id="deleteOutfitButton"
+                type="button"
+            >
+                Delete outfit
+            </button>
+
+        </div>
+
+    `;
+
+
+    $("backFromOutfitButton")
+        ?.addEventListener(
+            "click",
+            showOutfits
+        );
+
+
+    $("saveOutfitComment")
+        ?.addEventListener(
+            "click",
+            () =>
+                saveOutfitComment(
+                    outfit
+                )
+        );
+
+
+    $("wearOutfitButton")
+        ?.addEventListener(
+            "click",
+            () =>
+                markOutfitWorn(
+                    outfit
+                )
+        );
+
+
+    $("deleteOutfitButton")
+        ?.addEventListener(
+            "click",
+            () =>
+                deleteOutfit(
+                    outfit
+                )
+        );
+}
+
+
+/* =========================================================
+   SAVE OUTFIT COMMENT
+   ========================================================= */
+
+async function saveOutfitComment(
+    outfit
+) {
+
+    const comment =
+        $("outfitComment")
+            ?.value
+            .trim() || null;
+
+
+    const {
+        error
+    } = await supabase
+        .from(OUTFITS_TABLE)
+        .update({
+            comment:
+                comment
+        })
+        .eq(
+            "id",
+            outfit.id
+        );
+
+
+    if (error) {
+
+        showError(
+            "Could not save comment: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    outfit.comment =
+        comment;
+
+
+    alert(
+        "Comment saved ✨"
+    );
+}
+
+
+/* =========================================================
+   MARK OUTFIT AS WORN
+   ========================================================= */
+
+async function markOutfitWorn(
+    outfit
+) {
+
+    const newCount =
+        Number(
+            outfit.wear_count || 0
+        ) + 1;
+
+
+    const now =
+        new Date()
+            .toISOString();
+
+
+    const {
+        error
+    } = await supabase
+        .from(OUTFITS_TABLE)
+        .update({
+
+            wear_count:
+                newCount,
+
+            last_worn:
+                now
+
+        })
+        .eq(
+            "id",
+            outfit.id
+        );
+
+
+    if (error) {
+
+        showError(
+            "Could not update wear count: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    outfit.wear_count =
+        newCount;
+
+    outfit.last_worn =
+        now;
+
+
+    showSavedOutfit(
+        outfit.id
+    );
+}
+
+
+/* =========================================================
+   DELETE OUTFIT
+   ========================================================= */
+
+async function deleteOutfit(
+    outfit
+) {
+
+    const confirmed =
+        confirm(
+            "Delete this outfit?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const {
+        error
+    } = await supabase
+        .from(OUTFITS_TABLE)
+        .delete()
+        .eq(
+            "id",
+            outfit.id
+        );
+
+
+    if (error) {
+
+        showError(
+            "Could not delete outfit: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    outfits =
+        outfits.filter(
+            item =>
+                item.id !==
+                outfit.id
+        );
+
+
+    await showOutfits();
+}
+
+
+/* =========================================================
+   FAVORITES PAGE
+   ========================================================= */
+
+function showFavorites() {
+
+    currentPage =
+        "favorites";
+
+    activateNav(
+        $("favoritesNav")
+    );
+
+    showDynamicPage();
+
+
+    const dynamic =
+        $("dynamicPage");
+
+    if (!dynamic) {
+        return;
+    }
+
+
+    const favorites =
+        wardrobe.filter(
+            item =>
+                item.favorite
+        );
+
+
+    dynamic.innerHTML = `
+
+        <div
+            class="outfits-header"
+        >
+
+            <div>
+
+                <p class="hero-label">
+                    YOUR PICKS
+                </p>
+
+                <h2>
+                    Favorites
+                </h2>
+
+                <p>
+                    The pieces you love most.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="clothing-grid"
+            id="favoritesGrid"
+        ></div>
+
+    `;
+
+
+    const grid =
+        $("favoritesGrid");
+
+
+    if (!favorites.length) {
+
+        grid.innerHTML = `
+
+            <div class="empty-state">
+
+                <div
+                    style="font-size:42px;"
+                >
+                    ♡
+                </div>
+
+                <h3>
+                    No favorites yet
+                </h3>
+
+                <p>
+                    Tap the heart on
+                    any clothing item.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    favorites.forEach(
+        item => {
+
+            grid.appendChild(
+                createClothingCard(
+                    item
+                )
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+
+function showSettings() {
+
+    currentPage =
+        "settings";
+
+    activateNav(
+        $("settingsNav")
+    );
+
+    showDynamicPage();
+
+
+    const dynamic =
+        $("dynamicPage");
+
+    if (!dynamic) {
+        return;
+    }
+
+
+    dynamic.innerHTML = `
+
+        <div
+            class="outfits-header"
+        >
+
+            <div>
+
+                <p class="hero-label">
+                    APP SETTINGS
+                </p>
+
+                <h2>
+                    Settings
+                </h2>
+
+                <p>
+                    Your wardrobe is stored
+                    in the cloud.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="settings-card">
+
+            <h3>
+                Wardrobe
+            </h3>
+
+            <p>
+                You currently have
+                <strong>
+                    ${wardrobe.length}
+                </strong>
+                clothing items.
+            </p>
+
+        </div>
+
+
+        <div class="settings-card">
+
+            <h3>
+                Outfits
+            </h3>
+
+            <p>
+                You currently have
+                <strong>
+                    ${outfits.length}
+                </strong>
+                saved outfits.
+            </p>
+
+        </div>
+
+
+        <div class="settings-card">
+
+            <h3>
+                Cloud storage
+            </h3>
+
+            <p>
+                Your clothing photos and
+                wardrobe data are stored
+                in Supabase.
+            </p>
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+   ========================================================= */
+
+function setupMobileSidebar() {
+
+    const sidebar =
+        document.querySelector(
+            ".sidebar"
+        );
+
+    if (!sidebar) {
+        return;
+    }
+
+
+    if (
+        document.querySelector(
+            ".mobile-menu-button"
+        )
+    ) {
+        return;
+    }
+
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+    button.className =
+        "mobile-menu-button";
+
+    button.type =
+        "button";
+
+    button.innerHTML =
+        "☰";
+
+    button.setAttribute(
+        "aria-label",
+        "Open menu"
+    );
+
+
+    Object.assign(
+        button.style,
+        {
+            position: "fixed",
+            top: "15px",
+            left: "15px",
+            zIndex: "100",
+            width: "44px",
+            height: "44px",
+            border: "1px solid #e8e1da",
+            borderRadius: "12px",
+            background: "#fff",
+            color: "#2d2926",
+            fontSize: "22px",
+            display: "none"
+        }
+    );
+
+
+    document.body.appendChild(
+        button
+    );
+
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            sidebar.classList.toggle(
+                "mobile-open"
+            );
+
+        }
+    );
+
+
+    window.addEventListener(
+        "resize",
+        () => {
+
+            button.style.display =
+                window.innerWidth <= 820
+                    ? "flex"
+                    : "none";
+
+            button.style.alignItems =
+                "center";
+
+            button.style.justifyContent =
+                "center";
+        }
+    );
+
+
+    if (
+        window.innerWidth <= 820
+    ) {
+
+        button.style.display =
+            "flex";
+
+        button.style.alignItems =
+            "center";
+
+        button.style.justifyContent =
+            "center";
+    }
+}
+
+
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
+
+function setupNavigation() {
 
     $("wardrobeNav")
         ?.addEventListener(
@@ -268,274 +4022,12 @@ function connectNavigation() {
         );
 
 
-    $("logo")
-        ?.addEventListener(
-            "click",
-            showWardrobe
-        );
-
-
     $("styleOutfitButton")
         ?.addEventListener(
             "click",
             showOutfitBuilder
         );
 
-
-    $("profileButton")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                alert(
-                    "Profile settings can be added later ✨"
-                );
-
-            }
-        );
-
-}
-
-
-function hidePages() {
-
-    $("wardrobePage")
-        ?.classList
-        .add("hidden");
-
-
-    $("dynamicPage")
-        ?.classList
-        .add("hidden");
-
-}
-
-
-function activateNav(button) {
-
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(item => {
-
-            item.classList.remove(
-                "active"
-            );
-
-        });
-
-
-    button?.classList.add(
-        "active"
-    );
-
-}
-
-
-/* =========================================================
-   WARDROBE PAGE
-   ========================================================= */
-
-function showWardrobe() {
-
-    currentPage =
-        "wardrobe";
-
-
-    activateNav(
-        $("wardrobeNav")
-    );
-
-
-    hidePages();
-
-
-    $("wardrobePage")
-        ?.classList
-        .remove("hidden");
-
-
-    renderWardrobe();
-
-}
-
-
-/* =========================================================
-   SUPABASE — LOAD WARDROBE
-   ========================================================= */
-
-async function loadWardrobe() {
-
-    try {
-
-        console.log(
-            "☁️ Loading wardrobe from Supabase..."
-        );
-
-
-        const {
-            data,
-            error
-        } = await supabase
-
-            .from(TABLE_NAME)
-
-            .select("*")
-
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-        if (error) {
-
-            console.error(
-                "Supabase load error:",
-                error
-            );
-
-            showDatabaseError(
-                error
-            );
-
-            wardrobe = [];
-
-            return;
-
-        }
-
-
-        wardrobe =
-            (data || []).map(
-                normaliseItem
-            );
-
-
-        console.log(
-            `☁️ Loaded ${wardrobe.length} wardrobe items.`
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Could not load wardrobe:",
-            error
-        );
-
-        showDatabaseError(
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   NORMALISE DATABASE ITEM
-   ========================================================= */
-
-function normaliseItem(item) {
-
-    return {
-
-        id:
-            item.id,
-
-        category:
-            item.category || "",
-
-        color:
-            item.color || "",
-
-        fabric:
-            item.fabric || "",
-
-        types:
-            Array.isArray(item.types)
-                ? item.types
-                : [],
-
-        image:
-            item.image_url || "",
-
-        favorite:
-            Boolean(item.favorite),
-
-        wearCount:
-            Number(item.wear_count || 0),
-
-        lastWorn:
-            item.last_worn || null,
-
-        createdAt:
-            item.created_at || null
-
-    };
-
-}
-
-
-/* =========================================================
-   DATABASE ERROR
-   ========================================================= */
-
-function showDatabaseError(error) {
-
-    console.error(
-        "Database error:",
-        error
-    );
-
-
-    const grid =
-        $("clothingGrid");
-
-
-    if (!grid) {
-        return;
-    }
-
-
-    grid.innerHTML = `
-
-        <div
-            class="empty-state"
-            style="grid-column:1/-1;"
-        >
-
-            <div
-                style="font-size:45px;"
-            >
-                ⚠️
-            </div>
-
-            <h3>
-                Could not load wardrobe
-            </h3>
-
-            <p>
-                ${escapeHTML(
-                    error?.message ||
-                    "There was a problem connecting to Supabase."
-                )}
-            </p>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =========================================================
-   ADD ITEM
-   ========================================================= */
-
-function connectAddItem() {
 
     $("addItemButton")
         ?.addEventListener(
@@ -560,891 +4052,22 @@ function connectAddItem() {
                     event.target ===
                     $("addItemModal")
                 ) {
-
                     closeAddModal();
-
                 }
-
             }
-        );
-
-
-    $("clothingImage")
-        ?.addEventListener(
-            "change",
-            handleImageUpload
         );
 
 
     $("saveItem")
         ?.addEventListener(
             "click",
-            saveClothing
+            saveClothingItem
         );
-
-}
-
-
-/* =========================================================
-   OPEN / CLOSE MODAL
-   ========================================================= */
-
-function openAddModal() {
-
-    resetAddForm();
-
-
-    $("addItemModal")
-        ?.classList
-        .add("active");
-
-}
-
-
-function closeAddModal() {
-
-    $("addItemModal")
-        ?.classList
-        .remove("active");
-
-}
-
-
-/* =========================================================
-   RESET FORM
-   ========================================================= */
-
-function resetAddForm() {
-
-    selectedImageFile =
-        null;
-
-    selectedImagePreview =
-        "";
-
-    selectedTypes =
-        [];
-
-
-    if ($("clothingName")) {
-
-        $("clothingName").value =
-            "";
-
-    }
-
-
-    if ($("clothingCategory")) {
-
-        $("clothingCategory").value =
-            "";
-
-    }
-
-
-    if ($("clothingColor")) {
-
-        $("clothingColor").value =
-            "";
-
-    }
-
-
-    if ($("clothingFabric")) {
-
-        $("clothingFabric").value =
-            "";
-
-    }
-
-
-    if ($("clothingImage")) {
-
-        $("clothingImage").value =
-            "";
-
-    }
-
-
-    if ($("imagePreview")) {
-
-        $("imagePreview").src =
-            "";
-
-        $("imagePreview").style.display =
-            "none";
-
-    }
-
-
-    if ($("uploadPlaceholder")) {
-
-        $("uploadPlaceholder").style.display =
-            "flex";
-
-    }
 
 
     document
         .querySelectorAll(
-            "#typePicker .type-option"
-        )
-        .forEach(button => {
-
-            button.classList.remove(
-                "selected"
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   TYPE BUTTONS
-   ========================================================= */
-
-function connectTypeButtons() {
-
-    document
-        .querySelectorAll(
-            "#typePicker .type-option"
-        )
-        .forEach(button => {
-
-            if (
-                button.dataset.connected ===
-                "true"
-            ) {
-
-                return;
-
-            }
-
-
-            button.dataset.connected =
-                "true";
-
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const type =
-                        button.dataset.type;
-
-
-                    if (
-                        selectedTypes.includes(
-                            type
-                        )
-                    ) {
-
-                        selectedTypes =
-                            selectedTypes.filter(
-                                item =>
-                                    item !==
-                                    type
-                            );
-
-
-                        button.classList.remove(
-                            "selected"
-                        );
-
-
-                    } else {
-
-                        selectedTypes.push(
-                            type
-                        );
-
-
-                        button.classList.add(
-                            "selected"
-                        );
-
-                    }
-
-                }
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   IMAGE SELECTION
-   ========================================================= */
-
-async function handleImageUpload(event) {
-
-    const file =
-        event.target.files?.[0];
-
-
-    if (!file) {
-        return;
-    }
-
-
-    if (
-        !file.type.startsWith(
-            "image/"
-        )
-    ) {
-
-        alert(
-            "Please choose an image."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        console.log(
-            "📷 Image selected:",
-            file.name,
-            file.size
-        );
-
-
-        selectedImageFile =
-            file;
-
-
-        selectedImagePreview =
-            await createPreview(
-                file
-            );
-
-
-        const preview =
-            $("imagePreview");
-
-
-        const placeholder =
-            $("uploadPlaceholder");
-
-
-        if (preview) {
-
-            preview.src =
-                selectedImagePreview;
-
-            preview.style.display =
-                "block";
-
-        }
-
-
-        if (placeholder) {
-
-            placeholder.style.display =
-                "none";
-
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Image preview error:",
-            error
-        );
-
-
-        alert(
-            "The photo could not be loaded."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   IMAGE PREVIEW
-   ========================================================= */
-
-function createPreview(file) {
-
-    return new Promise(
-        (resolve, reject) => {
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload =
-                event => {
-
-                    const image =
-                        new Image();
-
-
-                    image.onload =
-                        () => {
-
-                            const max =
-                                900;
-
-
-                            let width =
-                                image.width;
-
-                            let height =
-                                image.height;
-
-
-                            if (
-                                width > max ||
-                                height > max
-                            ) {
-
-                                if (
-                                    width >
-                                    height
-                                ) {
-
-                                    height =
-                                        height *
-                                        max /
-                                        width;
-
-                                    width =
-                                        max;
-
-                                } else {
-
-                                    width =
-                                        width *
-                                        max /
-                                        height;
-
-                                    height =
-                                        max;
-
-                                }
-
-                            }
-
-
-                            const canvas =
-                                document.createElement(
-                                    "canvas"
-                                );
-
-
-                            canvas.width =
-                                Math.round(
-                                    width
-                                );
-
-                            canvas.height =
-                                Math.round(
-                                    height
-                                );
-
-
-                            const context =
-                                canvas.getContext(
-                                    "2d"
-                                );
-
-
-                            context.drawImage(
-                                image,
-                                0,
-                                0,
-                                canvas.width,
-                                canvas.height
-                            );
-
-
-                            resolve(
-                                canvas.toDataURL(
-                                    "image/jpeg",
-                                    0.78
-                                )
-                            );
-
-                        };
-
-
-                    image.onerror =
-                        reject;
-
-
-                    image.src =
-                        event.target.result;
-
-                };
-
-
-            reader.onerror =
-                reject;
-
-
-            reader.readAsDataURL(
-                file
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   COMPRESS IMAGE FOR STORAGE
-   ========================================================= */
-
-function compressImage(file) {
-
-    return new Promise(
-        (resolve, reject) => {
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload =
-                event => {
-
-                    const image =
-                        new Image();
-
-
-                    image.onload =
-                        () => {
-
-                            const max =
-                                1400;
-
-
-                            let width =
-                                image.width;
-
-                            let height =
-                                image.height;
-
-
-                            if (
-                                width > max ||
-                                height > max
-                            ) {
-
-                                if (
-                                    width >
-                                    height
-                                ) {
-
-                                    height =
-                                        height *
-                                        max /
-                                        width;
-
-                                    width =
-                                        max;
-
-                                } else {
-
-                                    width =
-                                        width *
-                                        max /
-                                        height;
-
-                                    height =
-                                        max;
-
-                                }
-
-                            }
-
-
-                            const canvas =
-                                document.createElement(
-                                    "canvas"
-                                );
-
-
-                            canvas.width =
-                                Math.round(
-                                    width
-                                );
-
-                            canvas.height =
-                                Math.round(
-                                    height
-                                );
-
-
-                            const context =
-                                canvas.getContext(
-                                    "2d"
-                                );
-
-
-                            context.drawImage(
-                                image,
-                                0,
-                                0,
-                                canvas.width,
-                                canvas.height
-                            );
-
-
-                            canvas.toBlob(
-                                blob => {
-
-                                    if (!blob) {
-
-                                        reject(
-                                            new Error(
-                                                "Could not compress image."
-                                            )
-                                        );
-
-                                        return;
-
-                                    }
-
-
-                                    resolve(
-                                        blob
-                                    );
-
-                                },
-
-                                "image/jpeg",
-
-                                0.78
-
-                            );
-
-                        };
-
-
-                    image.onerror =
-                        reject;
-
-
-                    image.src =
-                        event.target.result;
-
-                };
-
-
-            reader.onerror =
-                reject;
-
-
-            reader.readAsDataURL(
-                file
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   UPLOAD IMAGE TO SUPABASE STORAGE
-   ========================================================= */
-
-async function uploadImage(file) {
-
-    if (!file) {
-
-        return null;
-
-    }
-
-
-    console.log(
-        "☁️ Uploading image..."
-    );
-
-
-    const compressed =
-        await compressImage(
-            file
-        );
-
-
-    const fileName =
-
-        `${crypto.randomUUID()}.jpg`;
-
-
-    const filePath =
-        `clothing/${fileName}`;
-
-
-    const {
-        error
-    } = await supabase
-
-        .storage
-
-        .from(
-            STORAGE_BUCKET
-        )
-
-        .upload(
-            filePath,
-            compressed,
-            {
-                contentType:
-                    "image/jpeg",
-
-                upsert:
-                    false
-            }
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Storage upload error:",
-            error
-        );
-
-
-        throw error;
-
-    }
-
-
-    const {
-        data
-    } = supabase
-
-        .storage
-
-        .from(
-            STORAGE_BUCKET
-        )
-
-        .getPublicUrl(
-            filePath
-        );
-
-
-    if (!data?.publicUrl) {
-
-        throw new Error(
-            "Could not create public image URL."
-        );
-
-    }
-
-
-    console.log(
-        "🖼️ Image uploaded."
-    );
-
-
-    return data.publicUrl;
-
-}
-
-
-/* =========================================================
-   SAVE CLOTHING
-   ========================================================= */
-
-async function saveClothing() {
-
-    const category =
-        $("clothingCategory")
-            ?.value || "";
-
-
-    const color =
-        $("clothingColor")
-            ?.value || "";
-
-
-    const fabric =
-        $("clothingFabric")
-            ?.value || "";
-
-
-    if (!category) {
-
-        alert(
-            "Please choose a category."
-        );
-
-        return;
-
-    }
-
-
-    const button =
-        $("saveItem");
-
-
-    if (button) {
-
-        button.disabled =
-            true;
-
-        button.textContent =
-            "Saving...";
-
-    }
-
-
-    try {
-
-        let imageURL =
-            null;
-
-
-        if (
-            selectedImageFile
-        ) {
-
-            imageURL =
-                await uploadImage(
-                    selectedImageFile
-                );
-
-        }
-
-
-        const item = {
-
-            category:
-                category,
-
-            color:
-                color || null,
-
-            fabric:
-                fabric || null,
-
-            types:
-                selectedTypes,
-
-            image_url:
-                imageURL,
-
-            favorite:
-                false,
-
-            wear_count:
-                0,
-
-            last_worn:
-                null
-
-        };
-
-
-        console.log(
-            "☁️ Saving clothing:",
-            item
-        );
-
-
-        const {
-            data,
-            error
-        } = await supabase
-
-            .from(TABLE_NAME)
-
-            .insert(item)
-
-            .select()
-
-            .single();
-
-
-        if (error) {
-
-            console.error(
-                "Database save error:",
-                error
-            );
-
-
-            throw error;
-
-        }
-
-
-        wardrobe.unshift(
-            normaliseItem(
-                data
-            )
-        );
-
-
-        console.log(
-            "✅ Clothing saved."
-        );
-
-
-        closeAddModal();
-
-
-        renderWardrobe();
-
-
-    } catch (error) {
-
-        console.error(
-            "Could not save clothing:",
-            error
-        );
-
-
-        alert(
-            "Could not save the clothing item.\n\n" +
-            (
-                error?.message ||
-                "Unknown error"
-            )
-        );
-
-
-    } finally {
-
-        if (button) {
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "Add to wardrobe";
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   FILTERS
-   ========================================================= */
-
-function setupWardrobeFilters() {
-
-    document
-        .querySelectorAll(
-            "#wardrobePage .filter"
+            ".filter"
         )
         .forEach(button => {
 
@@ -1454,2023 +4077,170 @@ function setupWardrobeFilters() {
 
                     document
                         .querySelectorAll(
-                            "#wardrobePage .filter"
+                            ".filter"
                         )
-                        .forEach(item => {
-
-                            item.classList.remove(
-                                "active"
-                            );
-
-                        });
-
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "active"
+                                )
+                        );
 
                     button.classList.add(
                         "active"
                     );
 
-
-                    currentFilter =
+                    currentWardrobeFilter =
                         button.dataset.category ||
                         "all";
 
-
                     renderWardrobe();
-
                 }
             );
-
         });
-
 }
 
 
 /* =========================================================
-   RENDER WARDROBE
+   ADD NEW WARDROBE FILTER BUTTONS
    ========================================================= */
 
-function renderWardrobe() {
+function setupWardrobeCategoryButtons() {
 
-    const grid =
-        $("clothingGrid");
+    const filters =
+        document.querySelector(
+            ".filters"
+        );
 
-
-    if (!grid) {
+    if (!filters) {
         return;
     }
 
 
-    const filtered =
-        currentFilter === "all"
+    const wanted = [
 
-            ? wardrobe
+        {
+            value: "sweater",
+            label: "Sweaters"
+        },
 
-            : wardrobe.filter(
-                item =>
-                    item.category ===
-                    currentFilter
-            );
+        {
+            value: "cardigan",
+            label: "Cardigans / Overtop"
+        },
 
-
-    if ($("itemCount")) {
-
-        $("itemCount").textContent =
-
-            `${wardrobe.length} ${
-                wardrobe.length === 1
-                    ? "item"
-                    : "items"
-            } in your closet`;
-
-    }
-
-
-    grid.innerHTML =
-        "";
-
-
-    if (!filtered.length) {
-
-        grid.innerHTML = `
-
-            <div
-                class="empty-state"
-            >
-
-                <div
-                    style="font-size:45px;"
-                >
-                    👗
-                </div>
-
-                <h3>
-                    ${
-                        wardrobe.length
-                            ? "No items here"
-                            : "Your wardrobe is empty"
-                    }
-                </h3>
-
-                <p>
-                    ${
-                        wardrobe.length
-                            ? "Try another category."
-                            : "Add your first clothing item."
-                    }
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    filtered.forEach(
-        item => {
-
-            grid.appendChild(
-                createClothingCard(
-                    item
-                )
-            );
-
+        {
+            value: "skirt",
+            label: "Skirts"
         }
-    );
+    ];
 
-}
 
-
-/* =========================================================
-   CLOTHING CARD
-   ========================================================= */
-
-function createClothingCard(item) {
-
-    const card =
-        document.createElement(
-            "article"
-        );
-
-
-    card.className =
-        "clothing-card";
-
-
-    const imageHTML =
-        item.image
-
-            ? `
-
-                <img
-                    src="${escapeHTML(item.image)}"
-                    alt="${escapeHTML(
-                        categoryLabel(
-                            item.category
-                        )
-                    )}"
-                    loading="lazy"
-                >
-
-            `
-
-            : `
-
-                <div
-                    class="placeholder"
-                >
-                    ${categoryEmoji(
-                        item.category
-                    )}
-                </div>
-
-            `;
-
-
-    const details = [];
-
-
-    if (item.color) {
-
-        details.push(
-            colorLabel(
-                item.color
-            )
-        );
-
-    }
-
-
-    if (item.fabric) {
-
-        details.push(
-            fabricLabel(
-                item.fabric
-            )
-        );
-
-    }
-
-
-    const tags =
-        (item.types || [])
-
-            .map(
-                type => `
-
-                    <span
-                        class="item-tag"
-                    >
-                        ${escapeHTML(
-                            typeLabel(type)
-                        )}
-                    </span>
-
-                `
-            )
-
-            .join("");
-
-
-    card.innerHTML = `
-
-        <div
-            class="clothing-image"
-        >
-
-            ${imageHTML}
-
-
-            <button
-                class="heart ${
-                    item.favorite
-                        ? "active"
-                        : ""
-                }"
-                type="button"
-                data-action="favorite"
-            >
-
-                ${
-                    item.favorite
-                        ? "♥"
-                        : "♡"
-                }
-
-            </button>
-
-        </div>
-
-
-        <div
-            class="clothing-info"
-        >
-
-            <div>
-
-                <h3>
-                    ${escapeHTML(
-                        categoryLabel(
-                            item.category
-                        )
-                    ).toUpperCase()}
-                </h3>
-
-
-                <p>
-                    ${
-                        details.length
-                            ? escapeHTML(
-                                details.join(
-                                    " · "
-                                )
-                            )
-                            : "No details selected"
-                    }
-                </p>
-
-
-                <div
-                    class="item-tags"
-                >
-                    ${tags}
-                </div>
-
-            </div>
-
-
-            <button
-                class="more"
-                type="button"
-                data-action="edit"
-            >
-                •••
-            </button>
-
-        </div>
-
-    `;
-
-
-    card
-        .querySelector(
-            ".clothing-image"
-        )
-        ?.addEventListener(
-            "click",
-            event => {
-
-                if (
-                    event.target.closest(
-                        ".heart"
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                openPhotoModal(
-                    item
-                );
-
-            }
-        );
-
-
-    card
-        .querySelector(
-            '[data-action="favorite"]'
-        )
-        ?.addEventListener(
-            "click",
-            event => {
-
-                event.stopPropagation();
-
-
-                toggleFavorite(
-                    item.id
-                );
-
-            }
-        );
-
-
-    card
-        .querySelector(
-            '[data-action="edit"]'
-        )
-        ?.addEventListener(
-            "click",
-            event => {
-
-                event.stopPropagation();
-
-
-                openEditModal(
-                    item
-                );
-
-            }
-        );
-
-
-    return card;
-
-}
-
-
-/* =========================================================
-   PHOTO MODAL
-   ========================================================= */
-
-function openPhotoModal(item) {
-
-    removeTemporaryModals();
-
-
-    const modal =
-        document.createElement(
-            "div"
-        );
-
-
-    modal.className =
-        "photo-modal active";
-
-
-    const details = [];
-
-
-    if (item.color) {
-
-        details.push(
-            colorLabel(
-                item.color
-            )
-        );
-
-    }
-
-
-    if (item.fabric) {
-
-        details.push(
-            fabricLabel(
-                item.fabric
-            )
-        );
-
-    }
-
-
-    modal.innerHTML = `
-
-        <div
-            class="photo-modal-content"
-        >
-
-            <button
-                class="close-modal"
-                id="closePhotoViewer"
-                type="button"
-            >
-                ×
-            </button>
-
-
-            ${
-                item.image
-
-                    ? `
-
-                        <img
-                            src="${escapeHTML(
-                                item.image
-                            )}"
-                            alt="${escapeHTML(
-                                categoryLabel(
-                                    item.category
-                                )
-                            )}"
-                        >
-
-                    `
-
-                    : `
-
-                        <div
-                            class="placeholder"
-                            style="
-                                height:400px;
-                                background:#f2eeea;
-                            "
-                        >
-                            ${categoryEmoji(
-                                item.category
-                            )}
-                        </div>
-
-                    `
-            }
-
-
-            <h2
-                style="margin-top:18px;"
-            >
-                ${escapeHTML(
-                    categoryLabel(
-                        item.category
-                    )
-                ).toUpperCase()}
-            </h2>
-
-
-            <p
-                style="
-                    margin-top:7px;
-                    color:#8d857e;
-                "
-            >
-                ${
-                    details.length
-                        ? escapeHTML(
-                            details.join(
-                                " · "
-                            )
-                        )
-                        : "No details selected"
-                }
-            </p>
-
-
-            <div
-                class="item-tags"
-            >
-
-                ${(item.types || [])
-                    .map(
-                        type => `
-
-                            <span
-                                class="item-tag"
-                            >
-                                ${escapeHTML(
-                                    typeLabel(
-                                        type
-                                    )
-                                )}
-                            </span>
-
-                        `
-                    )
-                    .join("")}
-
-            </div>
-
-
-            <p
-                style="
-                    margin-top:15px;
-                    color:#8d857e;
-                "
-            >
-                Worn ${
-                    item.wearCount || 0
-                } ${
-                    (item.wearCount || 0) === 1
-                        ? "time"
-                        : "times"
-                }
-            </p>
-
-
-            <button
-                class="style-button"
-                id="wearItemButton"
-                type="button"
-                style="margin-top:15px;"
-            >
-                Mark as worn
-            </button>
-
-        </div>
-
-    `;
-
-
-    document.body.appendChild(
-        modal
-    );
-
-
-    $("closePhotoViewer")
-        ?.addEventListener(
-            "click",
-            () => modal.remove()
-        );
-
-
-    $("wearItemButton")
-        ?.addEventListener(
-            "click",
-            async () => {
-
-                await markItemWorn(
-                    item.id
-                );
-
-                modal.remove();
-
-            }
-        );
-
-
-    modal.addEventListener(
-        "click",
-        event => {
+    wanted.forEach(
+        category => {
 
             if (
-                event.target ===
-                modal
+                filters.querySelector(
+                    `[data-category="${category.value}"]`
+                )
             ) {
-
-                modal.remove();
-
+                return;
             }
 
-        }
-    );
-
-}
-
-
-/* =========================================================
-   MARK ITEM AS WORN
-   ========================================================= */
-
-async function markItemWorn(id) {
-
-    const item =
-        wardrobe.find(
-            current =>
-                current.id ===
-                id
-        );
-
-
-    if (!item) {
-        return;
-    }
-
-
-    const newWearCount =
-        (item.wearCount || 0) + 1;
-
-
-    const now =
-        new Date().toISOString();
-
-
-    const {
-        error
-    } = await supabase
-
-        .from(TABLE_NAME)
-
-        .update({
-
-            wear_count:
-                newWearCount,
-
-            last_worn:
-                now
-
-        })
-
-        .eq(
-            "id",
-            id
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Could not update wear count:",
-            error
-        );
-
-
-        alert(
-            "Could not update wear count.\n\n" +
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    item.wearCount =
-        newWearCount;
-
-
-    item.lastWorn =
-        now;
-
-
-    renderWardrobe();
-
-}
-
-
-/* =========================================================
-   FAVORITES
-   ========================================================= */
-
-async function toggleFavorite(id) {
-
-    const item =
-        wardrobe.find(
-            current =>
-                current.id ===
-                id
-        );
-
-
-    if (!item) {
-        return;
-    }
-
-
-    const newValue =
-        !item.favorite;
-
-
-    const {
-        error
-    } = await supabase
-
-        .from(TABLE_NAME)
-
-        .update({
-
-            favorite:
-                newValue
-
-        })
-
-        .eq(
-            "id",
-            id
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Favorite update error:",
-            error
-        );
-
-
-        alert(
-            "Could not update favorite.\n\n" +
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    item.favorite =
-        newValue;
-
-
-    if (
-        currentPage ===
-        "favorites"
-    ) {
-
-        renderFavorites();
-
-    } else {
-
-        renderWardrobe();
-
-    }
-
-}
-
-
-/* =========================================================
-   EDIT ITEM
-   ========================================================= */
-
-function openEditModal(item) {
-
-    removeTemporaryModals();
-
-
-    const modal =
-        document.createElement(
-            "div"
-        );
-
-
-    modal.className =
-        "edit-modal active";
-
-
-    modal.innerHTML = `
-
-        <div
-            class="edit-modal-content"
-        >
-
-            <button
-                class="close-modal"
-                id="closeEditModal"
-                type="button"
-            >
-                ×
-            </button>
-
-
-            <h2>
-                Edit clothing
-            </h2>
-
-
-            <label
-                class="input-label"
-            >
-                Category
-
-                <select
-                    id="editItemCategory"
-                >
-
-                    <option
-                        value="top"
-                    >
-                        Tops
-                    </option>
-
-                    <option
-                        value="bottom"
-                    >
-                        Bottoms
-                    </option>
-
-                    <option
-                        value="dress"
-                    >
-                        Dresses
-                    </option>
-
-                    <option
-                        value="shoes"
-                    >
-                        Shoes
-                    </option>
-
-                    <option
-                        value="accessory"
-                    >
-                        Accessories
-                    </option>
-
-                </select>
-
-            </label>
-
-
-            <label
-                class="input-label"
-            >
-                Colour
-
-                <select
-                    id="editItemColor"
-                >
-
-                    <option value="">
-                        Choose colour
-                    </option>
-
-                    ${COLOR_OPTIONS
-                        .map(
-                            option => `
-
-                                <option
-                                    value="${option[0]}"
-                                >
-                                    ${option[1]}
-                                </option>
-
-                            `
-                        )
-                        .join("")}
-
-                </select>
-
-            </label>
-
-
-            <label
-                class="input-label"
-            >
-                Fabric
-
-                <select
-                    id="editItemFabric"
-                >
-
-                    <option value="">
-                        No fabric selected
-                    </option>
-
-                    ${FABRIC_OPTIONS
-                        .map(
-                            option => `
-
-                                <option
-                                    value="${option[0]}"
-                                >
-                                    ${option[1]}
-                                </option>
-
-                            `
-                        )
-                        .join("")}
-
-                </select>
-
-            </label>
-
-
-            <div
-                class="input-label"
-            >
-
-                Clothing type
-
-                <div
-                    class="tag-picker"
-                    id="editTypePicker"
-                ></div>
-
-            </div>
-
-
-            <div
-                class="item-action-row"
-            >
-
-                <button
-                    class="edit-save-button"
-                    id="saveEditButton"
-                    type="button"
-                >
-                    Save changes
-                </button>
-
-
-                <button
-                    class="delete-item-button"
-                    id="deleteEditButton"
-                    type="button"
-                >
-                    Delete item
-                </button>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    document.body.appendChild(
-        modal
-    );
-
-
-    $("editItemCategory").value =
-        item.category;
-
-
-    $("editItemColor").value =
-        item.color || "";
-
-
-    $("editItemFabric").value =
-        item.fabric || "";
-
-
-    TYPE_OPTIONS.forEach(
-        ([value, label]) => {
 
             const button =
                 document.createElement(
                     "button"
                 );
 
+            button.className =
+                "filter";
 
             button.type =
                 "button";
 
-
-            button.className =
-                "type-option";
-
-
-            button.dataset.type =
-                value;
-
+            button.dataset.category =
+                category.value;
 
             button.textContent =
-                label;
-
-
-            if (
-                (item.types || [])
-                    .includes(value)
-            ) {
-
-                button.classList.add(
-                    "selected"
-                );
-
-            }
+                category.label;
 
 
             button.addEventListener(
                 "click",
                 () => {
 
-                    button.classList.toggle(
-                        "selected"
+                    document
+                        .querySelectorAll(
+                            ".filter"
+                        )
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "active"
+                                )
+                        );
+
+                    button.classList.add(
+                        "active"
                     );
 
+                    currentWardrobeFilter =
+                        category.value;
+
+                    renderWardrobe();
                 }
             );
 
 
-            $("editTypePicker")
-                ?.appendChild(
-                    button
-                );
-
-        }
-    );
-
-
-    $("closeEditModal")
-        ?.addEventListener(
-            "click",
-            () => modal.remove()
-        );
-
-
-    $("saveEditButton")
-        ?.addEventListener(
-            "click",
-            () =>
-                saveEditedItem(
-                    item,
-                    modal
-                )
-        );
-
-
-    $("deleteEditButton")
-        ?.addEventListener(
-            "click",
-            async () => {
-
-                modal.remove();
-
-                await confirmDeleteItem(
-                    item.id
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   SAVE EDITED ITEM
-   ========================================================= */
-
-async function saveEditedItem(
-    item,
-    modal
-) {
-
-    const category =
-        $("editItemCategory")
-            ?.value || "";
-
-
-    const color =
-        $("editItemColor")
-            ?.value || null;
-
-
-    const fabric =
-        $("editItemFabric")
-            ?.value || null;
-
-
-    const types =
-        [
-            ...document.querySelectorAll(
-                "#editTypePicker .type-option.selected"
-            )
-        ].map(
-            button =>
-                button.dataset.type
-        );
-
-
-    const {
-        error
-    } = await supabase
-
-        .from(TABLE_NAME)
-
-        .update({
-
-            category:
-                category,
-
-            color:
-                color,
-
-            fabric:
-                fabric,
-
-            types:
-                types
-
-        })
-
-        .eq(
-            "id",
-            item.id
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Edit error:",
-            error
-        );
-
-
-        alert(
-            "Could not save changes.\n\n" +
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    item.category =
-        category;
-
-
-    item.color =
-        color;
-
-
-    item.fabric =
-        fabric;
-
-
-    item.types =
-        types;
-
-
-    modal.remove();
-
-
-    renderWardrobe();
-
-}
-
-
-/* =========================================================
-   DELETE ITEM
-   ========================================================= */
-
-async function confirmDeleteItem(id) {
-
-    const item =
-        wardrobe.find(
-            current =>
-                current.id ===
-                id
-        );
-
-
-    if (!item) {
-        return;
-    }
-
-
-    if (
-        !confirm(
-            "Are you sure you want to delete this item?"
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    const {
-        error
-    } = await supabase
-
-        .from(TABLE_NAME)
-
-        .delete()
-
-        .eq(
-            "id",
-            id
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Delete error:",
-            error
-        );
-
-
-        alert(
-            "Could not delete item.\n\n" +
-            error.message
-        );
-
-        return;
-
-    }
-
-
-    wardrobe =
-        wardrobe.filter(
-            current =>
-                current.id !==
-                id
-        );
-
-
-    renderWardrobe();
-
-}
-
-
-/* =========================================================
-   FAVORITES PAGE
-   ========================================================= */
-
-function showFavorites() {
-
-    currentPage =
-        "favorites";
-
-
-    activateNav(
-        $("favoritesNav")
-    );
-
-
-    hidePages();
-
-
-    $("dynamicPage")
-        ?.classList
-        .remove("hidden");
-
-
-    renderFavorites();
-
-}
-
-
-function renderFavorites() {
-
-    const dynamic =
-        $("dynamicPage");
-
-
-    if (!dynamic) {
-        return;
-    }
-
-
-    const favorites =
-        wardrobe.filter(
-            item =>
-                item.favorite
-        );
-
-
-    dynamic.innerHTML = `
-
-        <div
-            class="dynamic-page-header"
-        >
-
-            <p
-                class="hero-label"
-            >
-                YOUR PICKS
-            </p>
-
-            <h2>
-                Favorites
-            </h2>
-
-            <p>
-                The pieces you love most.
-            </p>
-
-        </div>
-
-
-        <div
-            class="clothing-grid"
-            id="favoritesGrid"
-        ></div>
-
-    `;
-
-
-    const grid =
-        $("favoritesGrid");
-
-
-    if (!favorites.length) {
-
-        grid.innerHTML = `
-
-            <div
-                class="empty-state"
-            >
-
-                <div
-                    style="font-size:50px;"
-                >
-                    ♡
-                </div>
-
-                <h3>
-                    No favorites yet
-                </h3>
-
-                <p>
-                    Tap the heart on any clothing item.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    favorites.forEach(
-        item => {
-
-            grid.appendChild(
-                createClothingCard(
-                    item
-                )
+            filters.appendChild(
+                button
             );
-
         }
     );
-
 }
 
 
 /* =========================================================
-   OUTFITS
+   START APP
    ========================================================= */
 
-function showOutfits() {
+async function startApp() {
 
-    currentPage =
-        "outfits";
-
-
-    activateNav(
-        $("outfitsNav")
+    console.log(
+        "Closet AI starting..."
     );
 
 
-    hidePages();
+    setupNavigation();
 
+    setupImageInput();
 
-    $("dynamicPage")
-        ?.classList
-        .remove("hidden");
+    setupTypeOptions();
 
+    setupNewCategories();
 
-    renderOutfits();
+    setupPolyester();
 
-}
+    setupWardrobeCategoryButtons();
 
+    setupMobileSidebar();
 
-function renderOutfits() {
 
-    const dynamic =
-        $("dynamicPage");
+    await loadWardrobe();
 
+    await loadOutfits();
 
-    if (!dynamic) {
-        return;
-    }
 
+    showWardrobe();
 
-    dynamic.innerHTML = `
 
-        <div
-            class="outfits-header"
-        >
-
-            <h2>
-                Outfits
-            </h2>
-
-
-            <button
-                class="style-button"
-                id="createOutfitButton"
-                type="button"
-            >
-                + Create outfit
-            </button>
-
-        </div>
-
-
-        <div
-            class="empty-state"
-        >
-
-            <div
-                style="font-size:45px;"
-            >
-                ✨
-            </div>
-
-            <h3>
-                Outfit builder
-            </h3>
-
-            <p>
-                Choose pieces from your wardrobe
-                to create an outfit.
-            </p>
-
-            <button
-                class="style-button"
-                id="createOutfitButton2"
-                type="button"
-                style="margin-top:15px;"
-            >
-                Create outfit
-            </button>
-
-        </div>
-
-    `;
-
-
-    $("createOutfitButton")
-        ?.addEventListener(
-            "click",
-            showOutfitBuilder
-        );
-
-
-    $("createOutfitButton2")
-        ?.addEventListener(
-            "click",
-            showOutfitBuilder
-        );
-
-}
-
-
-/* =========================================================
-   OUTFIT BUILDER
-   ========================================================= */
-
-function showOutfitBuilder() {
-
-    currentPage =
-        "outfit-builder";
-
-
-    selectedOutfitItems =
-        [];
-
-
-    hidePages();
-
-
-    $("dynamicPage")
-        ?.classList
-        .remove("hidden");
-
-
-    const dynamic =
-        $("dynamicPage");
-
-
-    if (!dynamic) {
-        return;
-    }
-
-
-    dynamic.innerHTML = `
-
-        <div
-            class="dynamic-page-header"
-        >
-
-            <p
-                class="hero-label"
-            >
-                MANUAL STYLING
-            </p>
-
-            <h2>
-                Create your outfit
-            </h2>
-
-            <p>
-                Choose pieces from your wardrobe.
-            </p>
-
-        </div>
-
-
-        <label
-            class="input-label"
-        >
-
-            Outfit name
-
-            <input
-                type="text"
-                id="outfitName"
-                placeholder="e.g. Summer dinner"
-            >
-
-        </label>
-
-
-        <div
-            id="outfitItems"
-            class="clothing-grid"
-            style="margin-top:20px;"
-        ></div>
-
-
-        <div
-            class="selected-outfit"
-            style="margin-top:20px;"
-        >
-
-            <strong>
-                Selected pieces
-            </strong>
-
-
-            <div
-                id="selectedOutfitItems"
-                class="selected-outfit-items"
-                style="margin-top:10px;"
-            >
-                <span
-                    class="selected-chip"
-                >
-                    Nothing selected yet
-                </span>
-            </div>
-
-        </div>
-
-
-        <button
-            class="save-item"
-            id="saveOutfitButton"
-            type="button"
-            style="margin-top:20px;"
-        >
-            Save outfit
-        </button>
-
-
-        <button
-            class="delete-outfit"
-            id="cancelOutfitButton"
-            type="button"
-            style="margin-top:10px;"
-        >
-            Cancel
-        </button>
-
-    `;
-
-
-    $("saveOutfitButton")
-        ?.addEventListener(
-            "click",
-            saveOutfit
-        );
-
-
-    $("cancelOutfitButton")
-        ?.addEventListener(
-            "click",
-            showOutfits
-        );
-
-
-    const container =
-        $("outfitItems");
-
-
-    wardrobe.forEach(
-        item => {
-
-            const card =
-                createOutfitSelectionCard(
-                    item
-                );
-
-
-            container.appendChild(
-                card
-            );
-
-        }
+    console.log(
+        "Closet AI ready.",
+        wardrobe.length,
+        "clothing items loaded."
     );
-
 }
 
 
-function createOutfitSelectionCard(
-    item
-) {
-
-    const card =
-        document.createElement(
-            "article"
-        );
-
-
-    card.className =
-        "clothing-card";
-
-
-    card.innerHTML = `
-
-        <div
-            class="clothing-image"
-        >
-
-            ${
-                item.image
-
-                    ? `
-
-                        <img
-                            src="${escapeHTML(
-                                item.image
-                            )}"
-                            alt=""
-                        >
-
-                    `
-
-                    : `
-
-                        <div
-                            class="placeholder"
-                        >
-                            ${categoryEmoji(
-                                item.category
-                            )}
-                        </div>
-
-                    `
-            }
-
-        </div>
-
-
-        <div
-            class="clothing-info"
-        >
-
-            <strong>
-                ${escapeHTML(
-                    categoryLabel(
-                        item.category
-                    )
-                )}
-            </strong>
-
-        </div>
-
-    `;
-
-
-    if (
-        selectedOutfitItems
-            .includes(item.id)
-    ) {
-
-        card.classList.add(
-            "selected"
-        );
-
-    }
-
-
-    card.addEventListener(
-        "click",
-        () => {
-
-            if (
-                selectedOutfitItems
-                    .includes(item.id)
-            ) {
-
-                selectedOutfitItems =
-                    selectedOutfitItems.filter(
-                        id =>
-                            id !==
-                            item.id
-                    );
-
-            } else {
-
-                selectedOutfitItems.push(
-                    item.id
-                );
-
-            }
-
-
-            card.classList.toggle(
-                "selected"
-            );
-
-
-            renderSelectedOutfitItems();
-
-        }
-    );
-
-
-    return card;
-
-}
-
-
-function renderSelectedOutfitItems() {
-
-    const container =
-        $("selectedOutfitItems");
-
-
-    if (!container) {
-        return;
-    }
-
-
-    const selected =
-        wardrobe.filter(
-            item =>
-                selectedOutfitItems
-                    .includes(item.id)
-        );
-
-
-    if (!selected.length) {
-
-        container.innerHTML = `
-
-            <span
-                class="selected-chip"
-            >
-                Nothing selected yet
-            </span>
-
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        selected
-            .map(
-                item => `
-
-                    <span
-                        class="selected-chip"
-                    >
-                        ${escapeHTML(
-                            categoryLabel(
-                                item.category
-                            )
-                        )}
-                    </span>
-
-                `
-            )
-            .join("");
-
-}
-
-
-/* =========================================================
-   SAVE OUTFIT
-   ========================================================= */
-
-async function saveOutfit() {
-
-    const name =
-        $("outfitName")
-            ?.value
-            .trim();
-
-
-    if (!name) {
-
-        alert(
-            "Please give your outfit a name."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !selectedOutfitItems.length
-    ) {
-
-        alert(
-            "Please select at least one clothing item."
-        );
-
-        return;
-
-    }
-
-
-    /*
-       NOTE:
-
-       Your current Supabase setup only has
-       the wardrobe table.
-
-       Therefore outfits are kept locally
-       for now.
-
-       We can create a separate Supabase
-       outfits table next.
-    */
-
-
-    const outfits =
-        JSON.parse(
-            localStorage.getItem(
-                "closetAI_outfits"
-            ) || "[]"
-        );
-
-
-    const items =
-        wardrobe.filter(
-            item =>
-                selectedOutfitItems
-                    .includes(item.id)
-        );
-
-
-    outfits.push({
-
-        id:
-            crypto.randomUUID(),
-
-        name:
-            name,
-
-        items:
-            items,
-
-        createdAt:
-            new Date().toISOString()
-
-    });
-
-
-    localStorage.setItem(
-        "closetAI_outfits",
-        JSON.stringify(
-            outfits
-        )
-    );
-
-
-    alert(
-        "Outfit saved ✨"
-    );
-
-
-    showOutfits();
-
-}
-
-
-/* =========================================================
-   SETTINGS
-   ========================================================= */
-
-function showSettings() {
-
-    currentPage =
-        "settings";
-
-
-    activateNav(
-        $("settingsNav")
-    );
-
-
-    hidePages();
-
-
-    $("dynamicPage")
-        ?.classList
-        .remove("hidden");
-
-
-    const dynamic =
-        $("dynamicPage");
-
-
-    if (!dynamic) {
-        return;
-    }
-
-
-    dynamic.innerHTML = `
-
-        <div
-            class="dynamic-page-header"
-        >
-
-            <p
-                class="hero-label"
-            >
-                APP SETTINGS
-            </p>
-
-            <h2>
-                Settings
-            </h2>
-
-            <p>
-                Your wardrobe is stored in the cloud.
-            </p>
-
-        </div>
-
-
-        <div
-            class="settings-card"
-        >
-
-            <h3>
-                Wardrobe
-            </h3>
-
-            <p>
-                You currently have
-                <strong>
-                    ${wardrobe.length}
-                </strong>
-                clothing items.
-            </p>
-
-        </div>
-
-
-        <div
-            class="settings-card"
-        >
-
-            <h3>
-                Cloud storage
-            </h3>
-
-            <p>
-                Your clothing data and photos
-                are stored in Supabase.
-            </p>
-
-        </div>
-
-    `;
-
-}
-
-
-/* =========================================================
-   CLEANUP
-   ========================================================= */
-
-function removeTemporaryModals() {
-
-    document
-        .querySelectorAll(
-            ".photo-modal, .edit-modal, .delete-modal"
-        )
-        .forEach(
-            modal =>
-                modal.remove()
-        );
-
-}
+startApp();
